@@ -1,13 +1,20 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
+# Create app directory
 WORKDIR /app
 
-COPY package.json package-lock.json tsconfig.json ./
+# Copy dependency files first (better caching)
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
+# Copy the rest of the source
 COPY . .
 
+# Expose backend port
 EXPOSE 5000
 
-# Use ts-node-dev for hot reload in development
+# Start the server
 CMD ["npm", "run", "dev"]
+
