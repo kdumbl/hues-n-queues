@@ -4,7 +4,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color: #fff;
   background-color: #242424;
 
   font-synthesis: none;
@@ -28,6 +28,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #000;
 }
 
 h1 {
@@ -35,9 +36,102 @@ h1 {
   line-height: 1.1;
 }
 
+.hcsquarebutt {
+  background: #fff;
+  color: #fff;
+  border: 1px solid #000;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 27px;
+  margin-right: 2px;
+  margin-top: 2px;
+  padding: 0;
+  text-align: center;
+  width: 33.61px;
+  column-gap: 10px;
+}
+
+.hcsquarediv{
+  background: #fff;
+  color: #fff;
+  border: 1px solid #000;
+  float: left;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 20px;
+  margin-right: 2px;
+  margin-top: 2px;
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+  width: 32px;
+  column-gap: 2px;
+}
+
+.hcscorediv{
+  background: #fff;
+  color: #fff;
+  border: 1px solid #000;
+  float: left;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 95px;
+  height: 60px;
+  margin-right: 3px;
+  margin-top: 3px;
+  padding: 0;
+  text-align: center;
+  width: 31px;
+  column-gap: 2px;
+}
+
+.restart {
+  background: #fff;
+  border: 1px solid #000;
+  color: #000;
+  float: left;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 100px;
+  border-color: #000;
+  
+}
+
+.board-row:after {
+  clear: both;
+  content: '';
+  display: table;
+}
+
+.hcboard-row:after {
+  clear: both;
+  content: '';
+  display: table;
+}
+
+.container {
+  width: 150px;
+  height: 119px;
+
+}
+
+.logo {
+  background-image: url(./assets/logo.png);
+}
+
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  gap: 4;
+  border-color: #000;
+  border: 1px solid #000;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
