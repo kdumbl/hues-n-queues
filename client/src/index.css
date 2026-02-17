@@ -88,24 +88,6 @@ h1 {
   column-gap: 2px;
 }
 
-.restart {
-  background: #fff;
-  border: 1px solid #000;
-  color: #000;
-  float: left;
-  font-size: 18px;
-  font-weight: bold;
-  line-height: 34px;
-  height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-  width: 100px;
-  border-color: #000;
-  
-}
-
 .board-row:after {
   clear: both;
   content: '';
@@ -122,10 +104,6 @@ h1 {
   width: 150px;
   height: 119px;
 
-}
-
-.logo {
-  background-image: url(./assets/logo.png);
 }
 
 button {

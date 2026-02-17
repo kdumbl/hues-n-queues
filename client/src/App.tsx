@@ -1,5 +1,8 @@
 import { useState } from "react";
+import huesLogo from "./assets/logo.png";
 import "./App.css";
+
+//<img src={huesLogo} className="logo" alt="Hues and logo" />
 
 function ScoreRows(){
   return(
