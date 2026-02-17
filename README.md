@@ -12,8 +12,10 @@ Navigate to root folder
 In terminal run `docker compose up`  
 This builds image and starts a container
 
-When done use `docker compose down`  
+When done use `docker compose down`
 This stops the active containers
+
+To also remove development mongodb data use `docker compose down -v`
 
 Full reset if things get messed up:  
 `docker compose down --volumes --remove-orphans`  
