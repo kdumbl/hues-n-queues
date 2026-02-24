@@ -1,4 +1,5 @@
-class ColorCard {
+import { ColorOption } from './ColorOption';
+export class ColorCard {
   public cardID: number;
   public options: ColorOption[];
 

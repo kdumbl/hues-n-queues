@@ -1,4 +1,4 @@
-class ColorOption {
+export class ColorOption {
   public optionID: number;
   public hexCode: string;
   public gridCoordinates: string;

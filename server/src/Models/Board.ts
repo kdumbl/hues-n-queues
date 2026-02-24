@@ -1,4 +1,7 @@
-class Board {
+import { Player } from '../Models/Player';
+import { ColorCard } from '../Models/ColorCard';
+import { ColorOption } from '../Models/ColorOption';
+export class Board {
   // Maps a coordinate string (e.g., "A-0") to its hex color and occupation status
   public grid: Map<string, { hexCode: string; occupiedBy: Player | null }>;
   
