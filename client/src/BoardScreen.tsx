@@ -169,13 +169,11 @@ export default function HCBoard() {
         <div className="score-row">
           <ScoreRows />
         </div>
-        <div className="pic">
-          <img src={logo} />
-        </div>
+        <img src={logo} style={{width: '11vw', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}}/>
       </div>
       <div className="hcboard">
         <div className="hcboard-row">
-          <TopRow lh={'1.1em'}/>
+          <TopRow lh={'1.3vh'}/>
         </div>
         <div className="hcboard-row">
           <HCRow row_colors={rcs[1]} letter="A" />
@@ -226,7 +224,7 @@ export default function HCBoard() {
           <HCRow row_colors={rcs[16]} letter="P"/>
         </div>
         <div className="hcboard-row">
-          <TopRow lh="1.1em" />
+          <TopRow lh="2.5vh" />
         </div>
       </div>
     </>
