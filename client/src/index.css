@@ -36,24 +36,6 @@ h1 {
   line-height: 1.1;
 }
 
-.board-row:after {
-  clear: both;
-  content: '';
-  display: table;
-}
-
-.hcboard-row:after {
-  clear: both;
-  content: '';
-  display: table;
-}
-
-.container {
-  width: 150px;
-  height: 119px;
-
-}
-
 button {
   gap: 4;
   border-color: #000;

@@ -1,4 +1,5 @@
 import "./BoardScreen.css";
+import logo from "./assets/logo.png";
 
 function ScoreRows(){
   return(
@@ -164,62 +165,69 @@ export default function HCBoard() {
 
   return (
     <>
-      <div className="hcboard-row">
-        <ScoreRows />
+      <div className="top-section">
+        <div className="score-row">
+          <ScoreRows />
+        </div>
+        <div className="pic">
+          <img src={logo} />
+        </div>
       </div>
-      <div className="hcboard-row">
-        <TopRow lh={'26px'}/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[1]} letter="A" />
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[2]} letter="B"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[3]} letter="C"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[4]} letter="D"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[5]} letter="E"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[6]} letter="F"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[7]} letter="G"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[8]} letter="H"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[9]} letter="I"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[10]} letter="J"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[11]} letter="K"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[12]} letter="L"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[13]} letter="M"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[14]} letter="N"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[15]} letter="O"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[16]} letter="P"/>
-      </div>
-      <div className="hcboard-row">
-        <TopRow lh="15px" />
+      <div className="hcboard">
+        <div className="hcboard-row">
+          <TopRow lh={'1.1em'}/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[1]} letter="A" />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[2]} letter="B"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[3]} letter="C"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[4]} letter="D"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[5]} letter="E"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[6]} letter="F"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[7]} letter="G"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[8]} letter="H"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[9]} letter="I"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[10]} letter="J"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[11]} letter="K"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[12]} letter="L"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[13]} letter="M"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[14]} letter="N"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[15]} letter="O"/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[16]} letter="P"/>
+        </div>
+        <div className="hcboard-row">
+          <TopRow lh="1.1em" />
+        </div>
       </div>
     </>
   );
