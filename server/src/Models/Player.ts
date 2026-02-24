@@ -1,4 +1,6 @@
-class Player {
+import { ColorCard} from './ColorCard' ;
+import { ColorOption } from './ColorOption';
+export class Player {
   public playerName: string;
   public score: number = 0;
   public isClueGiver: boolean = false;
