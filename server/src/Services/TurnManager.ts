@@ -1,6 +1,6 @@
-import { Player } from '../Models/Player';
-import { ColorCard } from '../Models/ColorCard';
-import { ColorOption } from '../Models/ColorOption';
+import { Player } from "../domain/Player";
+import { ColorCard } from "../domain/ColorCard";
+import { ColorOption } from "../domain/ColorOption";
 
 // Enum to track the current state of the round, exactly as specified in your UML
 enum TurnPhase {
@@ -8,7 +8,7 @@ enum TurnPhase {
   GUESS_ONE,
   CLUE_TWO,
   GUESS_TWO,
-  SCORING
+  SCORING,
 }
 
 export class TurnManager {
@@ -17,7 +17,7 @@ export class TurnManager {
   public targetOption?: ColorOption;
   public currentPhase: TurnPhase;
   public currentClues: string[] = [];
-  
+
   // Maps a Player to the list of coordinates they guessed this round (max 2)
   public roundGuesses: Map<Player, string[]> = new Map();
 
@@ -25,7 +25,7 @@ export class TurnManager {
     this.clueGiver = clueGiver;
     this.activeCard = activeCard;
     this.currentPhase = TurnPhase.CLUE_ONE;
-    
+
     // Initialize the clue giver
     this.clueGiver.isClueGiver = true;
   }
@@ -38,10 +38,12 @@ export class TurnManager {
       console.warn("Target color can only be set during the initial phase.");
       return;
     }
-    
+
     this.targetOption = this.activeCard.getOption(optionIndex);
     if (this.targetOption) {
-      console.log(`${this.clueGiver.playerName} has selected their target color.`);
+      console.log(
+        `${this.clueGiver.playerName} has selected their target color.`,
+      );
     } else {
       console.error("Invalid option index selected.");
     }
@@ -55,9 +57,21 @@ export class TurnManager {
     const lowerCue = cue.toLowerCase().trim();
 
     // Basic forbidden words (Common colors) [cite: 51]
-    const forbiddenWords = ["red", "blue", "yellow", "green", "orange", "purple", "black", "white", "brown", "pink", "titty"];
-    
-    if (forbiddenWords.some(word => lowerCue.includes(word))) {
+    const forbiddenWords = [
+      "red",
+      "blue",
+      "yellow",
+      "green",
+      "orange",
+      "purple",
+      "black",
+      "white",
+      "brown",
+      "pink",
+      "titty",
+    ];
+
+    if (forbiddenWords.some((word) => lowerCue.includes(word))) {
       console.warn("Invalid clue: Cannot use common color names.");
       return false;
     }
@@ -68,7 +82,6 @@ export class TurnManager {
       console.warn("Invalid clue: Cannot refer to board positions.");
       return false;
     }
-
 
     // Ensure it's strictly a 1-word or 2-word cue based on the phase [cite: 49, 57]
     const wordCount = lowerCue.split(/\s+/).length;
@@ -94,7 +107,10 @@ export class TurnManager {
       return;
     }
 
-    if (this.currentPhase !== TurnPhase.GUESS_ONE && this.currentPhase !== TurnPhase.GUESS_TWO) {
+    if (
+      this.currentPhase !== TurnPhase.GUESS_ONE &&
+      this.currentPhase !== TurnPhase.GUESS_TWO
+    ) {
       console.warn("It is not currently a guessing phase.");
       return;
     }
@@ -107,7 +123,9 @@ export class TurnManager {
     const playerGuesses = this.roundGuesses.get(player)!;
 
     if (playerGuesses.length >= 2) {
-      console.warn(`${player.playerName} has already placed all their pieces for this round.`);
+      console.warn(
+        `${player.playerName} has already placed all their pieces for this round.`,
+      );
       return;
     }
 
