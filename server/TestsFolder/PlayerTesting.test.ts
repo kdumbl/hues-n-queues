@@ -1,4 +1,5 @@
-
+import {Player} from '../src/Models/Player';
+import {ColorCard} from '../src/Models/ColorCard';
 
 describe('Player', () => {
   let player: Player;
