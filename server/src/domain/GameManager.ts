@@ -1,6 +1,6 @@
-import { Player } from "../domain/Player";
-import { Board } from "../domain/Board";
-import { ColorCard } from "../domain/ColorCard";
+import { Player } from "./Player";
+import { Board } from "./Board";
+import { ColorCard } from "./ColorCard";
 import { TurnManager } from "./TurnManager";
 // Enum to track the overarching state of the game
 enum GameState {

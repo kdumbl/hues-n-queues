@@ -1,6 +1,6 @@
-import { Player } from "../domain/Player";
-import { ColorCard } from "../domain/ColorCard";
-import { ColorOption } from "../domain/ColorOption";
+import { Player } from "./Player";
+import { ColorCard } from "./ColorCard";
+import { ColorOption } from "./ColorOption";
 
 // Enum to track the current state of the round, exactly as specified in your UML
 enum TurnPhase {
