@@ -1,0 +1,232 @@
+/*  game view page */
+.hc-stage {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  font-family: Arial, sans-serif;
+}
+
+/*  wall/floor  */
+.hc-wall {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 78%;
+  background: #1e1c1c;
+}
+
+.hc-floor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 22%;
+  background: linear-gradient(180deg, #2e2e2e, #262626);
+}
+
+.hc-floorLip {
+  position: absolute;
+  bottom: 22%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8), transparent);
+  z-index: 2;
+}
+
+/*  spotlight  */
+.hc-spotlight {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+
+  /* triangle of light */
+  border-left: 380px solid transparent;
+  border-right: 380px solid transparent;
+  border-bottom: 500px solid rgba(255, 235, 100, 0.06);
+}
+
+/* lamp */
+.hc-lampCord {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 2px);
+  width: 7px;
+  height: 66px;
+  background: #555;
+  z-index: 5;
+}
+
+.hc-lampShade {
+  position: absolute;
+  top: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 170px;
+  height: 82px;
+  background: linear-gradient(180deg, #131626, #0c1020);
+  border-radius: 52% 52% 0 0 / 100% 100% 0 0;
+  border: 2px solid #252a50;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.9),
+    inset 0 -5px 16px rgba(255, 215, 60, 0.12);
+  z-index: 6;
+}
+
+.hc-lampRim {
+  position: absolute;
+  top: 138px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 171px;
+  height: 18px;
+  background: linear-gradient(180deg, #d4a828, #7a5e0e);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  z-index: 6;
+}
+
+.hc-lampBulb {
+  position: absolute;
+  top: 138px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #fffff0, #ffe066);
+  box-shadow: 0 0 55px 25px rgba(255, 230, 80, 0.65),
+    0 0 110px 60px rgba(255, 195, 40, 0.2);
+  z-index: 7;
+}
+
+/* table */
+.hc-tableTop {
+  position: absolute;
+  bottom: 27%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  height: 120px;
+  background: radial-gradient(ellipse at 48% 30%, #d8a428 0%, #8c5c12 55%, #5e3c08 100%);
+  border-radius: 50%;
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
+    inset 0 -12px 26px rgba(0, 0, 0, 0.5);
+  border: 5px solid #a07018;
+  z-index: 10;
+}
+
+.hc-tableLeg {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35px;
+  height: 78px;
+  background: linear-gradient(90deg, #6a4810, #c09030, #6a4810);
+  z-index: 9;
+}
+
+.hc-tableBase {
+  position: absolute;
+  bottom: 17%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 18px;
+  background: linear-gradient(90deg, #4a3008, #9a7020, #4a3008);
+  border-radius: 5px;
+  z-index: 9;
+}
+
+/*  deck button  */
+.hc-deckButton {
+  position: absolute;
+  bottom: calc(22% + 54px);
+  left: calc(55% + 45px);
+  z-index: 20;
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+
+  transform: translateY(0) rotate(0deg);
+  transition: transform 0.2s ease;
+}
+
+.hc-deckButton.isDeckHovered {
+  transform: translateY(-10px) rotate(4deg);
+}
+
+.hc-deckCards {
+  position: relative;
+  width: 60px;
+  height: 82px;
+}
+
+/* Cards stack */
+.hc-card {
+  position: absolute;
+  width: 56px;
+  height: 76px;
+  border-radius: 10px;
+  border: 2px solid #3e3e3e;
+}
+
+.backCard {
+  top: 6px;
+  left: -6px;
+  background: #0e0e0e;
+}
+
+.midCard {
+  top: 3px;
+  left: -3px;
+  background: #0e0e0e;
+}
+
+.topCard {
+  top: 0;
+  left: 0;
+  background: linear-gradient(155deg, #1c1c1c, #2e2e2e);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.hc-cardTitle {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  font-family: Impact, sans-serif;
+  line-height: 1;
+}
+
+.hc-cardAnd {
+  color: #aaa;
+  font-size: 7px;
+  letter-spacing: 1px;
+}
+
+/* Deck tip label */
+.hc-deckTip {
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  border: 1px solid #555;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
