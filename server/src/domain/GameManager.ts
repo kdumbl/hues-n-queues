@@ -9,7 +9,7 @@ enum GameState {
   END,
 }
 
-class GameManager {
+export class GameManager {
   public players: Player[];
   public board: Board;
   public currentTurnManager: TurnManager | null = null;
