@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const { Schema } = mongoose;
+const { Schema, model, Types } = mongoose;
 
 /*
 Basicallly a clone of the domain classes but in a mongodb format.
@@ -19,6 +19,7 @@ const colorCardSchema = new Schema({
 
 const playerSchema = new Schema({
   playerName: String,
+  userId: { type: Types.ObjectId, ref: "User", required: true },
   score: Number,
   isClueGiver: Boolean,
   _piecesRemaining: Number, //Private variable in player class?
@@ -48,3 +49,5 @@ const gameSchema = new Schema({
     enum: ["SETUP", "ACTIVE", "END"],
   },
 });
+
+export const GameModel = model("Model", gameSchema);
