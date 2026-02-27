@@ -1,18 +1,15 @@
 import mongoose from "mongoose";
-import { GameModel } from "../schemas/game.schema";
-import { GameManager } from "../domain/GameManager";
+import { UserModel } from "../schemas/user.schema";
 import { connectDB, connectDBMock } from "../config/db";
 
 //Should we import the db connection here? Ideally we only connect once and leave that connection open.
 //Do we create a second user repository for interaction with the user?
-export class GameRepository {
-  public Game;
+export class UserRepository {
+  public User;
 
   constructor() {
-    this.Game = GameModel;
+    this.User = UserModel;
   }
 
-  public createGameFromDB(): GameManager {}
-
-  public writeGameToDB() {}
+  public readGameModel() {}
 }
