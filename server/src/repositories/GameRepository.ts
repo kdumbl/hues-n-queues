@@ -12,7 +12,7 @@ export class GameRepository {
     this.Game = GameModel;
   }
 
-  public createGameFromDB(): GameManager {}
+  public createGameFromDB() {}
 
   public writeGameToDB() {}
 }
