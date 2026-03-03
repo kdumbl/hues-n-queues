@@ -1,4 +1,7 @@
+import {Player} from '../src/domain/Player';
+import {ColorCard} from '../src/domain/ColorCard';
 
+"'npm test' to run all tests in this folder."
 
 describe('Player', () => {
   let player: Player;
