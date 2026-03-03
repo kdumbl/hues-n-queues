@@ -1,4 +1,4 @@
-import { ColorOption } from '../src/Models/ColorOption';
+import { ColorOption } from '../src/domain/ColorOption';
 
 "'npm test' to run all tests in this folder."
 

@@ -1,5 +1,5 @@
-import { ColorCard } from '../src/Models/ColorCard';
-import { ColorOption } from '../src/Models/ColorOption';
+import { ColorCard } from '../src/domain/ColorCard';
+import { ColorOption } from '../src/domain/ColorOption';
 
 "'npm test' to run all tests in this folder."
 

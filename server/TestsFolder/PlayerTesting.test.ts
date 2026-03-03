@@ -1,5 +1,5 @@
-import {Player} from '../src/Models/Player';
-import {ColorCard} from '../src/Models/ColorCard';
+import {Player} from '../src/domain/Player';
+import {ColorCard} from '../src/domain/ColorCard';
 
 "'npm test' to run all tests in this folder."
 
