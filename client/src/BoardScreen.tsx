@@ -1,5 +1,13 @@
 import "./BoardScreen.css";
+import { useState } from 'react';
+import logo from "./assets/logo.png";
+import red_piece from "./assets/pieces/red_piece.png";
+import yellow_piece from "./assets/pieces/yellow_piece.png";
+import green_piece from "./assets/pieces/green_piece.png";
+import blue_piece from "./assets/pieces/blue_piece.png";
 
+
+//Creates two rows of grayscale rectangles representing score in the top left
 function ScoreRows(){
   return(
     <>
@@ -63,6 +71,8 @@ function ScoreRows(){
   )
 }
 
+//Creates top and bottom borders of game board with corresponding number indices.
+//Line Height passed in as parameter to allow for numbers to be closer to board than otherwise
 function TopRow({ lh }){
   return (
     <>
@@ -102,47 +112,157 @@ function TopRow({ lh }){
   )
 }
 
-function HCRow({row_colors, letter}){
+//Creates a normal row of the game board
+//row_colors is an array of the 30 color values, left->right, that will be present in the row
+//letter is the row index as a letter between A and P, which appears on the left and right side of the main board
+//row_num is the index of the row as a number, with 0 being the topmost and 15 being the bottom-most
+//images is an array representing whether each space is occupied by a game piece and if so, which color it is
+  //Functionally, each element in the array is an image url that is assigned to the source field of an otherwise empty image object over each space
+//add_piece is the function that is called when a space is clicked, defined in HCBoard
+function HCRow({row_colors, letter, row_num, images, add_piece}){
+
+  //Value for easier indexing of array
+  let base = row_num * 30;
+
+  //For each column, defines a game space (hcsquarebutt class) whose color corresponds with the row_colors array
+  //Additionally defines an image, initially null, that sits a layer above the space, to be filled in with a game piece if necessary
   return (
     <>
       <div className="hcsquarediv" style={{background: '#000000'}}>{letter}</div>
-      <button className="hcsquarebutt" style={{background: row_colors[0]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[1]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[2]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[3]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[4]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[5]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[6]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[7]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[8]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[9]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[10]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[11]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[12]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[13]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[14]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[15]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[16]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[17]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[18]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[19]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[20]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[21]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[22]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[23]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[24]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[25]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[26]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[27]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[28]}}></button>
-      <button className="hcsquarebutt" style={{background: row_colors[29]}}></button>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 0)} className="hcsquarebutt" style={{background: row_colors[0]}}></button>
+        <img src={images[base + 0]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "1.7vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 1)} className="hcsquarebutt" style={{background: row_colors[1]}}></button>
+        <img src={images[base + 1]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "3.7vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 2)} className="hcsquarebutt" style={{background: row_colors[2]}}></button>
+        <img src={images[base + 2]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "5.7vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 3)} className="hcsquarebutt" style={{background: row_colors[3]}}></button>
+        <img src={images[base + 3]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "7.6vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 4)} className="hcsquarebutt" style={{background: row_colors[4]}}></button>
+        <img src={images[base + 4]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "9.6vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 5)} className="hcsquarebutt" style={{background: row_colors[5]}}></button>
+        <img src={images[base + 5]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "11.6vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 6)} className="hcsquarebutt" style={{background: row_colors[6]}}></button>
+        <img src={images[base + 6]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "13.5vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 7)} className="hcsquarebutt" style={{background: row_colors[7]}}></button>
+        <img src={images[base + 7]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "15.5vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 8)} className="hcsquarebutt" style={{background: row_colors[8]}}></button>
+        <img src={images[base + 8]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "17.5vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 9)} className="hcsquarebutt" style={{background: row_colors[9]}}></button>
+        <img src={images[base + 9]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "19.4vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 10)} className="hcsquarebutt" style={{background: row_colors[10]}}></button>
+        <img src={images[base + 10]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "21.4vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 11)} className="hcsquarebutt" style={{background: row_colors[11]}}></button>
+        <img src={images[base + 11]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "23.4vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 12)} className="hcsquarebutt" style={{background: row_colors[12]}}></button>
+        <img src={images[base + 12]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "25.4vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 13)} className="hcsquarebutt" style={{background: row_colors[13]}}></button>
+        <img src={images[base + 13]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "27.3vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 14)} className="hcsquarebutt" style={{background: row_colors[14]}}></button>
+        <img src={images[base + 14]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "29.3vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 15)} className="hcsquarebutt" style={{background: row_colors[15]}}></button>
+        <img src={images[base + 15]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "31.2vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 16)} className="hcsquarebutt" style={{background: row_colors[16]}}></button>
+        <img src={images[base + 16]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "33.2vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 17)} className="hcsquarebutt" style={{background: row_colors[17]}}></button>
+        <img src={images[base + 17]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "35.2vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 18)} className="hcsquarebutt" style={{background: row_colors[18]}}></button>
+        <img src={images[base + 18]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "37.2vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 19)} className="hcsquarebutt" style={{background: row_colors[19]}}></button>
+        <img src={images[base + 19]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "39.2vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 20)} className="hcsquarebutt" style={{background: row_colors[20]}}></button>
+        <img src={images[base + 20]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "41.2vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 21)} className="hcsquarebutt" style={{background: row_colors[21]}}></button>
+        <img src={images[base + 21]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "43.1vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 22)} className="hcsquarebutt" style={{background: row_colors[22]}}></button>
+        <img src={images[base + 22]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "45.1vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 23)} className="hcsquarebutt" style={{background: row_colors[23]}}></button>
+        <img src={images[base + 23]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "47.1vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 24)} className="hcsquarebutt" style={{background: row_colors[24]}}></button>
+        <img src={images[base + 24]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "49vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 25)} className="hcsquarebutt" style={{background: row_colors[25]}}></button>
+        <img src={images[base + 25]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "51vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 26)} className="hcsquarebutt" style={{background: row_colors[26]}}></button>
+        <img src={images[base + 26]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "53vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 27)} className="hcsquarebutt" style={{background: row_colors[27]}}></button>
+        <img src={images[base + 27]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "55vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 28)} className="hcsquarebutt" style={{background: row_colors[28]}}></button>
+        <img src={images[base + 28]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "56.9vw", bottom: "-4vh"}}></img>
+      </div>
+      <div style={{position: "relative"}}>
+        <button onClick={() => add_piece(base + 29)} className="hcsquarebutt" style={{background: row_colors[29]}}></button>
+        <img src={images[base + 29]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "58.9vw", bottom: "-4vh"}}></img>
+      </div>
       <div className="hcsquarediv" style={{background: '#000000'}}>{letter}</div>
     </>
   );
 }
 
+//Creates the full game board that sits beneath the score rows and logo
 export default function HCBoard() {
 
+  //Initializes each space to initially lack a game piece image
+  const[images, set_images] = useState(Array(480).fill(null));
+
+  const [counter, set_counter] = useState(0);
+
+  //Defines the colors of each space on the gameboard, as well as the top and bottom rows with the displayed number indices
   let rcs = [["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000"],
              ["#612b0f", "#6b2710", "#752214", "#821f19", "#941e1e", "#9e1b20", "#af1e23", "#c62127", "#de1f26", "#eb1c24", "#ec1d23", "#ec1d25", "#ec1b2e", "#ed1a3b", "#ec1946", "#e91754", "#e51465", "#e21075", "#d80f83", "#d4148d", "#c82791", "#bb2d91", "#b33394", "#a83594", "#9f3894", "#933895", "#8c3d98", "#833d96", "#7d3e99", "#73419a"], 
              ["#884b1f", "#94441f", "#9c3f20", "#ad3f24", "#b93825", "#c62d27", "#d62827", "#e42024", "#eb2325", "#ec282a", "#ee2932", "#ee2932", "#ed2041", "#eb204d", "#ed1c5e", "#ec166e", "#ed0f7c", "#e90c8d", "#db2a92", "#cd3894", "#bf3e98", "#b43d97", "#a93c97", "#9e3e97", "#963d97", "#8d3d96", "#843e97", "#7d3e99", "#723d97", "#683b96"],
@@ -162,64 +282,93 @@ export default function HCBoard() {
              ["#7ba541", "#76a940", "#6fa744", "#65a243", "#59a445", "#4c9f45", "#439845", "#399645", "#299144", "#1e8943", "#198b43", "#149145", "#159a47", "#18a149", "#1bab4a", "#22b04c", "#2cb34c", "#33b555", "#3ab65e", "#3eb865", "#3fb970", "#39b97c", "#32ba8a", "#2cb996", "#21bba1", "#1cbaac", "#18bcbd", "#14bcc7", "#10b7d7", "#0fb1e2"],
              ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000"]];
 
+  //Called when a game space is clicked
+    //Advances the counter variable (initially 0) and sets the space's index in the images array to the corresponding colored piece
+    //Currently cycles between red, yellow, green, and blue in lieu of turn order being controlled by backend
+  function add_piece(i) {
+    const next_counter = counter + 1;
+    const next_images = images.slice();
+    set_counter(next_counter);
+    if (next_counter == 1){
+      next_images[i] = red_piece;
+    }
+    if (next_counter == 2){
+      next_images[i] = yellow_piece;
+    }
+    if (next_counter == 3){
+      next_images[i] = green_piece;
+    }
+    if (next_counter == 4){
+      next_images[i] = blue_piece;
+      set_counter(0);
+    }
+    set_images(next_images);
+  }
+
+  //Creates full screen by showing score rows, then logo in top right, then the game board, which is made up of 16 main rows sandwiched between graph indices
   return (
     <>
-      <div className="hcboard-row">
-        <ScoreRows />
+      <div className="top-section">
+        <div className="score-row">
+          <ScoreRows />
+        </div>
+        <img src={logo} style={{width: '11vw', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}}/>
       </div>
-      <div className="hcboard-row">
-        <TopRow lh={'26px'}/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[1]} letter="A" />
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[2]} letter="B"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[3]} letter="C"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[4]} letter="D"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[5]} letter="E"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[6]} letter="F"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[7]} letter="G"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[8]} letter="H"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[9]} letter="I"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[10]} letter="J"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[11]} letter="K"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[12]} letter="L"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[13]} letter="M"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[14]} letter="N"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[15]} letter="O"/>
-      </div>
-      <div className="hcboard-row">
-        <HCRow row_colors={rcs[16]} letter="P"/>
-      </div>
-      <div className="hcboard-row">
-        <TopRow lh="15px" />
+      <div className="hcboard">
+        <div className="hcboard-row">
+          <TopRow lh={'1.3vh'}/>
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[1]} letter="A" row_num={0} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[2]} letter="B" row_num={1} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[3]} letter="C" row_num={2} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[4]} letter="D" row_num={3} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[5]} letter="E" row_num={4} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[6]} letter="F" row_num={5} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[7]} letter="G" row_num={6} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[8]} letter="H" row_num={7} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[9]} letter="I" row_num={8} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[10]} letter="J" row_num={9} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[11]} letter="K" row_num={10} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[12]} letter="L" row_num={11} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[13]} letter="M" row_num={12} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[14]} letter="N" row_num={13} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[15]} letter="O" row_num={14} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[16]} letter="P" row_num={15} images = {images} add_piece = {add_piece} />
+        </div>
+        <div className="hcboard-row">
+          <TopRow lh="2.5vh" />
+        </div>
       </div>
     </>
   );
