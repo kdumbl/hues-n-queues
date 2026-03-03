@@ -1,5 +1,7 @@
 import { ColorOption } from '../src/Models/ColorOption';
 
+"'npm test' to run all tests in this folder."
+
 describe('ColorOption', () => {
   test('should initialize with correct id, hexCode, and gridCoordinates', () => {
     const option = new ColorOption(1, '#612b0f', 'A-0');

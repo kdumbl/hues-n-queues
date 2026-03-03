@@ -1,6 +1,8 @@
 import { ColorCard } from '../src/Models/ColorCard';
 import { ColorOption } from '../src/Models/ColorOption';
 
+"'npm test' to run all tests in this folder."
+
 describe('ColorCard', () => {
   let card: ColorCard;
 

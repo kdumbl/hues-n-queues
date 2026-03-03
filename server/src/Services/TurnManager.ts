@@ -1,8 +1,8 @@
 import { Player } from '../Models/Player';
 import { ColorCard } from '../Models/ColorCard';
 import { ColorOption } from '../Models/ColorOption';
+import { ScoringCalc } from './ScoringCalc'; // <-- Added import
 
-// Enum to track the current state of the round, exactly as specified in your UML
 enum TurnPhase {
   CLUE_ONE,
   GUESS_ONE,
@@ -18,21 +18,15 @@ export class TurnManager {
   public currentPhase: TurnPhase;
   public currentClues: string[] = [];
   
-  // Maps a Player to the list of coordinates they guessed this round (max 2)
   public roundGuesses: Map<Player, string[]> = new Map();
 
   constructor(clueGiver: Player, activeCard: ColorCard) {
     this.clueGiver = clueGiver;
     this.activeCard = activeCard;
     this.currentPhase = TurnPhase.CLUE_ONE;
-    
-    // Initialize the clue giver
     this.clueGiver.isClueGiver = true;
   }
 
-  /**
-   * Sets the target color based on the option the clue giver chose from the card.
-   */
   public setTarget(optionIndex: number): void {
     if (this.currentPhase !== TurnPhase.CLUE_ONE) {
       console.warn("Target color can only be set during the initial phase.");
@@ -47,14 +41,8 @@ export class TurnManager {
     }
   }
 
-  /**
-   * Checks to make sure the clue does not include bad words.
-   * According to the rules, cues cannot be common color names, or board coordinates
-   */
   public validateClue(cue: string): boolean {
     const lowerCue = cue.toLowerCase().trim();
-
-    // Basic forbidden words (Common colors) [cite: 51]
     const forbiddenWords = ["red", "blue", "yellow", "green", "orange", "purple", "black", "white", "brown", "pink", "titty"];
     
     if (forbiddenWords.some(word => lowerCue.includes(word))) {
@@ -62,15 +50,12 @@ export class TurnManager {
       return false;
     }
 
-    // Check for coordinate patterns (e.g., A1, B-12) [cite: 52]
     const coordinateRegex = /^[a-pA-P]-?\d{1,2}$/;
     if (coordinateRegex.test(lowerCue)) {
       console.warn("Invalid clue: Cannot refer to board positions.");
       return false;
     }
 
-
-    // Ensure it's strictly a 1-word or 2-word cue based on the phase [cite: 49, 57]
     const wordCount = lowerCue.split(/\s+/).length;
     if (this.currentPhase === TurnPhase.CLUE_ONE && wordCount !== 1) {
       console.warn("Invalid clue: The first clue must be exactly one word.");
@@ -85,9 +70,6 @@ export class TurnManager {
     return true;
   }
 
-  /**
-   * Records the player's guess with an input of both a player and a coordinate.
-   */
   public receiveGuess(player: Player, coordinate: string): void {
     if (player === this.clueGiver) {
       console.warn("The clue giver cannot guess!");
@@ -99,7 +81,6 @@ export class TurnManager {
       return;
     }
 
-    // Initialize player in map if they don't exist yet
     if (!this.roundGuesses.has(player)) {
       this.roundGuesses.set(player, []);
     }
@@ -116,31 +97,74 @@ export class TurnManager {
   }
 
   /**
-   * Advances the phase or triggers scoring based on the current state.
+   * Evaluates all guesses, calculates points for guessers and the clue giver,
+   * and returns a Map to be consumed by the GameManager.
    */
-  public resolveRound(): void {
+  private calculateScores(): Map<Player, number> {
+    const roundScores = new Map<Player, number>();
+    let clueGiverPoints = 0;
+
+    if (!this.targetOption) {
+      console.error("Cannot score: No target option was set.");
+      return roundScores;
+    }
+
+    const targetCoord = this.targetOption.gridCoordinates;
+
+    for (const [player, guesses] of this.roundGuesses.entries()) {
+      let playerTotal = 0;
+
+      for (const guess of guesses) {
+        const pts = ScoringCalc.calculate(targetCoord, guess);
+        playerTotal += pts;
+
+        // If a guess scores 2 or 3 points, it is inside the 3x3 frame.
+        // The clue giver gets 1 point for each of these pieces.
+        if (pts >= 2) {
+          clueGiverPoints += 1;
+        }
+      }
+      roundScores.set(player, playerTotal);
+    }
+
+    // Enforce the max of 9 points for the clue giver
+    if (clueGiverPoints > 9) {
+      clueGiverPoints = 9;
+    }
+    
+    roundScores.set(this.clueGiver, clueGiverPoints);
+    console.log(`[Scoring] ${this.clueGiver.playerName} (Clue Giver) earned ${clueGiverPoints} points.`);
+
+    return roundScores;
+  }
+
+  /**
+   * Advances the phase or triggers scoring based on the current state.
+   * Returns a Map of scores ONLY when the phase shifts to SCORING, otherwise null.
+   */
+  public resolveRound(): Map<Player, number> | null {
     switch (this.currentPhase) {
       case TurnPhase.CLUE_ONE:
         this.currentPhase = TurnPhase.GUESS_ONE;
         console.log("Moving to first guess phase.");
-        break;
+        return null;
       case TurnPhase.GUESS_ONE:
         this.currentPhase = TurnPhase.CLUE_TWO;
         console.log("Moving to second clue phase.");
-        break;
+        return null;
       case TurnPhase.CLUE_TWO:
         this.currentPhase = TurnPhase.GUESS_TWO;
         console.log("Moving to second guess phase.");
-        break;
+        return null;
       case TurnPhase.GUESS_TWO:
         this.currentPhase = TurnPhase.SCORING;
-        console.log("Round over! Moving to scoring.");
-        // We'll return results to GameManager from here in the future
-        break;
+        console.log("Round over! Calculating scores...");
+        const scores = this.calculateScores();
+        this.clueGiver.isClueGiver = false; // Clean up role
+        return scores;
       case TurnPhase.SCORING:
         console.log("Scoring is complete. Ready for next round.");
-        this.clueGiver.isClueGiver = false; // Reset clue giver status
-        break;
+        return null;
     }
   }
 }

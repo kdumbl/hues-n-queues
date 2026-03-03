@@ -2,6 +2,8 @@ import { Board } from '../src/Models/Board';
 import { Player } from '../src/Models/Player';
 import { ColorOption } from '../src/Models/ColorOption';
 
+"'npm test' to run all tests in this folder."
+
 describe('Board', () => {
   let board: Board;
   let testPlayer: Player;

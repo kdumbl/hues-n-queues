@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "test" : "jest",
+    "test": "jest",
     "start": "node dist/server.js"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^25.0.10",
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",

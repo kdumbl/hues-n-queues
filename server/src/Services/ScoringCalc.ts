@@ -1,4 +1,4 @@
-class ScoringCalc {
+export class ScoringCalc {
   
   /**
    * Calculates the points a player earns for a specific piece.
