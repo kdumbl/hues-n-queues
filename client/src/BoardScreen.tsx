@@ -211,7 +211,7 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
       </div>
       <div style={{position: "relative"}}>
         <button onClick={() => add_piece(base + 20)} className="hcsquarebutt" style={{background: row_colors[20]}}></button>
-        <img src={images[base + 20]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "41.1vw", bottom: "-4vh"}}></img>
+        <img src={images[base + 20]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "41.2vw", bottom: "-4vh"}}></img>
       </div>
       <div style={{position: "relative"}}>
         <button onClick={() => add_piece(base + 21)} className="hcsquarebutt" style={{background: row_colors[21]}}></button>
