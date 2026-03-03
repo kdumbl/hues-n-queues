@@ -1,8 +1,9 @@
-import { Board } from '../src/Models/Board';
-import { Player } from '../src/Models/Player';
-import { ColorOption } from '../src/Models/ColorOption';
+import { Board } from '../src/domain/Board';
+import { Player } from '../src/domain/Player';
+import { ColorOption } from '../src/domain/ColorOption';
 
 "'npm test' to run all tests in this folder."
+"new push"
 
 describe('Board', () => {
   let board: Board;
