@@ -1,15 +1,18 @@
-import { Player } from '../Models/Player';
-import { ColorCard } from '../Models/ColorCard';
-import { ColorOption } from '../Models/ColorOption';
+import { Player } from "./Player";
+import { ColorCard } from "./ColorCard";
+import { ColorOption } from "./ColorOption";
 export class Board {
   // Maps a coordinate string (e.g., "A-0") to its hex color and occupation status
   public grid: Map<string, { hexCode: string; occupiedBy: Player | null }>;
-  
+
   // Keeps track of which coordinates have been guessed this round
   public occupiedSpaces: string[];
 
   constructor() {
-    this.grid = new Map<string, { hexCode: string; occupiedBy: Player | null }>();
+    this.grid = new Map<
+      string,
+      { hexCode: string; occupiedBy: Player | null }
+    >();
     this.occupiedSpaces = [];
     this.initializeBoard();
   }
@@ -20,15 +23,15 @@ export class Board {
    */
   private initializeBoard(): void {
     const palette = ColorOption.MASTER_PALETTE;
-    
+
     for (let rowIndex = 0; rowIndex < palette.length; rowIndex++) {
       const row = palette[rowIndex];
-      const rowLetter = String.fromCharCode(65 + rowIndex); 
-      
+      const rowLetter = String.fromCharCode(65 + rowIndex);
+
       for (let colIndex = 0; colIndex < row.length; colIndex++) {
         const hexCode = row[colIndex];
         const coordinate = `${rowLetter}-${colIndex}`;
-        
+
         this.grid.set(coordinate, { hexCode: hexCode, occupiedBy: null });
       }
     }
@@ -60,7 +63,9 @@ export class Board {
       this.occupiedSpaces.push(coordinate);
       return true;
     }
-    console.warn(`Cannot place piece: ${coordinate} is invalid or already occupied.`);
+    console.warn(
+      `Cannot place piece: ${coordinate} is invalid or already occupied.`,
+    );
     return false;
   }
 
