@@ -312,7 +312,7 @@ export default function HCBoard() {
         <div className="score-row">
           <ScoreRows />
         </div>
-        <img src={logo} style={{width: '11vw', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}}/>
+        <img src={logo} style={{width: '11vw', height: '19vh', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}}/>
       </div>
       <div className="hcboard">
         <div className="hcboard-row">
