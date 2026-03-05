@@ -1,12 +1,14 @@
 import { ColorCard} from './ColorCard' ;
 import { ColorOption } from './ColorOption';
 export class Player {
+  public userId: string;
   public playerName: string;
   public score: number = 0;
   public isClueGiver: boolean = false;
   private _piecesRemaining: number = 2;
 
-  constructor(name: string) {
+  constructor(userId: string, name: string) {
+    this.userId = userId;
     this.playerName = name;
   }
 
