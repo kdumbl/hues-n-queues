@@ -1,12 +1,13 @@
 import HCBoard from "./BoardScreen.tsx";
+import GameView from "./GameScreen.tsx";
+import "./BoardScreen.css"
+import "./GameScreen.css"
 import "./App.css";
 
-function App() {
+export default function App() {
   return (
     <>
-      <HCBoard />
+      <GameView />
     </>
   );
 }
-
-export default App;
