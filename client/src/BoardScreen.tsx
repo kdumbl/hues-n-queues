@@ -124,6 +124,8 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
   //Value for easier indexing of array
   let base = row_num * 30;
 
+  let lefts = ["1.7vw", "3.7vw", "5.7vw", "7.6vw", "9.6vw", "11.6vw", "13.5vw", "15.5vw", "17.5vw", "19.4vw", "21.4vw", "23.4vw", "25.4vw", "27.3vw", "29.3vw", "31.2vw", "33.2vw", "35.2vw", "37.2vw", "39.2vw", "41.2vw", "43.1vw", "45.1vw", "47.1vw", "49vw", "51vw", "53vw", "55vw", "56.9vw", "58.9vw"];
+
   //For each column, defines a game space (hcsquarebutt class) whose color corresponds with the row_colors array
   //Additionally defines an image, initially null, that sits a layer above the space, to be filled in with a game piece if necessary
   return (

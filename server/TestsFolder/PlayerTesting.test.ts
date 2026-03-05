@@ -7,7 +7,7 @@ describe('Player', () => {
   let player: Player;
 
   beforeEach(() => {
-    player = new Player('Alice');
+    player = new Player('1','Alice');
   });
 
   test('should initialize with correct default values', () => {
