@@ -1,6 +1,6 @@
 //convert domain models to mongo models and vice versa
 
-"two functions, one to convert a Game domain model to a Game document for MongoDB, and another to convert a Game document back to a Game domain model.";
+//"two functions, one to convert a Game domain model to a Game document for MongoDB, and another to convert a Game document back to a Game domain model.";
 
 // src/persistence/mappers/GameMapper.ts
 
