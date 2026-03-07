@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "./GameView.css";
+import "./GameScreen.css";
+
 
 type Panel = "settings" | "leaderboard" | null;
 
@@ -14,6 +15,7 @@ const rankClass = (i: number) =>
   : i === 1 ? "hc-lbRow isSecond"
   : i === 2 ? "hc-lbRow isThird"
   : "hc-lbRow";
+
 
 export default function GameView() {
   const [isDeckHovered, setIsDeckHovered] = useState(false);
