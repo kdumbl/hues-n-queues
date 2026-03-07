@@ -18,7 +18,7 @@ const io = new Server(httpServer, {
 
 //middleware stuff
 app.use(express.json());
-app.use(); //eventaully require authentication here
+//app.use(); //eventaully require authentication here
 
 //http routing
 app.get("/health", (req: Request, res: Response) => {

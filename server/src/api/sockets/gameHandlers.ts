@@ -3,6 +3,10 @@ import { gameController } from "../controllers/gameController";
 //this is where all the emit and on functionality for the live game will live
 export function registerGameHandlers(io: Server, socket: Socket) {
   //basic what is happening
+  socket.on('update_pieces', () => {
+    console.log(`update pieces from socket ${socket.id}`);
+    io.emit('update_pieces2', 'hi');
+  })
 
   //recieve info from a client
   socket.on("game_update", async (data: any) => {

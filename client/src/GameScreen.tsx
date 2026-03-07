@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import {socket} from "./api/socket.tsx";
 import "./GameScreen.css";
-
 
 type Panel = "settings" | "leaderboard" | null;
 
@@ -16,8 +16,12 @@ const rankClass = (i: number) =>
   : i === 2 ? "hc-lbRow isThird"
   : "hc-lbRow";
 
+socket.on('connect', () => {
+  console.log("Connected in GameScreen");
+})
 
-export default function GameView() {
+
+export default function GameScreen() {
   const [isDeckHovered, setIsDeckHovered] = useState(false);
   const [activePanel, setActivePanel] = useState<Panel>(null);
   const [colorblind, setColorblind] = useState(false);

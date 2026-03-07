@@ -5,7 +5,12 @@ import red_piece from "./assets/pieces/red_piece.png";
 import yellow_piece from "./assets/pieces/yellow_piece.png";
 import green_piece from "./assets/pieces/green_piece.png";
 import blue_piece from "./assets/pieces/blue_piece.png";
+import { socket } from "./api/socket";
 
+
+socket.on('connect', () => {
+  console.log("Connected in BoardScreen");
+})
 
 //Creates two rows of grayscale rectangles representing score in the top left
 function ScoreRows(){
@@ -257,7 +262,7 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
 }
 
 //Creates the full game board that sits beneath the score rows and logo
-export default function HCBoard() {
+export default function BoardScreen() {
 
   //Initializes each space to initially lack a game piece image
   const[images, set_images] = useState(Array(480).fill(null));
@@ -303,9 +308,18 @@ export default function HCBoard() {
     if (next_counter == 4){
       next_images[i] = blue_piece;
       set_counter(0);
+      socket.emit('update_pieces', () => {
+        console.log('sent update pieces');
+      });
     }
     set_images(next_images);
   }
+
+  socket.once('update_pieces2', () => {
+    console.log('oops! all gone!');
+    let next_images = Array(480).fill(null);
+    set_images(next_images);
+  })
 
   //Creates full screen by showing score rows, then logo in top right, then the game board, which is made up of 16 main rows sandwiched between graph indices
   return (
