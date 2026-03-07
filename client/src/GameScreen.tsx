@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import {socket} from "./api/socket.tsx";
+//import {socket} from "./api/socket.tsx";
 import "./GameScreen.css";
+import { Socket } from 'socket.io-client';
+
 
 type Panel = "settings" | "leaderboard" | null;
 
@@ -16,12 +18,14 @@ const rankClass = (i: number) =>
   : i === 2 ? "hc-lbRow isThird"
   : "hc-lbRow";
 
-socket.on('connect', () => {
-  console.log("Connected in GameScreen");
-})
+interface Props {
+  socket: Socket| null;
+  gameState: GameState;
+  switchView: (v:"board" | "game") => void;
+}
 
-
-export default function GameScreen() {
+//pass in the props
+export default function GameScreen({socket, gameState, switchView}: Props) {
   const [isDeckHovered, setIsDeckHovered] = useState(false);
   const [activePanel, setActivePanel] = useState<Panel>(null);
   const [colorblind, setColorblind] = useState(false);
@@ -29,6 +33,13 @@ export default function GameScreen() {
 
   const toggle = (panel: Panel) =>
     setActivePanel(prev => (prev === panel ? null : panel));
+
+  //add the switch view functionality
+  const viewChanger = () =>{
+    //this call that setView func defined in app.tsx
+    switchView("board");
+    console.log("View Switched!");
+  };
 
   return (
     <div className="hc-stage">
@@ -58,11 +69,13 @@ export default function GameScreen() {
       <div className="hc-tableLeg" />
       <div className="hc-tableBase" />
 
+      {/* added the switch view here; I assume this is button we want it on */}
       <button
       type="button"
       className={`hc-tableButton ${isTableHovered ? "isDeckHovered" : ""}`}
       onMouseEnter={() => setIsTableHovered(true)}
       onMouseLeave={() => setIsTableHovered(false)}
+      onClick = {viewChanger}
       />
 
       {/* deck */}

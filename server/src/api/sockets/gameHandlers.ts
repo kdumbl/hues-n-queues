@@ -6,6 +6,7 @@ export function registerGameHandlers(io: Server, socket: Socket) {
   socket.on('update_pieces', () => {
     console.log(`update pieces from socket ${socket.id}`);
     io.emit('update_pieces2', 'hi');
+
   })
 
   //recieve info from a client

@@ -5,12 +5,15 @@ import red_piece from "./assets/pieces/red_piece.png";
 import yellow_piece from "./assets/pieces/yellow_piece.png";
 import green_piece from "./assets/pieces/green_piece.png";
 import blue_piece from "./assets/pieces/blue_piece.png";
-import { socket } from "./api/socket";
+//import { socket } from "./api/socket";
+import { Socket } from "socket.io-client"
 
-
-socket.on('connect', () => {
-  console.log("Connected in BoardScreen");
-})
+//heres what we are inheriting from the app.tsx file
+interface Props {
+  socket: Socket| null;
+  gameState: GameState;
+  switchView: (v:"board" | "game") => void;
+}
 
 //Creates two rows of grayscale rectangles representing score in the top left
 function ScoreRows(){
@@ -261,8 +264,9 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
   );
 }
 
-//Creates the full game board that sits beneath the score rows and logo
-export default function BoardScreen() {
+
+//notice that this now takes in parameters: These are the passed in props
+export default function BoardScreen({socket, gameState, switchView}: Props) {
 
   //Initializes each space to initially lack a game piece image
   const[images, set_images] = useState(Array(480).fill(null));
@@ -294,7 +298,7 @@ export default function BoardScreen() {
     //Currently cycles between red, yellow, green, and blue in lieu of turn order being controlled by backend
   function add_piece(i) {
     const next_counter = counter + 1;
-    const next_images = images.slice();
+    let next_images = images.slice();
     set_counter(next_counter);
     if (next_counter == 1){
       next_images[i] = red_piece;
@@ -308,42 +312,24 @@ export default function BoardScreen() {
     if (next_counter == 4){
       next_images[i] = blue_piece;
       set_counter(0);
-      socket.emit('update_pieces', () => {
-        console.log('sent update pieces');
-      });
+
+      //note that because socket may be null we add the ?
+      socket?.emit('update_pieces');
+      //had front end handle the removal after four have been placed.
+      next_images = Array(480).fill(null);
+      set_images(next_images);
     }
     set_images(next_images);
   }
 
-  socket.once('update_pieces2', () => {
-    console.log('oops! all gone!');
-    let next_images = Array(480).fill(null);
-    set_images(next_images);
-  })
 
-  /*
-  const [counter2, set_counter2] = useState([]);
+  //add the switch view functionality
+  const viewChanger = () =>{
+    //this call that setView func defined in app.tsx
+    switchView("game");
+    console.log("Switch View!")
+  }
 
-  useEffect(() => {
-    socket.connect();
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    function addVal(value) {
-      set_counter2(counter2.concat(value));
-    }
-
-    socket.on('counter2', addVal);
-
-    return () => {
-      socket.off('counter2', addVal);
-    };
-  }, [counter2]);
-  */
 
   //Creates full screen by showing score rows, then logo in top right, then the game board, which is made up of 16 main rows sandwiched between graph indices
   return (
@@ -352,7 +338,8 @@ export default function BoardScreen() {
         <div className="score-row">
           <ScoreRows />
         </div>
-        <img src={logo} style={{width: '11vw', height: '19vh', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}}/>
+        {/* added the switch view func to the logo*/}
+        <img src={logo} style={{width: '11vw', height: '19vh', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}} onClick = {viewChanger}/>
       </div>
       <div className="hcboard">
         <div className="hcboard-row">
