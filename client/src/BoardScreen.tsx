@@ -1,5 +1,5 @@
 import "./BoardScreen.css";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import logo from "./assets/logo.png";
 import red_piece from "./assets/pieces/red_piece.png";
 import yellow_piece from "./assets/pieces/yellow_piece.png";
@@ -320,6 +320,30 @@ export default function BoardScreen() {
     let next_images = Array(480).fill(null);
     set_images(next_images);
   })
+
+  /*
+  const [counter2, set_counter2] = useState([]);
+
+  useEffect(() => {
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    function addVal(value) {
+      set_counter2(counter2.concat(value));
+    }
+
+    socket.on('counter2', addVal);
+
+    return () => {
+      socket.off('counter2', addVal);
+    };
+  }, [counter2]);
+  */
 
   //Creates full screen by showing score rows, then logo in top right, then the game board, which is made up of 16 main rows sandwiched between graph indices
   return (
