@@ -57,7 +57,8 @@ export interface GameDoc {
 }
 
 export interface UserDoc {
+  _id: string;
   username: string;
   email: string;
-  passwordhash: string;
+  passwordHash: string;
 }
