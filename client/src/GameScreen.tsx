@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import "./GameScreen.css";
 import { Socket } from 'socket.io-client';
 import type { GameState } from "./types";
+import warped_board from "./assets/warped_board.png";
 
 
 type Panel = "settings" | "leaderboard" | null;
@@ -69,6 +70,8 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
       <div className="hc-tableTop" />
       <div className="hc-tableLeg" />
       <div className="hc-tableBase" />
+
+      <img src={warped_board} style={{'z-index': '200', position: 'absolute', 'width': '15vw', height: 'auto', left: '42vw', top: '58vh'}} />
 
       {/* added the switch view here; I assume this is button we want it on */}
       <button
