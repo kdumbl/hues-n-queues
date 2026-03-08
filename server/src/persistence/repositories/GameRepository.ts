@@ -6,13 +6,5 @@ import connectDB from "../db";
 //Should we import the db connection here? Ideally we only connect once and leave that connection open.
 //Do we create a second user repository for interaction with the user?
 export class GameRepository {
-  public Game;
-
-  constructor() {
-    this.Game = GameModel;
-  }
-
-  public createGameFromDB() {}
-
-  public writeGameToDB() {}
+  
 }
