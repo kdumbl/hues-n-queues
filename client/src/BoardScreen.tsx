@@ -5,6 +5,7 @@ import red_piece from "./assets/pieces/red_piece.png";
 import yellow_piece from "./assets/pieces/yellow_piece.png";
 import green_piece from "./assets/pieces/green_piece.png";
 import blue_piece from "./assets/pieces/blue_piece.png";
+import back_button from "./assets/back_button.png";
 import { Socket } from "socket.io-client"
 import type { GameState } from "./types";
 
@@ -334,12 +335,16 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
   //Creates full screen by showing score rows, then logo in top right, then the game board, which is made up of 16 main rows sandwiched between graph indices
   return (
     <>
+      <div className="back-button">
+        <button style={{width: '11vw', height: '8.3vh', 'z-index': '201', 'left': '2vw', top: '1.5vw', position: 'absolute', 'background-color': 'transparent'}} onClick = {viewChanger} />
+        <img src={back_button} style={{width: '11vw', height: 'auto', 'z-index': '200', 'left': '2vw', top: '1.5vw', position: 'absolute'}}/>
+      </div>
       <div className="top-section">
         <div className="score-row">
           <ScoreRows />
         </div>
         {/* added the switch view func to the logo*/}
-        <img src={logo} style={{width: '11vw', height: '19vh', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}} onClick = {viewChanger}/>
+        <img src={logo} style={{width: '11vw', height: '19vh', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}}/>
       </div>
 
       <div className="hcboard">

@@ -116,17 +116,8 @@ img {
   margin-left: 16vw;
 }
 
-img:hover {
-  border-color: #646cff;
-}
-
-img:focus,
-img:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
 button:hover {
-  border-color: #646cff;
+  border-color: #ffffff;
 }
 button:focus,
 button:focus-visible {
