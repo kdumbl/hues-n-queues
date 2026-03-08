@@ -20,107 +20,49 @@ interface Props {
 
 //Creates two rows of grayscale rectangles representing score in the top left
 function ScoreRows(){
-  return(
+
+  const fr_colors = ["#000000", "#414141", "#424443", "#464646", "#474948", "#4a4c4b", "#4d4d4d", "#4f4f4f", "#525453", "#545655", "#575757", "#595b5a", "#5d5d5d", "#5e605f", "#606261", "#636363", "#676765", "#696969", "#6b6d6c", "#6f6f6f", "#707271", "#737574", "#767676", "#797979", "#7b7d7c", "#7e807f"];
+  const fr_nums = ["", "", "", "", "", "5", "", "", "", "", "10", "", "", "", "", "15", "", "", "", "", "20", "", "", "", "", "25"];
+  const first_row = [];
+
+  const sr_colors = ["#000000", "#bdbdbd", "#bababa", "#b9b9b9", "#b5b5b5", "#b3b3b3", "#b0b2b1", "#aeaeae", "#acacac", "#a8aaa9", "#a6a6a4", "#a3a3a3", "#a1a19f", "#9ea09f", "#9c9c9c", "#9a9a9a", "#979795", "#959595", "#929290", "#919191", "#8e8e8e", "#8c8c8c", "#878988", "#858786", "#838584", "#808281"];
+  const sr_nums = ["", "50", "", "", "", "", "45", "", "", "", "", "40", "", "", "", "", "35", "", "", "", "", "30", "", "", "", ""];
+  const second_row = [];
+
+  for (let i = 0; i < 26; i++){
+    first_row.push(<div className="hcscorediv" style={{background: fr_colors[i]}}>{fr_nums[i]}</div>);
+    second_row.push(<div className="hcscorediv" style={{background: sr_colors[i], color: '#000000'}}>{sr_nums[i]}</div>)
+  }
+
+  return (
     <>
       <div className="hcboard-row">
-        <div className="hcscorediv" style={{background: '#000000'}}></div>
-        <div className="hcscorediv" style={{background: '#414141'}}></div>
-        <div className="hcscorediv" style={{background: '#424443'}}></div>
-        <div className="hcscorediv" style={{background: '#464646'}}></div>
-        <div className="hcscorediv" style={{background: '#474948'}}></div>
-        <div className="hcscorediv" style={{background: '#4a4c4b'}}>5</div>
-        <div className="hcscorediv" style={{background: '#4d4d4d'}}></div>
-        <div className="hcscorediv" style={{background: '#4f4f4f'}}></div>
-        <div className="hcscorediv" style={{background: '#525453'}}></div>
-        <div className="hcscorediv" style={{background: '#545655'}}></div>
-        <div className="hcscorediv" style={{background: '#575757'}}>10</div>
-        <div className="hcscorediv" style={{background: '#595b5a'}}></div>
-        <div className="hcscorediv" style={{background: '#5d5d5d'}}></div>
-        <div className="hcscorediv" style={{background: '#5e605f'}}></div>
-        <div className="hcscorediv" style={{background: '#606261'}}></div>
-        <div className="hcscorediv" style={{background: '#636363'}}>15</div>
-        <div className="hcscorediv" style={{background: '#676765'}}></div>
-        <div className="hcscorediv" style={{background: '#696969'}}></div>
-        <div className="hcscorediv" style={{background: '#6b6d6c'}}></div>
-        <div className="hcscorediv" style={{background: '#6f6f6f'}}></div>
-        <div className="hcscorediv" style={{background: '#707271'}}>20</div>
-        <div className="hcscorediv" style={{background: '#737574'}}></div>
-        <div className="hcscorediv" style={{background: '#767676'}}></div>
-        <div className="hcscorediv" style={{background: '#797979'}}></div>
-        <div className="hcscorediv" style={{background: '#7b7d7c'}}></div>
-        <div className="hcscorediv" style={{background: '#7e807f'}}>25</div>
+        {first_row}
       </div>
       <div className="hcboard-row">
-        <div className="hcscorediv" style={{background: '#000000'}}></div>
-        <div className="hcscorediv" style={{background: '#bdbdbd', color: '#000'}}>50</div>
-        <div className="hcscorediv" style={{background: '#bababa'}}></div>
-        <div className="hcscorediv" style={{background: '#b9b9b9'}}></div>
-        <div className="hcscorediv" style={{background: '#b5b5b5'}}></div>
-        <div className="hcscorediv" style={{background: '#b3b3b3'}}></div>
-        <div className="hcscorediv" style={{background: '#b0b2b1', color: '#000'}}>45</div>
-        <div className="hcscorediv" style={{background: '#aeaeae'}}></div>
-        <div className="hcscorediv" style={{background: '#acacac'}}></div>
-        <div className="hcscorediv" style={{background: '#a8aaa9'}}></div>
-        <div className="hcscorediv" style={{background: '#a6a6a4'}}></div>
-        <div className="hcscorediv" style={{background: '#a3a3a3', color: '#000'}}>40</div>
-        <div className="hcscorediv" style={{background: '#a1a19f'}}></div>
-        <div className="hcscorediv" style={{background: '#9ea09f'}}></div>
-        <div className="hcscorediv" style={{background: '#9c9c9c'}}></div>
-        <div className="hcscorediv" style={{background: '#9a9a9a'}}></div>
-        <div className="hcscorediv" style={{background: '#979795', color: '#000'}}>35</div>
-        <div className="hcscorediv" style={{background: '#959595'}}></div>
-        <div className="hcscorediv" style={{background: '#929290'}}></div>
-        <div className="hcscorediv" style={{background: '#919191'}}></div>
-        <div className="hcscorediv" style={{background: '#8e8e8e'}}></div>
-        <div className="hcscorediv" style={{background: '#8c8c8c', color: '#000'}}>30</div>
-        <div className="hcscorediv" style={{background: '#878988'}}></div>
-        <div className="hcscorediv" style={{background: '#858786'}}></div>
-        <div className="hcscorediv" style={{background: '#838584'}}></div>
-        <div className="hcscorediv" style={{background: '#808281'}}></div>
+        {second_row}
       </div>
     </>
-  )
+  );
 }
 
 //Creates top and bottom borders of game board with corresponding number indices.
 //Line Height passed in as parameter to allow for numbers to be closer to board than otherwise
 function TopRow({ lh }){
+
+  const items = [];
+
+  for (let i = 1; i < 31; i++) {
+    items.push(<div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>{i}</div>);
+  }
+
   return (
     <>
       <div className="hcsquarediv" style={{background: '#000000'}}></div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>1</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>2</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>3</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>4</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>5</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>6</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>7</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>8</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>9</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>10</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>11</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>12</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>13</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>14</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>15</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>16</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>17</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>18</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>19</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>20</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>21</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>22</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>23</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>24</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>25</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>26</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>27</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>28</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>29</div>
-      <div className="hcsquarediv" style={{background: '#000000', "line-height": lh}}>30</div>
+      {items}
       <div className="hcsquarediv" style={{background: '#000000'}}></div>
     </>
-  )
+  );
 }
 
 //Creates a normal row of the game board
@@ -134,134 +76,27 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
 
   //Value for easier indexing of array
   let base = row_num * 30;
-
   let lefts = ["1.7vw", "3.7vw", "5.7vw", "7.6vw", "9.6vw", "11.6vw", "13.5vw", "15.5vw", "17.5vw", "19.4vw", "21.4vw", "23.4vw", "25.4vw", "27.3vw", "29.3vw", "31.3vw", "33.2vw", "35.2vw", "37.2vw", "39.2vw", "41.2vw", "43.1vw", "45.1vw", "47.1vw", "49vw", "51vw", "53vw", "55vw", "56.9vw", "58.9vw"];
+
+  const items = [];
 
   //For each column, defines a game space (hcsquarebutt class) whose color corresponds with the row_colors array
   //Additionally defines an image, initially null, that sits a layer above the space, to be filled in with a game piece if necessary
+  for (let i = 0; i < 30; i++) {
+    items.push(
+      <>
+        <div style={{position: "relative"}}>
+          <button onClick={() => add_piece(base + i)} className="hcsquarebutt" style={{background: row_colors[i]}}></button>
+          <img src={images[base + i]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: lefts[i], bottom: "-4vh"}}></img>
+        </div>
+      </>
+    );
+  }
+  
   return (
     <>
       <div className="hcsquarediv" style={{background: '#000000'}}>{letter}</div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 0)} className="hcsquarebutt" style={{background: row_colors[0]}}></button>
-        <img src={images[base + 0]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "1.7vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 1)} className="hcsquarebutt" style={{background: row_colors[1]}}></button>
-        <img src={images[base + 1]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "3.7vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 2)} className="hcsquarebutt" style={{background: row_colors[2]}}></button>
-        <img src={images[base + 2]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "5.7vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 3)} className="hcsquarebutt" style={{background: row_colors[3]}}></button>
-        <img src={images[base + 3]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "7.6vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 4)} className="hcsquarebutt" style={{background: row_colors[4]}}></button>
-        <img src={images[base + 4]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "9.6vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 5)} className="hcsquarebutt" style={{background: row_colors[5]}}></button>
-        <img src={images[base + 5]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "11.6vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 6)} className="hcsquarebutt" style={{background: row_colors[6]}}></button>
-        <img src={images[base + 6]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "13.5vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 7)} className="hcsquarebutt" style={{background: row_colors[7]}}></button>
-        <img src={images[base + 7]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "15.5vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 8)} className="hcsquarebutt" style={{background: row_colors[8]}}></button>
-        <img src={images[base + 8]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "17.5vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 9)} className="hcsquarebutt" style={{background: row_colors[9]}}></button>
-        <img src={images[base + 9]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "19.4vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 10)} className="hcsquarebutt" style={{background: row_colors[10]}}></button>
-        <img src={images[base + 10]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "21.4vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 11)} className="hcsquarebutt" style={{background: row_colors[11]}}></button>
-        <img src={images[base + 11]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "23.4vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 12)} className="hcsquarebutt" style={{background: row_colors[12]}}></button>
-        <img src={images[base + 12]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "25.4vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 13)} className="hcsquarebutt" style={{background: row_colors[13]}}></button>
-        <img src={images[base + 13]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "27.3vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 14)} className="hcsquarebutt" style={{background: row_colors[14]}}></button>
-        <img src={images[base + 14]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "29.3vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 15)} className="hcsquarebutt" style={{background: row_colors[15]}}></button>
-        <img src={images[base + 15]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "31.3vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 16)} className="hcsquarebutt" style={{background: row_colors[16]}}></button>
-        <img src={images[base + 16]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "33.2vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 17)} className="hcsquarebutt" style={{background: row_colors[17]}}></button>
-        <img src={images[base + 17]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "35.2vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 18)} className="hcsquarebutt" style={{background: row_colors[18]}}></button>
-        <img src={images[base + 18]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "37.2vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 19)} className="hcsquarebutt" style={{background: row_colors[19]}}></button>
-        <img src={images[base + 19]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "39.2vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 20)} className="hcsquarebutt" style={{background: row_colors[20]}}></button>
-        <img src={images[base + 20]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "41.2vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 21)} className="hcsquarebutt" style={{background: row_colors[21]}}></button>
-        <img src={images[base + 21]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "43.1vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 22)} className="hcsquarebutt" style={{background: row_colors[22]}}></button>
-        <img src={images[base + 22]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "45.1vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 23)} className="hcsquarebutt" style={{background: row_colors[23]}}></button>
-        <img src={images[base + 23]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "47.1vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 24)} className="hcsquarebutt" style={{background: row_colors[24]}}></button>
-        <img src={images[base + 24]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "49vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 25)} className="hcsquarebutt" style={{background: row_colors[25]}}></button>
-        <img src={images[base + 25]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "51vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 26)} className="hcsquarebutt" style={{background: row_colors[26]}}></button>
-        <img src={images[base + 26]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "53vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 27)} className="hcsquarebutt" style={{background: row_colors[27]}}></button>
-        <img src={images[base + 27]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "55vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 28)} className="hcsquarebutt" style={{background: row_colors[28]}}></button>
-        <img src={images[base + 28]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "56.9vw", bottom: "-4vh"}}></img>
-      </div>
-      <div style={{position: "relative"}}>
-        <button onClick={() => add_piece(base + 29)} className="hcsquarebutt" style={{background: row_colors[29]}}></button>
-        <img src={images[base + 29]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "58.9vw", bottom: "-4vh"}}></img>
-      </div>
+      {items}
       <div className="hcsquarediv" style={{background: '#000000'}}>{letter}</div>
     </>
   );
@@ -271,8 +106,8 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
 //notice that this now takes in parameters: These are the passed in props
 export default function BoardScreen({socket, gameState, switchView, images, set_images}: Props) {
 
-  
-
+  const items = [];
+  const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"];
   const [counter, set_counter] = useState(0);
 
   //Defines the colors of each space on the gameboard, as well as the top and bottom rows with the displayed number indices
@@ -320,9 +155,7 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
     
     //next_images = Array(480).fill(null);
     set_images(next_images);
-
   }
-
 
   //add the switch view functionality
   const viewChanger = () =>{
@@ -331,6 +164,15 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
     console.log("Switch View!")
   }
 
+  for (let i = 0; i < 16; i++) {
+    items.push(
+      <>
+        <div className="hcboard-row">
+          <HCRow row_colors={rcs[i + 1]} letter={letters[i]} row_num={i} images = {images} add_piece = {add_piece} />
+        </div>
+      </>
+    );
+  }
 
   //Creates full screen by showing score rows, then logo in top right, then the game board, which is made up of 16 main rows sandwiched between graph indices
   return (
@@ -351,54 +193,7 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
         <div className="hcboard-row">
           <TopRow lh={'1.3vh'}/>
         </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[1]} letter="A" row_num={0} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[2]} letter="B" row_num={1} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[3]} letter="C" row_num={2} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[4]} letter="D" row_num={3} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[5]} letter="E" row_num={4} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[6]} letter="F" row_num={5} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[7]} letter="G" row_num={6} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[8]} letter="H" row_num={7} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[9]} letter="I" row_num={8} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[10]} letter="J" row_num={9} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[11]} letter="K" row_num={10} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[12]} letter="L" row_num={11} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[13]} letter="M" row_num={12} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[14]} letter="N" row_num={13} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[15]} letter="O" row_num={14} images = {images} add_piece = {add_piece} />
-        </div>
-        <div className="hcboard-row">
-          <HCRow row_colors={rcs[16]} letter="P" row_num={15} images = {images} add_piece = {add_piece} />
-        </div>
+        {items}
         <div className="hcboard-row">
           <TopRow lh="2.5vh" />
         </div>
