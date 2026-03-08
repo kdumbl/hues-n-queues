@@ -14,17 +14,16 @@ export class UserRepository {
   }
 
   public static async create(
-    user: string,
-    em: string,
-    passwordH: string,
-  ): Promise<UserDoc | null> {
-    let dbPayload = {
-      username: user,
-      email: em,
-      passwordHash: passwordH,
-    };
-    const savedDoc = await UserModel.create(dbPayload);
+    username: string,
+    email: string,
+    passwordHash: string,
+  ): Promise<User> {
+    const savedDoc = (await UserModel.create({
+      username,
+      email,
+      passwordHash,
+    })) as UserDoc;
 
-    return UserRepository.findByEmail(em);
+    return UserMapper.toDomain(savedDoc);
   }
 }

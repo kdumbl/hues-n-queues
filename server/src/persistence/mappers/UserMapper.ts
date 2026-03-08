@@ -11,7 +11,7 @@ export class UserMapper {
    */
   public static toDomain(userDoc: UserDoc): User {
     return new User(
-      userDoc._id,
+      userDoc._id.toString(),
       userDoc.username,
       userDoc.email,
       userDoc.passwordHash,
@@ -25,7 +25,6 @@ export class UserMapper {
    */
   public static toDocument(user: User, passwordHash?: string): any {
     const document: any = {
-      _id: user._id,
       username: user.username,
       email: user.email,
     };

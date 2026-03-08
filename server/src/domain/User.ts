@@ -1,13 +1,13 @@
 // src/domain/User.ts
 
 export class User {
-  public _id: string;
+  public _id: string | undefined;
   public username: string;
   public email: string;
   public passwordhash: string;
 
   constructor(
-    _id: string,
+    _id: string | undefined,
     username: string,
     email: string,
     passwordHash: string,

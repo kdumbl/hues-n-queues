@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 //interfaces for the mongoose docs
 export interface ColorOptionDoc {
   optionID: number;
@@ -57,7 +59,7 @@ export interface GameDoc {
 }
 
 export interface UserDoc {
-  _id: string;
+  _id: Types.ObjectId;
   username: string;
   email: string;
   passwordHash: string;
