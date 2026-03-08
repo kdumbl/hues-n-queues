@@ -337,7 +337,7 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
     <>
       <div className="back-button">
         <button style={{width: '11vw', height: '8.3vh', 'z-index': '201', 'left': '2vw', top: '1.5vw', position: 'absolute', 'background-color': 'transparent'}} onClick = {viewChanger} />
-        <img src={back_button} style={{width: '11vw', height: 'auto', 'z-index': '200', 'left': '2vw', top: '1.5vw', position: 'absolute'}}/>
+        <img src={back_button} style={{width: '11vw', height: '8.3vh', 'z-index': '200', 'left': '2vw', top: '1.5vw', position: 'absolute'}}/>
       </div>
       <div className="top-section">
         <div className="score-row">
