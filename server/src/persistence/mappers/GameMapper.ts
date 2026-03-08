@@ -1,56 +1,60 @@
 //convert domain models to mongo models and vice versa
-
 //"two functions, one to convert a Game domain model to a Game document for MongoDB, and another to convert a Game document back to a Game domain model.";
 
-// src/persistence/mappers/GameMapper.ts
-
+import { GameModel } from "../schemas/game.schema";
+import { GameDoc, GameState } from "../docs";
 import { GameManager } from "../../domain/GameManager";
 import { Player } from "../../domain/Player";
-// ... (other imports)
+import { Board } from "../../domain/Board";
+import { TurnManager } from "../../domain/TurnManager";
+import { GameState as enumGameState } from "../../domain/GameManager";
 
 export class GameMapper {
-  public static toDocument(game: GameManager): any {
+  /**
+   * Converts a GameManager instance into a plain MongoDB document.
+   */
+  public static toDocument(game: GameManager): GameDoc {
     return {
-      // ... (gameState, board, etc.)
-
-      // Map domain players to mongoose player schema
-      players: game.players.map((p) => ({
-        userId: p.userId, // <-- Now we can populate this directly!
-        playerName: p.playerName,
-        score: p.score,
-        isClueGiver: p.isClueGiver,
-        _piecesRemaining: p.piecesRemaining,
-      })),
-
+      players: game.players.map((p) => p.toDocument()),
+      board: game.board.toDocument(),
       currentTurnManager: game.currentTurnManager
-        ? {
-            clueGiver: {
-              userId: game.currentTurnManager.clueGiver.userId,
-              playerName: game.currentTurnManager.clueGiver.playerName,
-              score: game.currentTurnManager.clueGiver.score,
-              isClueGiver: game.currentTurnManager.clueGiver.isClueGiver,
-              _piecesRemaining:
-                game.currentTurnManager.clueGiver.piecesRemaining,
-            },
-            // ... (activeCard, targetOption, currentPhase)
-          }
-        : null,
+        ? game.currentTurnManager.toDocument() // convert if it exists
+        : undefined, // leave as undefined otherwise,
+      gameState: game.gameState,
+      roundsHosted: Object.fromEntries(game["roundsHosted"]), // Map -> object
+      currentClueGiverIndex: game["currentClueGiverIndex"],
     };
   }
 
-  public static toDomain(gameDoc: any): GameManager {
-    // Reconstruct Players with their userId
-    const players = gameDoc.players.map((pDoc: any) => {
-      // Mongoose ObjectIds need to be converted to strings for the domain
-      const player = new Player(pDoc.userId.toString(), pDoc.playerName);
-      player.score = pDoc.score;
-      player.isClueGiver = pDoc.isClueGiver;
-      (player as any)._piecesRemaining = pDoc._piecesRemaining;
-      return player;
-    });
+  /**
+   * Reconstructs a GameManager instance from a MongoDB document.
+   */
+  public static fromDocument(doc: GameDoc): GameManager {
+    // First, recreate players
+    const players = doc.players.map(Player.fromDocument);
 
+    // Build a map for userId -> Player (needed for TurnManager reconstruction)
+    const playerMap = new Map(players.map((p) => [p.userId, p]));
+
+    // Recreate the board
+    const board = Board.fromDocument(doc.board);
+
+    // Initialize GameManager with players
     const game = new GameManager(players);
-    // ... (Reconstruct the rest of the game just like the previous example)
+
+    // Restore internal trackers
+    game["roundsHosted"] = new Map(Object.entries(doc.roundsHosted));
+    game["currentClueGiverIndex"] = doc.currentClueGiverIndex;
+    game.gameState = doc.gameState as enumGameState;
+    game.board = board;
+
+    // Restore TurnManager if present
+    if (doc.currentTurnManager) {
+      game.currentTurnManager = TurnManager.fromDocument(
+        doc.currentTurnManager,
+        playerMap,
+      );
+    }
 
     return game;
   }

@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-const { Schema, model, Types } = mongoose;
+import { Schema, model, InferSchemaType, Types } from "mongoose";
 
 /*
 Basicallly a clone of the domain classes but in a mongodb format.
@@ -19,14 +18,15 @@ const colorCardSchema = new Schema({
 
 const playerSchema = new Schema({
   playerName: String,
-  userId: { type: Types.ObjectId, ref: "User", required: true },
+  userId: String,
+  socketId: String,
   score: Number,
   isClueGiver: Boolean,
-  _piecesRemaining: Number, //Private variable in player class?
+  _piecesRemaining: Number,
 });
 
 const boardSchema = new Schema({
-  grid: Map, //Do we really need this if grid is the same everytime?
+  grid: Map,
   occupiedSpaces: [String],
 });
 
@@ -38,6 +38,8 @@ const turnSchema = new Schema({
     type: String,
     enum: ["CLUE_ONE", "GUESS_ONE", "CLUE_TWO", "GUESS_TWO", "SCORING"],
   },
+  currentClues: [String],
+  roundGuesses: Map,
 });
 
 const gameSchema = new Schema({

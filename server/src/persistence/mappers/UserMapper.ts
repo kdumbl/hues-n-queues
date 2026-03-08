@@ -3,24 +3,18 @@
 
 import { Types, Document } from "mongoose";
 import { User } from "../../domain/User"; // Importing your new concrete class!
-
-// This interface matches what is inside your user.schema.ts
-export interface UserDocument extends Document {
-  _id: Types.ObjectId;
-  username: string;
-  email: string;
-  passwordHash: string;
-}
+import { UserDoc } from "../docs";
 
 export class UserMapper {
   /**
    * Converts a MongoDB User document into your concrete User domain class.
    */
-  public static toDomain(userDoc: UserDocument): User {
+  public static toDomain(userDoc: UserDoc): User {
     return new User(
       userDoc._id.toString(),
       userDoc.username,
-      userDoc.email
+      userDoc.email,
+      userDoc.passwordHash,
     );
   }
 

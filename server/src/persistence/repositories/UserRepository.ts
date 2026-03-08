@@ -1,14 +1,15 @@
 import { UserModel } from "../schemas/user.schema";
-import { UserMapper, UserDocument } from "../mappers/UserMapper";
+import { UserMapper } from "../mappers/UserMapper";
+import { UserDoc } from "../docs";
 import { User } from "../../domain/User";
 
 export class UserRepository {
-  public static async findByEmail(email: string): Promise<UserDocument | null> {
+  public static async findByEmail(email: string): Promise<UserDoc | null> {
     return await UserModel.findOne({ email });
   }
 
   public static async findById(id: string): Promise<User | null> {
-    const doc = (await UserModel.findById(id)) as UserDocument | null;
+    const doc = (await UserModel.findById(id)) as UserDoc | null;
     return doc ? UserMapper.toDomain(doc) : null;
   }
 
@@ -17,9 +18,12 @@ export class UserRepository {
     email: string,
     passwordHash: string,
   ): Promise<User> {
-    const newUserDomain = new User("", username, email);
-    const dbPayload = UserMapper.toDocument(newUserDomain, passwordHash);
-    const savedDoc = (await UserModel.create(dbPayload)) as UserDocument;
+    const savedDoc = (await UserModel.create({
+      username,
+      email,
+      passwordHash,
+    })) as UserDoc;
+
     return UserMapper.toDomain(savedDoc);
   }
 }
