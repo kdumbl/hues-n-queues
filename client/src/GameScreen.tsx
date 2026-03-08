@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 //import {socket} from "./api/socket.tsx";
 import "./GameScreen.css";
 import { Socket } from 'socket.io-client';
+import type { GameState } from "./types";
 
 
 type Panel = "settings" | "leaderboard" | null;
@@ -20,7 +21,7 @@ const rankClass = (i: number) =>
 
 interface Props {
   socket: Socket| null;
-  gameState: GameState;
+  gameState: GameState | undefined;
   switchView: (v:"board" | "game") => void;
 }
 

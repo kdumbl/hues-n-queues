@@ -5,14 +5,16 @@ import red_piece from "./assets/pieces/red_piece.png";
 import yellow_piece from "./assets/pieces/yellow_piece.png";
 import green_piece from "./assets/pieces/green_piece.png";
 import blue_piece from "./assets/pieces/blue_piece.png";
-//import { socket } from "./api/socket";
 import { Socket } from "socket.io-client"
+import type { GameState } from "./types";
 
 //heres what we are inheriting from the app.tsx file
 interface Props {
   socket: Socket| null;
-  gameState: GameState;
+  gameState: GameState | undefined;
   switchView: (v:"board" | "game") => void;
+  images,
+  set_images,
 }
 
 //Creates two rows of grayscale rectangles representing score in the top left
@@ -266,10 +268,9 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
 
 
 //notice that this now takes in parameters: These are the passed in props
-export default function BoardScreen({socket, gameState, switchView}: Props) {
+export default function BoardScreen({socket, gameState, switchView, images, set_images}: Props) {
 
-  //Initializes each space to initially lack a game piece image
-  const[images, set_images] = useState(Array(480).fill(null));
+  
 
   const [counter, set_counter] = useState(0);
 
@@ -312,14 +313,13 @@ export default function BoardScreen({socket, gameState, switchView}: Props) {
     if (next_counter == 4){
       next_images[i] = blue_piece;
       set_counter(0);
-
-      //note that because socket may be null we add the ?
-      socket?.emit('update_pieces');
-      //had front end handle the removal after four have been placed.
-      next_images = Array(480).fill(null);
-      set_images(next_images);
     }
+    //note that because socket may be null we add the ?
+    socket?.emit('update_piece', next_images);
+    
+    //next_images = Array(480).fill(null);
     set_images(next_images);
+
   }
 
 
