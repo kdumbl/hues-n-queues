@@ -1,18 +1,16 @@
 import { Player } from "./Player";
 import { ColorCard } from "./ColorCard";
 import { ColorOption } from "./ColorOption";
+import { BoardDoc } from "../persistence/docs";
 export class Board {
   // Maps a coordinate string (e.g., "A-0") to its hex color and occupation status
-  public grid: Map<string, { hexCode: string; occupiedBy: Player | null }>;
+  public grid: Map<string, { hexCode: string; occupiedBy: string | null }>; //string using the userId
 
   // Keeps track of which coordinates have been guessed this round
   public occupiedSpaces: string[];
 
   constructor() {
-    this.grid = new Map<
-      string,
-      { hexCode: string; occupiedBy: Player | null }
-    >();
+    this.grid = new Map<string, { hexCode: string; occupiedBy: string }>();
     this.occupiedSpaces = [];
     this.initializeBoard();
   }
@@ -59,7 +57,7 @@ export class Board {
   public placePiece(coordinate: string, player: Player): boolean {
     if (this.isValidPlacement(coordinate)) {
       const space = this.grid.get(coordinate)!;
-      space.occupiedBy = player;
+      space.occupiedBy = player.userId;
       this.occupiedSpaces.push(coordinate);
       return true;
     }
@@ -82,5 +80,25 @@ export class Board {
     // Clear the list of occupied spaces
     this.occupiedSpaces = [];
     console.log("Board cleared for the next round.");
+  }
+
+  public toDocument(): BoardDoc {
+    return {
+      grid: Object.fromEntries(this.grid),
+      occupiedSpaces: [...this.occupiedSpaces],
+    };
+  }
+
+  /**
+   * Recreates a Board instance from a Mongo document.
+   */
+  public static fromDocument(doc: BoardDoc): Board {
+    const board = new Board();
+
+    // Replace the initialized board with the saved state
+    board.grid = new Map(Object.entries(doc.grid));
+    board.occupiedSpaces = [...doc.occupiedSpaces];
+
+    return board;
   }
 }

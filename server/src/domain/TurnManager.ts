@@ -2,13 +2,14 @@ import { Player } from "./Player";
 import { ColorCard } from "./ColorCard";
 import { ColorOption } from "./ColorOption";
 import { ScoringCalc } from "./ScoringCalc";
+import { TurnDoc } from "../persistence/docs";
 
 enum TurnPhase {
-  CLUE_ONE,
-  GUESS_ONE,
-  CLUE_TWO,
-  GUESS_TWO,
-  SCORING,
+  CLUE_ONE = "CLUE_ONE",
+  GUESS_ONE = "GUESS_ONE",
+  CLUE_TWO = "CLUE_TWO",
+  GUESS_TWO = "GUESS_TWO",
+  SCORING = "SCORING",
 }
 
 export class TurnManager {
@@ -193,5 +194,51 @@ export class TurnManager {
         console.log("Scoring is complete. Ready for next round.");
         return null;
     }
+  }
+
+  public toDocument(): TurnDoc {
+    const guesses: Record<string, string[]> = {};
+    this.roundGuesses.forEach((guessesArr, player) => {
+      guesses[player.userId] = [...guessesArr];
+    });
+
+    return {
+      clueGiver: this.clueGiver.toDocument(),
+      activeCard: this.activeCard.toDocument(),
+      targetOption: this.targetOption?.toDocument(),
+      currentPhase: this.currentPhase,
+      currentClues: [...this.currentClues],
+      roundGuesses: guesses,
+    };
+  }
+
+  /**
+   * Recreates a TurnManager from a plain Mongo document.
+   */
+  public static fromDocument(
+    doc: TurnDoc,
+    playerMap: Map<string, Player>, // Map userId -> Player instance
+  ): TurnManager {
+    const clueGiver = playerMap.get(doc.clueGiver.userId)!;
+    const activeCard = ColorCard.fromDocument(doc.activeCard);
+
+    const tm = new TurnManager(clueGiver, activeCard);
+
+    tm.currentPhase = doc.currentPhase as TurnPhase;
+    tm.currentClues = [...doc.currentClues];
+    tm.targetOption = doc.targetOption
+      ? ColorOption.fromDocument(doc.targetOption)
+      : undefined;
+
+    // Reconstruct the roundGuesses Map using playerMap
+    tm.roundGuesses = new Map();
+    for (const userId in doc.roundGuesses) {
+      const player = playerMap.get(userId);
+      if (player) {
+        tm.roundGuesses.set(player, [...doc.roundGuesses[userId]]);
+      }
+    }
+
+    return tm;
   }
 }

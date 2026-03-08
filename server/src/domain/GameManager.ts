@@ -3,21 +3,21 @@ import { Board } from "./Board";
 import { ColorCard } from "./ColorCard";
 import { TurnManager } from "./TurnManager";
 // Enum to track the overarching state of the game
-enum GameState {
-  SETUP,
-  ACTIVE,
-  END,
+export enum GameState {
+  SETUP = "SETUP",
+  ACTIVE = "ACTIVE",
+  END = "END",
 }
 
 export class GameManager {
   public players: Player[];
   public board: Board;
-  public currentTurnManager: TurnManager | null = null;
+  public currentTurnManager?: TurnManager;
   public gameState: GameState;
 
   // Internal trackers for game flow
   private currentClueGiverIndex: number = 0;
-  private roundsHosted: Map<Player, number>;
+  private roundsHosted: Map<string, number>; //string is userId
 
   constructor(players: Player[]) {
     if (players.length < 3 || players.length > 10) {
@@ -30,7 +30,7 @@ export class GameManager {
     // Initialize the tracker for how many times each player has been the clue giver
     this.roundsHosted = new Map();
     for (const player of players) {
-      this.roundsHosted.set(player, 0);
+      this.roundsHosted.set(player.userId, 0);
     }
   }
 
@@ -71,8 +71,8 @@ export class GameManager {
     clueGiver.isClueGiver = true;
 
     // Update how many times this player has hosted
-    const hostedCount = this.roundsHosted.get(clueGiver) || 0;
-    this.roundsHosted.set(clueGiver, hostedCount + 1);
+    const hostedCount = this.roundsHosted.get(clueGiver.userId) || 0;
+    this.roundsHosted.set(clueGiver.userId, hostedCount + 1);
 
     console.log(`Starting new round. Clue giver is ${clueGiver.playerName}.`);
 
@@ -108,7 +108,7 @@ export class GameManager {
     const requiredRounds = this.players.length >= 7 ? 1 : 2;
 
     for (const player of this.players) {
-      if ((this.roundsHosted.get(player) || 0) < requiredRounds) {
+      if ((this.roundsHosted.get(player.userId) || 0) < requiredRounds) {
         return false; // Someone still needs to meet the requirement
       }
     }
