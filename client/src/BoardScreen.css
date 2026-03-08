@@ -40,7 +40,7 @@ h1 {
   color: #fff;
   border: 0.15vw solid #000;
   float: left;
-  height: 3.9vh;
+  height: 4.4vh;
   padding: 0;
   text-align: center;
   width: 1.9755vw;
@@ -92,6 +92,11 @@ h1 {
   float: left;
 }
 
+.hcboard {
+  padding-top: 21vh;
+  margin-left: 16vw;
+}
+
 .hcbuttcontainer {
   position: absolute;
   float: left;
@@ -107,7 +112,17 @@ img {
 }
 
 .top-section {
-  margin-bottom: 21vh;
+  margin-bottom: 2vh;
+  margin-left: 16vw;
+}
+
+img:hover {
+  border-color: #646cff;
+}
+
+img:focus,
+img:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
 }
 
 button:hover {

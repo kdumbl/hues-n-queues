@@ -134,7 +134,7 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
   //Value for easier indexing of array
   let base = row_num * 30;
 
-  let lefts = ["1.7vw", "3.7vw", "5.7vw", "7.6vw", "9.6vw", "11.6vw", "13.5vw", "15.5vw", "17.5vw", "19.4vw", "21.4vw", "23.4vw", "25.4vw", "27.3vw", "29.3vw", "31.2vw", "33.2vw", "35.2vw", "37.2vw", "39.2vw", "41.2vw", "43.1vw", "45.1vw", "47.1vw", "49vw", "51vw", "53vw", "55vw", "56.9vw", "58.9vw"];
+  let lefts = ["1.7vw", "3.7vw", "5.7vw", "7.6vw", "9.6vw", "11.6vw", "13.5vw", "15.5vw", "17.5vw", "19.4vw", "21.4vw", "23.4vw", "25.4vw", "27.3vw", "29.3vw", "31.3vw", "33.2vw", "35.2vw", "37.2vw", "39.2vw", "41.2vw", "43.1vw", "45.1vw", "47.1vw", "49vw", "51vw", "53vw", "55vw", "56.9vw", "58.9vw"];
 
   //For each column, defines a game space (hcsquarebutt class) whose color corresponds with the row_colors array
   //Additionally defines an image, initially null, that sits a layer above the space, to be filled in with a game piece if necessary
@@ -203,7 +203,7 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
       </div>
       <div style={{position: "relative"}}>
         <button onClick={() => add_piece(base + 15)} className="hcsquarebutt" style={{background: row_colors[15]}}></button>
-        <img src={images[base + 15]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "31.2vw", bottom: "-4vh"}}></img>
+        <img src={images[base + 15]} style={{width: "2.5vw", height: "auto", "z-index": "200", position: "absolute", left: "31.3vw", bottom: "-4vh"}}></img>
       </div>
       <div style={{position: "relative"}}>
         <button onClick={() => add_piece(base + 16)} className="hcsquarebutt" style={{background: row_colors[16]}}></button>
@@ -341,6 +341,7 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
         {/* added the switch view func to the logo*/}
         <img src={logo} style={{width: '11vw', height: '19vh', 'margin-top': '0.37vh', 'margin-left': '0.1vw'}} onClick = {viewChanger}/>
       </div>
+
       <div className="hcboard">
         <div className="hcboard-row">
           <TopRow lh={'1.3vh'}/>
