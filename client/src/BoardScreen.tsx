@@ -6,7 +6,10 @@ import yellow_piece from "./assets/pieces/yellow_piece.png";
 import green_piece from "./assets/pieces/green_piece.png";
 import blue_piece from "./assets/pieces/blue_piece.png";
 import back_button from "./assets/back_button.png";
-import { Socket } from "socket.io-client"
+import submit_button from "./assets/submit_button.png";
+import trans_piece from "./assets/pieces/transparent_piece.png";
+import submitted from "./assets/submitted.png";
+import { Socket } from "socket.io-client";
 import type { GameState } from "./types";
 
 //heres what we are inheriting from the app.tsx file
@@ -107,8 +110,11 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
 export default function BoardScreen({socket, gameState, switchView, images, set_images}: Props) {
 
   const items = [];
+  const [submit_vis, set_submit_vis] = useState(false);
+  const [submitted_vis, set_submitted_vis] = useState(false);
   const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"];
   const [counter, set_counter] = useState(0);
+  const [last_placed, set_last_placed] = useState(null);
 
   //Defines the colors of each space on the gameboard, as well as the top and bottom rows with the displayed number indices
   let rcs = [["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000"],
@@ -134,8 +140,20 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
     //Advances the counter variable (initially 0) and sets the space's index in the images array to the corresponding colored piece
     //Currently cycles between red, yellow, green, and blue in lieu of turn order being controlled by backend
   function add_piece(i) {
-    const next_counter = counter + 1;
+
     let next_images = images.slice();
+
+    if (last_placed == null){
+      next_images[i] = red_piece;
+      set_last_placed(i);
+    } else {
+      next_images[last_placed] = null;
+      next_images[i] = red_piece;
+      set_last_placed(i);
+    }
+    //const next_counter = counter + 1;
+
+    /**
     set_counter(next_counter);
     if (next_counter == 1){
       next_images[i] = red_piece;
@@ -149,13 +167,27 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
     if (next_counter == 4){
       next_images[i] = blue_piece;
       set_counter(0);
-    }
-    //note that because socket may be null we add the ?
-    socket?.emit('update_piece', next_images);
+    } **/
+
+    set_submit_vis(true);
     
-    //next_images = Array(480).fill(null);
     set_images(next_images);
   }
+
+  function submit(){
+    const locked = images.slice();
+    for (let i = 0; i < 480; i++){
+      if (locked[i] == null){
+        locked[i] = trans_piece;
+      }
+    }
+    set_images(locked);
+    set_submitted_vis(true);
+
+    //note that because socket may be null we add the ?
+    socket?.emit('update_piece', locked);
+  }
+
 
   //add the switch view functionality
   const viewChanger = () =>{
@@ -198,6 +230,17 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
           <TopRow lh="2.5vh" />
         </div>
       </div>
+      {submit_vis && (
+        <>
+          <div className="submit-button">
+            <button style={{width: '15vw', height: '6.4vh', 'z-index': '201', 'left': '40.2vw', top: '92vh', position: 'absolute', 'background-color': 'transparent'}} onClick = {submit} />
+            <img src={submit_button} style={{width: '15vw', height: 'auto', 'z-index': '200', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
+          </div>
+        </>
+      )}
+      {submitted_vis && (
+        <img src={submitted} style={{width: '15vw', height: 'auto', 'z-index': '202', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
+      )}
     </>
   );
 }
