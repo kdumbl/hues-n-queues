@@ -4,6 +4,7 @@ import express, { Application, Request, Response } from "express";
 import { Server } from "socket.io";
 import cors from "cors";
 import { initSockets } from "./api/sockets/index";
+import connectDB from "./persistence/db";
 
 dotenv.config();
 
@@ -33,7 +34,8 @@ io.on("connection", (socket) => {
 });
 
 const PORT = process.env.PORT || 5001;
-
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+connectDB().then(() => {
+  httpServer.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 });
