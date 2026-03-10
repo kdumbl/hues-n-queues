@@ -3,7 +3,7 @@ import { UserRepository } from "../persistence/repositories/UserRepository";
 
 const connectDB = async (): Promise<void> => {
   try {
-    const mongoUri = process.env.MONGO_URI_PROD || "";
+    const mongoUri = process.env.MONGO_URI || "";
 
     await mongoose.connect(mongoUri);
     console.log(`MongoDB connected${mongoUri}`);
