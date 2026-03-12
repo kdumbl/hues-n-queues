@@ -32,9 +32,18 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
   const [activePanel, setActivePanel] = useState<Panel>(null);
   const [colorblind, setColorblind] = useState(false);
   const [isTableHovered, setIsTableHovered] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [cueText, setCueText] = useState('');
+  const [cardDrawn, setCardDrawn] = useState(false);
+  const [announcement, setAnnouncement] = useState<string | null>(null);
 
   const toggle = (panel: Panel) =>
     setActivePanel(prev => (prev === panel ? null : panel));
+
+  const showAnnouncement = (msg: string) => {
+    setAnnouncement(msg);
+    setTimeout(() => setAnnouncement(null), 1000000);
+  };
 
   //add the switch view functionality
   const viewChanger = () =>{
@@ -71,7 +80,7 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
       <div className="hc-tableLeg" />
       <div className="hc-tableBase" />
 
-      <img src={warped_board} style={{'z-index': '200', position: 'absolute', 'width': '15vw', height: 'auto', left: '42vw', top: '58vh'}} />
+      <img src={warped_board} style={{'z-index': '200', position: 'absolute', 'width': '250px', height: 'auto', left: '43%', top: '58vh'}} />
 
       {/* added the switch view here; I assume this is button we want it on */}
       <button
@@ -82,13 +91,90 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
       onClick = {viewChanger}
       />
 
+      {cardDrawn && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '260px',
+          height: '420px',
+          background: 'linear-gradient(155deg, #1c1c1c, #2e2e2e)',
+          border: '2px solid #3e3e3e',
+          borderRadius: '16px',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.95)',
+          zIndex: 300,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '16px',
+          animation: 'panelIn 0.25s ease'
+        }}>
+          <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
+          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '0 20px', width: '100%', boxSizing: 'border-box' as const}}>
+            {['#e74c3c','#f1c40f','#2ecc71','#3498db'].map(color => (
+              <div
+                key={color}
+                onClick={() => setSelectedColor(color)}
+                style={{
+                  height: '80px',
+                  borderRadius: '10px',
+                  background: color,
+                  boxShadow: selectedColor === color ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)',
+                  cursor: 'pointer',
+                  transform: selectedColor === color ? 'scale(1.05)' : 'scale(1)',
+                  transition: 'all 0.15s ease'
+                }}
+              />
+            ))}
+          </div>
+          <input
+            type="text"
+            placeholder="Enter yourrr cue!"
+            value={cueText}
+            onChange={e => setCueText(e.target.value)}
+            style={{
+              width: 'calc(100% - 40px)',
+              padding: '8px 12px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid #444',
+              borderRadius: '6px',
+              color: '#fff',
+              fontFamily: 'Courier New, monospace',
+              fontSize: '11px',
+              outline: 'none',
+              letterSpacing: '0.5px'
+            }}
+          />
+          <button
+            onClick={() => {
+              showAnnouncement(`Jackson's hint is ${cueText}`);
+              setCardDrawn(false);
+            }}
+            style={{
+              padding: '8px 24px',
+              background: 'rgba(255,216,74,0.12)',
+              border: '1px solid rgba(255,216,74,0.45)',
+              borderRadius: '6px',
+              color: '#ffd84a',
+              fontFamily: 'Courier New, monospace',
+              fontSize: '11px',
+              letterSpacing: '1.5px',
+              cursor: 'pointer',
+            }}
+          >Submit Cue</button>
+        </div>
+      )}
+
       {/* deck */}
       <button
         type="button"
         className={`hc-deckButton ${isDeckHovered ? "isDeckHovered" : ""}`}
         onMouseEnter={() => setIsDeckHovered(true)}
         onMouseLeave={() => setIsDeckHovered(false)}
-      >
+        onClick={() => setCardDrawn(prev => !prev)}
+      > 
         <div className="hc-deckCards">
           <div className="hc-card backCard" />
           <div className="hc-card midCard" />
@@ -100,6 +186,29 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
         </div>
         <div className="hc-deckTip">Draw a card</div>
       </button>
+
+      {/* announcement banner */}
+      {announcement && (
+        <div style={{
+          position: 'absolute',
+          bottom: '40px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(10,10,14,0.94)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '10px',
+          padding: '14px 28px',
+          color: '#fff',
+          fontFamily: 'Courier New, monospace',
+          fontSize: '14px',
+          letterSpacing: '1px',
+          zIndex: 400,
+          whiteSpace: 'nowrap' as const,
+          animation: 'panelIn 0.2s ease'
+        }}>
+          {announcement}
+        </div>
+      )}
 
       {/* nav top-right */}
       <div className="hc-topNav">
