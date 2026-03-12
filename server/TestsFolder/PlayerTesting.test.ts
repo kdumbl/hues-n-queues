@@ -7,7 +7,7 @@ describe('Player', () => {
   let player: Player;
 
   beforeEach(() => {
-    player = new Player('1','Alice');
+    player = new Player('1','Alice', "socket123");
   });
 
   test('should initialize with correct default values', () => {

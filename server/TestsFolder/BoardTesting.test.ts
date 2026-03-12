@@ -8,7 +8,6 @@ describe('Board', () => {
 
   beforeEach(() => {
     board = new Board();
-    // Assuming the Player constructor is (userId, name, socketId)
     testPlayer = new Player('user123', 'TestPlayer', 'socket123'); 
   });
 
