@@ -26,7 +26,9 @@ const playerSchema = new Schema({
 });
 
 const boardSchema = new Schema({
-  grid: Map,
+  // Mongoose syntax for a 2D array of strings. 
+  // We use mixed strings to allow nulls, or define it as [[String]]
+  grid: [[String]], 
   occupiedSpaces: [String],
 });
 

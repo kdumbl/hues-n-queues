@@ -2,24 +2,22 @@ import { Board } from '../src/domain/Board';
 import { Player } from '../src/domain/Player';
 import { ColorOption } from '../src/domain/ColorOption';
 
-"'npm test' to run all tests in this folder."
-"new push"
-
 describe('Board', () => {
   let board: Board;
   let testPlayer: Player;
 
   beforeEach(() => {
     board = new Board();
-    testPlayer = new Player('TestPlayer');
+    // Assuming the Player constructor is (userId, name, socketId)
+    testPlayer = new Player('user123', 'TestPlayer', 'socket123'); 
   });
 
   test('should initialize a grid based on the MASTER_PALETTE dimensions', () => {
     const rows = ColorOption.MASTER_PALETTE.length;
     const cols = ColorOption.MASTER_PALETTE[0].length;
-    const totalSpaces = rows * cols;
     
-    expect(board.grid.size).toBe(totalSpaces);
+    expect(board.grid.length).toBe(rows);
+    expect(board.grid[0].length).toBe(cols);
     expect(board.isValidPlacement('A-0')).toBe(true);
   });
 
@@ -40,7 +38,8 @@ describe('Board', () => {
     
     expect(success).toBe(true);
     expect(board.occupiedSpaces).toContain('A-0');
-    expect(board.grid.get('A-0')?.occupiedBy).toBe(testPlayer);
+    // 'A' is row 0, '0' is col 0
+    expect(board.grid[0][0]).toBe(testPlayer.userId); 
   });
 
   test('placePiece should fail on an invalid coordinate', () => {
@@ -51,15 +50,15 @@ describe('Board', () => {
   });
 
   test('resetBoard should clear all occupied spaces', () => {
-    board.placePiece('A-0', testPlayer);
-    board.placePiece('B-2', testPlayer);
+    board.placePiece('A-0', testPlayer); // row 0, col 0
+    board.placePiece('B-2', testPlayer); // row 1, col 2
     
     expect(board.occupiedSpaces.length).toBe(2);
     
     board.resetBoard();
     
     expect(board.occupiedSpaces.length).toBe(0);
-    expect(board.grid.get('A-0')?.occupiedBy).toBeNull();
-    expect(board.grid.get('B-2')?.occupiedBy).toBeNull();
+    expect(board.grid[0][0]).toBeNull();
+    expect(board.grid[1][2]).toBeNull();
   });
 });

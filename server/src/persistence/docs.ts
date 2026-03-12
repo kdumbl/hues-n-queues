@@ -22,7 +22,8 @@ export interface PlayerDoc {
 }
 
 export interface BoardDoc {
-  grid: Record<string, GridCellDoc>;
+  // Updated this from the old Record/Map type to our new 2D array
+  grid: (string | null)[][]; 
   occupiedSpaces: string[];
 }
 

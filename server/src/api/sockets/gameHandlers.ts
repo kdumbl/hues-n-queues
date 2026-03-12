@@ -31,6 +31,8 @@ export function registerGameHandlers(io: Server, socket: Socket) {
     io.emit('piece_color_assigned', usersConnected);
   });
 
+  "code from before the refactor"
+  /*
   socket.on('piece_placed', (i, last_placed, piece) => {
     if (last_placed != null){
       master_images[last_placed] = null;
@@ -38,6 +40,24 @@ export function registerGameHandlers(io: Server, socket: Socket) {
     master_images[i] = piece;
     io.emit('piece_placed2', master_images);
   })
+*/
+socket.on('piece_placed', (i, last_placed, piece) => {
+    if (last_placed != null){
+      master_images[last_placed] = null;
+    }
+    master_images[i] = piece;
+    io.emit('piece_placed2', master_images);
+
+    // Translate the 1D frontend index (0-479) to 2D board indices
+    const row = Math.floor(i / 30); // 30 columns per row
+    const col = i % 30;
+
+    // Convert row number (0-15) to letter ('A'-'P') to match your Board.ts format
+    const rowLetter = String.fromCharCode(65 + row); 
+    const coordinateString = `${rowLetter}-${col}`;
+    console.log(`Placed piece: Frontend Index [${i}] -> Backend Coordinate [${coordinateString}]`);
+
+  });
 
   //receive info from a client
   socket.on("game_update", async (data: any) => {
