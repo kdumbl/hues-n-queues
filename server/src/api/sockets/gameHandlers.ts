@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import { gameController } from "../controllers/gameController";
 
 let usersConnected = 0;
+let master_images = Array(480).fill(null);
 
 //this is where all the emit and on functionality for the live game will live
 export function registerGameHandlers(io: Server, socket: Socket) {
@@ -29,6 +30,14 @@ export function registerGameHandlers(io: Server, socket: Socket) {
     console.log(`After being increased, it is ${usersConnected}`);
     io.emit('piece_color_assigned', usersConnected);
   });
+
+  socket.on('piece_placed', (i, last_placed, piece) => {
+    if (last_placed != null){
+      master_images[last_placed] = null;
+    }
+    master_images[i] = piece;
+    io.emit('piece_placed2', master_images);
+  })
 
   //receive info from a client
   socket.on("game_update", async (data: any) => {

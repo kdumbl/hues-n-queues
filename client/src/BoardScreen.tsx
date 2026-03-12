@@ -86,14 +86,25 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
   //For each column, defines a game space (hcsquarebutt class) whose color corresponds with the row_colors array
   //Additionally defines an image, initially null, that sits a layer above the space, to be filled in with a game piece if necessary
   for (let i = 0; i < 30; i++) {
-    items.push(
-      <>
-        <div style={{position: "relative"}}>
-          <button onClick={() => add_piece(base + i)} className="hcsquarebutt" style={{background: row_colors[i]}}></button>
-          <img src={images[base + i]} style={{width: "2.5vw", height: "auto", zIndex: "200", position: "absolute", left: lefts[i], bottom: "-4vh"}}></img>
-        </div>
-      </>
-    );
+    if (images[base + i] == null){
+      items.push(
+        <>
+          <div style={{position: "relative"}}>
+            <button onClick={() => add_piece(base + i)} className="hcsquarebutt" style={{background: row_colors[i]}}></button>
+            <img src={images[base + i]} style={{width: "2.5vw", height: "auto", zIndex: "200", position: "absolute", left: lefts[i], bottom: "-4vh"}}></img>
+          </div>
+        </>
+      );
+    } else {
+      items.push(
+        <>
+          <div style={{position: "relative"}}>
+            <button onClick={() => add_piece(base + i)} className="hcsquarebutt" style={{background: row_colors[i]}}></button>
+            <img src={images[base + i]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "-4vh"}}></img>
+          </div>
+        </>
+      );
+    }
   }
   
   return (
@@ -149,12 +160,7 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
   //Called when a game space is clicked
   function add_piece(i) {
 
-    let next_images = images.slice();
-
-    if (last_placed != null){
-      next_images[last_placed] = null;
-    }
-    next_images[i] = piece;
+    socket?.emit('piece_placed', i, last_placed, piece);
     set_last_placed(i);
 
     if (submitted_vis){
@@ -163,8 +169,11 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
     }
 
     set_submit_vis(true);
-    set_images(next_images);
   }
+
+  socket.on('piece_placed2', (master_images) => {
+    set_images(master_images);
+  });
 
   function submit(){
     set_submitted_vis(true);
@@ -172,7 +181,6 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
   }
 
   socket.on('player_submitted2', (num_submitted2) => {
-    console.log(`client learned that player submitted: ${socket.id}`);
     let locked = images.slice();
     set_num_submitted(num_submitted2);
 
@@ -241,13 +249,13 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
         <>
           <div className="submit-button">
             <button style={{width: '15vw', height: '6.4vh', 'z-index': '201', 'left': '40.2vw', top: '92vh', position: 'absolute', 'background-color': 'transparent'}} onClick = {submit} />
-            <img src={submit_button} style={{width: '15vw', height: 'auto', 'z-index': '200', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
+            <img src={submit_button} style={{width: '15vw', height: '6.4vh', 'z-index': '200', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
             <div className="how-many-submitted" style={{'z-index': '202', left: '55.5vw', top: '91.7vh', color: '#ffffff', fontSize: '2vw', position: 'absolute', width: '3vw', fontWeight: 'bold'}}>{num_submitted}/4</div>
           </div>
         </>
       )}
       {submitted_vis && (
-          <img src={submitted} style={{width: '15vw', height: 'auto', zIndex: '202', left: '40.2vw', top: '92vh', position: 'absolute'}}/>
+          <img src={submitted} style={{width: '15vw', height: '6.4vh', zIndex: '202', left: '40.2vw', top: '92vh', position: 'absolute'}}/>
       )}
     </>
   );
