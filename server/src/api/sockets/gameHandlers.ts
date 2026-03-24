@@ -11,7 +11,6 @@ export function registerGameHandlers(io: Server, socket: Socket) {
   socket.on('all_submitted', (images) => {
     console.log(`all piece have been submitted to socket ${socket.id}`);
     io.emit('all_submitted2', images);
-
   });
 
   socket.on('player_submitted', (num_submitted) => {
