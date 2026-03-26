@@ -2,13 +2,12 @@ export interface ClientGameState {
   //client described state of game
   self: Player;
   otherPlayers: Player[] | null;
-  correctColorIndex: number;
 }
 
 export interface Player {
   name: string;
   socketId: string;
-  pieceAddress: string;
+  pieceColor: string;
   profileURL: string;
   isClueGiver: boolean;
   yourTurn: boolean
