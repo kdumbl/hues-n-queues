@@ -7,6 +7,10 @@ export interface ClientGameState {
 export interface Player {
   name: string;
   socketId: string;
+  pieceAddress: string;
+  profileURL: string;
+  clueGiver: boolean;
+  yourTurn: boolean
   score: number;
   piece: {
     x: number | null;
