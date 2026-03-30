@@ -3,16 +3,42 @@ import React, { useState } from 'react';
 import "./GameScreen.css";
 import { Socket } from 'socket.io-client';
 import type { GameState } from "./types";
-import warped_board from "./assets/warped_board.png";
+import warpedBoard from "./assets/warped_board.png";
+import LeaderboardSort from './LeaderboardSort';
 
 
 type Panel = "settings" | "leaderboard" | null;
 
-const LEADERBOARD = [
-  { name: "dather9", score: 2840 },
-  { name: "gayvinShan",    score: 2210 },
-  { name: "rubGut",  score: 1990 },
-];
+function generateLeaderboard(gameState){
+  let LEADERBOARD = [];
+  if (gameState != undefined){
+    let general = [];
+    general[0] = [gameState.self.score, gameState.self.name];
+    for (let i = 1; i < 4; i++){
+      general[i] = [gameState.otherPlayers[i - 1].score, gameState.otherPlayers[i - 1].name];
+    }
+    general = LeaderboardSort(general);
+    for (let i = 0; i < 4; i++){
+      LEADERBOARD[i] = { name: general[i][1], score: general[i][0] }
+    };
+  } else {
+    LEADERBOARD = [ {name: "we messed up", score: -1}];
+  }
+
+  return LEADERBOARD;
+}
+
+function color_string_to_background(colorString){
+  if (colorString == "RED"){
+    return "radial-gradient(ellipse at 40% 30%, #f60202 0%, #c81515 55%, #5f0202 100%)";
+  } else if (colorString == "YELLOW"){
+    return "radial-gradient(ellipse at 40% 30%, #dfdb0b 0%, #afad1c 55%, #6e6809 100%)";
+  } else if (colorString == "GREEN"){
+    return "radial-gradient(ellipse at 15% 10%, #229508 0%, #166904 55%, #105301 100%)";
+  } else {
+    return "radial-gradient(ellipse at 15% 10%, #0532ff 0%, #2b28c9 55%, #0e025f 100%)";
+  }
+}
 
 const rankClass = (i: number) =>
   i === 0 ? "hc-lbRow isFirst"
@@ -71,16 +97,19 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
       <div className="hc-lampBulb" />
 
       {/* body */}
-      <div className="hc-body" />
-      <div className="hc-body2" />
-      <div className="hc-body3" />
+      <div className="hc-body" style={{background: color_string_to_background(gameState?.otherPlayers[0].pieceColor)}} />
+      <div className="hc-body2" style={{background: color_string_to_background(gameState?.otherPlayers[1].pieceColor)}} />
+      <div className="hc-body3" style={{background: color_string_to_background(gameState?.otherPlayers[2].pieceColor)}} />
+      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '33.73vw', top: '54vh'}}>{gameState?.otherPlayers[0].name}</div>
+      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '48.3vw', top: '48vh'}}>{gameState?.otherPlayers[1].name}</div>
+      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '62.4%', top: '54vh'}}>{gameState?.otherPlayers[2].name}</div>
 
       {/* table */}
       <div className="hc-tableTop" />
       <div className="hc-tableLeg" />
       <div className="hc-tableBase" />
 
-      <img src={warped_board} style={{'z-index': '200', position: 'absolute', 'width': '250px', height: 'auto', left: '43%', top: '58vh'}} />
+      <img src={warpedBoard} style={{'zIndex': '200', position: 'absolute', 'width': '250px', height: 'auto', left: '43%', top: '58vh'}} />
 
       {/* added the switch view here; I assume this is button we want it on */}
       <button
@@ -262,7 +291,7 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
                 </tr>
               </thead>
               <tbody>
-                {LEADERBOARD.map((p, i) => (
+                {generateLeaderboard(gameState).map((p, i) => (
                   <tr key={p.name} className={rankClass(i)}>
                     <td className="hc-lbRank">{i + 1}</td>
                     <td>{p.name}</td>

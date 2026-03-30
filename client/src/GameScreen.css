@@ -145,8 +145,8 @@
   transform: scale(0.96);
 }
 
-/*body1*/
-.hc-body{
+/*body3 (rightmost)*/
+.hc-body2{
   position: absolute;
   bottom: 25%;
   left: 50%;
@@ -176,8 +176,8 @@
   border: 2px solid #030303;
 }
 
-/*body2*/
-.hc-body2 {
+/*body2 (middle)*/
+.hc-body3 {
   position: absolute;
   bottom: 20%;
   left: 60%;
@@ -191,8 +191,8 @@
   z-index: 3;
 }
 
-/*body3*/
-.hc-body3 {
+/*body1 (leftmost)*/
+.hc-body {
   position: absolute;
   bottom: 20%;
   right: 60%;

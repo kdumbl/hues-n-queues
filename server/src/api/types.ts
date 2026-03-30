@@ -1,7 +1,7 @@
-export interface ClientGameState {
+export interface GameState {
   //client described state of game
   self: Player;
-  otherPlayers: Player[] | null;
+  otherPlayers: Player[];
 }
 
 export interface Player {
@@ -13,11 +13,11 @@ export interface Player {
   yourTurn: boolean
   score: number;
   piece: {
-    x: number | null;
-    y: number | null;
-  };
+    x: number;
+    y: number;
+  } | null;
   secondPiece: {
-    x: number | null;
-    y: number | null;
-  };
+    x: number;
+    y: number;
+  } | null;
 }

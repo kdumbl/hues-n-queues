@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import { registerGameHandlers } from "./gameHandlers";
 import { registerLobbyHandlers } from "./lobbyHandlers";
 import { setupSocket } from "../middleware/socketAuthMiddleware";
+import { GameState, Player } from "../types.ts";
 
 function initSockets(io: Server) {
   //also will allow us to connect a user to a socket connection
