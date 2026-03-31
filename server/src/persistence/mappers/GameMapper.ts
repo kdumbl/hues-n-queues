@@ -40,7 +40,8 @@ export class GameMapper {
     const board = Board.fromDocument(doc.board);
 
     // Initialize GameManager with players
-    const game = new GameManager(players);
+    const game = new GameManager();
+    game.setUpGame(players);
 
     // Restore internal trackers
     game["roundsHosted"] = new Map(Object.entries(doc.roundsHosted));

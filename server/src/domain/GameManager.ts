@@ -10,17 +10,22 @@ export enum GameState {
 }
 
 export class GameManager {
-  public players?: Player[];
-  public board?: Board;
+  public players: Player[];
+  public board: Board;
   public currentTurnManager?: TurnManager;
-  public gameState?: GameState;
+  public gameState: GameState;
 
   // Internal trackers for game flow
   private currentClueGiverIndex: number = 0;
-  private roundsHosted?: Map<string, number>; //string is userId
+  private roundsHosted: Map<string, number>; //string is userId
 
   //split into this constructor and setUpGame function
-  constructor() {}
+  constructor() {
+    this.players = [];
+    this.board = new Board();
+    this.roundsHosted = new Map();
+    this.gameState = GameState.SETUP;
+  }
 
   //added so we can create game object in gamestore withought knowing players. Just moved func from constructor.
   public setUpGame(players: Player[]): void {
