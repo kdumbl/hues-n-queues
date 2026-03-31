@@ -9,69 +9,68 @@ import "./GameScreen.css";
 import "./App.css";
 
 const gavin: Player = {
-    name: "TheGooseMafia",
-    socketId: "45",
-    pieceColor: "RED",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: true,
-    score: 50,
-    piece: {
-      x: 12,
-      y: 8
-    },
-    secondPiece: null
-  };
+  name: "TheGooseMafia",
+  socketId: "45",
+  pieceColor: "RED",
+  profileURL: "rgebrgbergbj",
+  isClueGiver: false,
+  yourTurn: true,
+  score: 50,
+  piece: {
+    x: 12,
+    y: 8,
+  },
+  secondPiece: null,
+};
 
 const ruby: Player = {
-    name: "GutsMan",
-    socketId: "46",
-    pieceColor: "YELLOW",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: false,
-    score: 27,
-    piece: {
-      x: 4,
-      y: 4
-    },
-    secondPiece: null
-  };
+  name: "GutsMan",
+  socketId: "46",
+  pieceColor: "YELLOW",
+  profileURL: "rgebrgbergbj",
+  isClueGiver: false,
+  yourTurn: false,
+  score: 27,
+  piece: {
+    x: 4,
+    y: 4,
+  },
+  secondPiece: null,
+};
 
 const jackson: Player = {
-    name: "dather9",
-    socketId: "47",
-    pieceColor: "GREEN",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: true,
-    yourTurn: false,
-    score: 9,
-    piece: null,
-    secondPiece: null
-  };
+  name: "dather9",
+  socketId: "47",
+  pieceColor: "GREEN",
+  profileURL: "rgebrgbergbj",
+  isClueGiver: true,
+  yourTurn: false,
+  score: 9,
+  piece: null,
+  secondPiece: null,
+};
 
 const kurt: Player = {
-    name: "DumblDum",
-    socketId: "48",
-    pieceColor: "BLUE",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: false,
-    score: 67,
-    piece: {
-      x: 8,
-      y: 8
-    },
-    secondPiece: null
-  };
+  name: "DumblDum",
+  socketId: "48",
+  pieceColor: "BLUE",
+  profileURL: "rgebrgbergbj",
+  isClueGiver: false,
+  yourTurn: false,
+  score: 67,
+  piece: {
+    x: 8,
+    y: 8,
+  },
+  secondPiece: null,
+};
 
 let others: Player[] = [ruby, jackson, kurt];
 
 const curr_game: GameState = {
-    self: gavin,
-    otherPlayers: others
-  };
-
+  self: gavin,
+  otherPlayers: others,
+};
 
 export default function App() {
   //global react variables
@@ -98,9 +97,9 @@ export default function App() {
     })
     */
 
-    socket.on("update_pieces2", (images)=>{
+    socket.on("update_pieces2", (images) => {
       set_images(images);
-    })
+    });
 
     //might listen for a new gamestate
     //ideally we can make this the only game related thing the server ever sends. Keep it simple.
