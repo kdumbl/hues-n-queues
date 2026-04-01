@@ -1,69 +1,87 @@
 import { Player } from "./Player";
-import { ColorCard } from "./ColorCard";
 import { ColorOption } from "./ColorOption";
 import { BoardDoc } from "../persistence/docs";
-export class Board {
-  // Maps a coordinate string (e.g., "A-0") to its hex color and occupation status
-  public grid: Map<string, { hexCode: string; occupiedBy: string | null }>; //string using the userId
 
-  // Keeps track of which coordinates have been guessed this round
+export class Board {
+  // 2D Array storing the userId of the occupying player, or null if empty
+  public grid: (string | null)[][];
   public occupiedSpaces: string[];
 
   constructor() {
-    this.grid = new Map<string, { hexCode: string; occupiedBy: string }>();
+    this.grid = [];
     this.occupiedSpaces = [];
     this.initializeBoard();
   }
 
   /**
-   * Populates the grid using the MASTER_PALETTE from ColorOption.
-   * Generates coordinates like "A-0", "A-1", "B-0", etc.
+   * Helper method to parse a coordinate string like "A-0" into array indices.
+   */
+  private parseCoordinate(coordinate: string): { row: number; col: number } {
+    const [rowStr, colStr] = coordinate.split("-");
+    const row = rowStr.charCodeAt(0) - 65; // 'A' becomes 0, 'B' becomes 1, etc.
+    const col = parseInt(colStr, 10);
+    return { row, col };
+  }
+
+  /**
+   * Populates the 2D grid array based on the dimensions of MASTER_PALETTE.
    */
   private initializeBoard(): void {
     const palette = ColorOption.MASTER_PALETTE;
+    this.grid = [];
 
     for (let rowIndex = 0; rowIndex < palette.length; rowIndex++) {
-      const row = palette[rowIndex];
-      const rowLetter = String.fromCharCode(65 + rowIndex);
-
-      for (let colIndex = 0; colIndex < row.length; colIndex++) {
-        const hexCode = row[colIndex];
-        const coordinate = `${rowLetter}-${colIndex}`;
-
-        this.grid.set(coordinate, { hexCode: hexCode, occupiedBy: null });
+      const rowArray: (string | null)[] = [];
+      for (let colIndex = 0; colIndex < palette[rowIndex].length; colIndex++) {
+        rowArray.push(null); // Null means unoccupied
       }
+      this.grid.push(rowArray);
     }
   }
 
   /**
-   * Returns the hex color string at a given coordinate.
+   * Returns the hex color string at a given coordinate directly from the palette.
    */
   public getCoordinateColor(coordinate: string): string | undefined {
-    const space = this.grid.get(coordinate);
-    return space ? space.hexCode : undefined;
+    if (!this.isValidPlacement(coordinate)) return undefined;
+    
+    const { row, col } = this.parseCoordinate(coordinate);
+    return ColorOption.MASTER_PALETTE[row][col];
   }
 
   /**
-   * Checks if a coordinate is a valid placement.
+   * Checks if a coordinate is within the bounds of the 2D array.
    */
   public isValidPlacement(coordinate: string): boolean {
-    const space = this.grid.get(coordinate);
-    return space !== undefined;
+    // Basic regex check to ensure format is valid before parsing
+    if (!/^[A-Z]-\d+$/.test(coordinate)) return false;
+
+    const { row, col } = this.parseCoordinate(coordinate);
+    return (
+      row >= 0 &&
+      row < this.grid.length &&
+      col >= 0 &&
+      col < this.grid[row].length
+    );
   }
 
   /**
-   * Places a player's piece on the board if the placement is valid.
+   * Places a player's piece on the board if the placement is valid and empty.
    */
   public placePiece(coordinate: string, player: Player): boolean {
     if (this.isValidPlacement(coordinate)) {
-      const space = this.grid.get(coordinate)!;
-      space.occupiedBy = player.userId;
-      this.occupiedSpaces.push(coordinate);
-      return true;
+      const { row, col } = this.parseCoordinate(coordinate);
+      
+      if (this.grid[row][col] === null) {
+        this.grid[row][col] = player.userId;
+        this.occupiedSpaces.push(coordinate);
+        return true;
+      } else {
+        console.warn(`Cannot place piece: ${coordinate} is already occupied.`);
+        return false;
+      }
     }
-    console.warn(
-      `Cannot place piece: ${coordinate} is invalid or already occupied.`,
-    );
+    console.warn(`Cannot place piece: ${coordinate} is invalid.`);
     return false;
   }
 
@@ -72,19 +90,18 @@ export class Board {
    */
   public resetBoard(): void {
     for (const coord of this.occupiedSpaces) {
-      const space = this.grid.get(coord);
-      if (space) {
-        space.occupiedBy = null;
+      if (this.isValidPlacement(coord)) {
+        const { row, col } = this.parseCoordinate(coord);
+        this.grid[row][col] = null;
       }
     }
-    // Clear the list of occupied spaces
     this.occupiedSpaces = [];
     console.log("Board cleared for the next round.");
   }
 
   public toDocument(): BoardDoc {
     return {
-      grid: Object.fromEntries(this.grid),
+      grid: this.grid, // Now naturally serializes as a 2D array
       occupiedSpaces: [...this.occupiedSpaces],
     };
   }
@@ -95,8 +112,8 @@ export class Board {
   public static fromDocument(doc: BoardDoc): Board {
     const board = new Board();
 
-    // Replace the initialized board with the saved state
-    board.grid = new Map(Object.entries(doc.grid));
+    // Deep copy the 2D array from the document to avoid reference mutations
+    board.grid = doc.grid.map(row => [...row]);
     board.occupiedSpaces = [...doc.occupiedSpaces];
 
     return board;
