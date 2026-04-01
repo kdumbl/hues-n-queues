@@ -50,7 +50,7 @@
   /* triangle of light */
   border-left: 380px solid transparent;
   border-right: 380px solid transparent;
-  border-bottom: 500px solid rgba(255, 235, 100, 0.06);
+  border-bottom: 65vh solid rgba(255, 235, 100, 0.06);
 }
 
 .container {
@@ -145,8 +145,8 @@
   transform: scale(0.96);
 }
 
-/*body1*/
-.hc-body{
+/*body3 (rightmost)*/
+.hc-body2{
   position: absolute;
   bottom: 25%;
   left: 50%;
@@ -158,6 +158,7 @@
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
     inset 0 -12px 26px rgba(0, 0, 0, 0.5);
   border: 2px solid #030303;
+  z-index: 3;
 }
 
 /*head*/
@@ -175,8 +176,8 @@
   border: 2px solid #030303;
 }
 
-/*body2*/
-.hc-body2 {
+/*body2 (middle)*/
+.hc-body3 {
   position: absolute;
   bottom: 20%;
   left: 60%;
@@ -187,10 +188,11 @@
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
     inset 0 -12px 26px rgba(0, 0, 0, 0.5);
   border: 2px solid #030303;
+  z-index: 3;
 }
 
-/*body3*/
-.hc-body3 {
+/*body1 (leftmost)*/
+.hc-body {
   position: absolute;
   bottom: 20%;
   right: 60%;
@@ -201,6 +203,7 @@
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
     inset 0 -12px 26px rgba(0, 0, 0, 0.5);
   border: 2px solid #030303;
+  z-index: 3;
 }
 
 .hc-tableLeg {

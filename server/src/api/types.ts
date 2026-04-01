@@ -1,15 +1,23 @@
-export interface ClientGameState {
+export interface GameState {
   //client described state of game
   self: Player;
-  otherPlayers: Player[] | null;
+  otherPlayers: Player[];
 }
 
 export interface Player {
   name: string;
   socketId: string;
+  pieceColor: string;
+  profileURL: string;
+  isClueGiver: boolean;
+  yourTurn: boolean
   score: number;
   piece: {
-    x: number | null;
-    y: number | null;
-  };
+    x: number;
+    y: number;
+  } | null;
+  secondPiece: {
+    x: number;
+    y: number;
+  } | null;
 }

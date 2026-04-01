@@ -1,13 +1,14 @@
 import "./BoardScreen.css";
 import { useState, useEffect } from 'react';
 import logo from "./assets/logo.png";
-import red_piece from "./assets/pieces/red_piece.png";
-import yellow_piece from "./assets/pieces/yellow_piece.png";
-import green_piece from "./assets/pieces/green_piece.png";
-import blue_piece from "./assets/pieces/blue_piece.png";
-import back_button from "./assets/back_button.png";
-import submit_button from "./assets/submit_button.png";
-import trans_piece from "./assets/pieces/transparent_piece.png";
+import redPiece from "./assets/pieces/red_piece.png";
+import yellowPiece from "./assets/pieces/yellow_piece.png";
+import greenPiece from "./assets/pieces/green_piece.png";
+import bluePiece from "./assets/pieces/blue_piece.png";
+import backButton from "./assets/back_button.png";
+import submitButton from "./assets/submit_button.png";
+import submitButtonGray from "./assets/submit_button_gray.png";
+import transPiece from "./assets/pieces/transparent_piece.png";
 import submitted from "./assets/submitted.png";
 import { Socket } from "socket.io-client";
 import type { GameState } from "./types";
@@ -17,36 +18,72 @@ interface Props {
   socket: Socket| null;
   gameState: GameState | undefined;
   switchView: (v:"board" | "game") => void;
-  images,
-  set_images,
 }
 
 //Creates two rows of grayscale rectangles representing score in the top left
 function ScoreRows(){
 
-  const fr_colors = ["#000000", "#414141", "#424443", "#464646", "#474948", "#4a4c4b", "#4d4d4d", "#4f4f4f", "#525453", "#545655", "#575757", "#595b5a", "#5d5d5d", "#5e605f", "#606261", "#636363", "#676765", "#696969", "#6b6d6c", "#6f6f6f", "#707271", "#737574", "#767676", "#797979", "#7b7d7c", "#7e807f"];
-  const fr_nums = ["", "", "", "", "", "5", "", "", "", "", "10", "", "", "", "", "15", "", "", "", "", "20", "", "", "", "", "25"];
-  const first_row = [];
+  const frColors = ["#000000", "#414141", "#424443", "#464646", "#474948", "#4a4c4b", "#4d4d4d", "#4f4f4f", "#525453", "#545655", "#575757", "#595b5a", "#5d5d5d", "#5e605f", "#606261", "#636363", "#676765", "#696969", "#6b6d6c", "#6f6f6f", "#707271", "#737574", "#767676", "#797979", "#7b7d7c", "#7e807f"];
+  const frNums = ["", "", "", "", "", "5", "", "", "", "", "10", "", "", "", "", "15", "", "", "", "", "20", "", "", "", "", "25"];
+  const firstRow = [];
 
-  const sr_colors = ["#000000", "#bdbdbd", "#bababa", "#b9b9b9", "#b5b5b5", "#b3b3b3", "#b0b2b1", "#aeaeae", "#acacac", "#a8aaa9", "#a6a6a4", "#a3a3a3", "#a1a19f", "#9ea09f", "#9c9c9c", "#9a9a9a", "#979795", "#959595", "#929290", "#919191", "#8e8e8e", "#8c8c8c", "#878988", "#858786", "#838584", "#808281"];
-  const sr_nums = ["", "50", "", "", "", "", "45", "", "", "", "", "40", "", "", "", "", "35", "", "", "", "", "30", "", "", "", ""];
-  const second_row = [];
+  const srColors = ["#000000", "#bdbdbd", "#bababa", "#b9b9b9", "#b5b5b5", "#b3b3b3", "#b0b2b1", "#aeaeae", "#acacac", "#a8aaa9", "#a6a6a4", "#a3a3a3", "#a1a19f", "#9ea09f", "#9c9c9c", "#9a9a9a", "#979795", "#959595", "#929290", "#919191", "#8e8e8e", "#8c8c8c", "#878988", "#858786", "#838584", "#808281"];
+  const srNums = ["", "50", "", "", "", "", "45", "", "", "", "", "40", "", "", "", "", "35", "", "", "", "", "30", "", "", "", ""];
+  const secondRow = [];
 
   for (let i = 0; i < 26; i++){
-    first_row.push(<div className="hcscorediv" style={{background: fr_colors[i]}}>{fr_nums[i]}</div>);
-    second_row.push(<div className="hcscorediv" style={{background: sr_colors[i], color: '#000000'}}>{sr_nums[i]}</div>)
+    firstRow.push(<div className="hcscorediv" style={{background: frColors[i]}}>{frNums[i]}</div>);
+    secondRow.push(<div className="hcscorediv" style={{background: srColors[i], color: '#000000'}}>{srNums[i]}</div>)
   }
 
   return (
     <>
       <div className="hcboard-row">
-        {first_row}
+        {firstRow}
       </div>
       <div className="hcboard-row">
-        {second_row}
+        {secondRow}
       </div>
     </>
   );
+}
+
+//Converts String versions of color from gameState into image addresses of that color of piece
+function colorStringToPiece(colorString){
+  if (colorString == "RED"){
+    return redPiece;
+  } else if (colorString == "YELLOW"){
+    return yellowPiece;
+  } else if (colorString == "GREEN"){
+    return greenPiece;
+  } else {
+    return bluePiece;
+  }
+}
+
+//Generates layout of pieces from gameState
+function createImages(gameState){
+  let images = [];
+  if (gameState.self.yourTurn && !gameState.self.isClueGiver){
+    images = Array(480).fill(null);
+  } else {
+    images = Array(480).fill(transPiece);
+  }
+  if (gameState.self.piece != null){
+    images[gameState.self.piece.y * 30 + gameState.self.piece.x] = colorStringToPiece(gameState.self.pieceColor);
+  }
+  if (gameState.self.secondPiece != null){
+    images[gameState.self.secondPiece.y * 30 + gameState.self.secondPiece.x] = colorStringToPiece(gameState.self.pieceColor);
+  }
+  for (let i = 0; i < 3; i++){
+    if (gameState.otherPlayers[i].piece != null){
+      images[gameState.otherPlayers[i].piece.y * 30 + gameState.otherPlayers[i].piece.x] = colorStringToPiece(gameState.otherPlayers[i].pieceColor);
+    }
+    if (gameState.otherPlayers[i].secondPiece != null){
+      images[gameState.otherPlayers[i].secondPiece.y * 30 + gameState.otherPlayers[i].secondPiece.x] = colorStringToPiece(gameState.otherPlayers[i].pieceColor);
+    }
+  }
+  return images;
 }
 
 //Creates top and bottom borders of game board with corresponding number indices.
@@ -75,11 +112,11 @@ function TopRow({ lh }){
 //images is an array representing whether each space is occupied by a game piece and if so, which color it is
   //Functionally, each element in the array is an image url that is assigned to the source field of an otherwise empty image object over each space
 //add_piece is the function that is called when a space is clicked, defined in HCBoard
-function HCRow({row_colors, letter, row_num, images, add_piece}){
+function HCRow({rowColors, letter, rowNum, images, addPiece}){
 
   //Value for easier indexing of array
-  let base = row_num * 30;
-  let lefts = ["1.7vw", "3.7vw", "5.7vw", "7.6vw", "9.6vw", "11.6vw", "13.5vw", "15.5vw", "17.5vw", "19.4vw", "21.4vw", "23.4vw", "25.4vw", "27.3vw", "29.3vw", "31.3vw", "33.3vw", "35.2vw", "37.2vw", "39.2vw", "41.2vw", "43.1vw", "45.1vw", "47.1vw", "49vw", "51vw", "53vw", "55vw", "56.9vw", "58.9vw"];
+  let base = rowNum * 30;
+  let lefts = ["1.7vw", "3.7vw", "5.7vw", "7.6vw", "9.6vw", "11.6vw", "13.5vw", "15.5vw", "17.5vw", "19.4vw", "21.5vw", "23.4vw", "25.4vw", "27.4vw", "29.3vw", "31.3vw", "33.3vw", "35.2vw", "37.2vw", "39.2vw", "41.2vw", "43.2vw", "45.2vw", "47.1vw", "49.1vw", "51.1vw", "53vw", "55vw", "57vw", "58.9vw"];
 
   const items = [];
 
@@ -90,7 +127,7 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
       items.push(
         <>
           <div style={{position: "relative"}}>
-            <button onClick={() => add_piece(base + i)} className="hcsquarebutt" style={{background: row_colors[i]}}></button>
+            <button onClick={() => addPiece(base + i)} className="hcsquarebutt" style={{background: rowColors[i]}}></button>
             <img src={images[base + i]} style={{width: "2.5vw", height: "auto", zIndex: "200", position: "absolute", left: lefts[i], bottom: "-4vh"}}></img>
           </div>
         </>
@@ -99,7 +136,7 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
       items.push(
         <>
           <div style={{position: "relative"}}>
-            <button onClick={() => add_piece(base + i)} className="hcsquarebutt" style={{background: row_colors[i]}}></button>
+            <button onClick={() => addPiece(base + i)} className="hcsquarebutt" style={{background: rowColors[i]}}></button>
             <img src={images[base + i]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "-4vh"}}></img>
           </div>
         </>
@@ -118,24 +155,13 @@ function HCRow({row_colors, letter, row_num, images, add_piece}){
 
 
 //notice that this now takes in parameters: These are the passed in props
-export default function BoardScreen({socket, gameState, switchView, images, set_images}: Props) {
+export default function BoardScreen({socket, gameState, switchView}: Props) {
 
   const items = [];
-  const [submit_vis, set_submit_vis] = useState(false);
-  const [submitted_vis, set_submitted_vis] = useState(false);
+  const [submittedVis, setSubmittedVis] = useState(false);
   const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"];
-  const [last_placed, set_last_placed] = useState(null);
-  const [num_submitted, set_num_submitted] = useState(0);
-  const pieces = [red_piece, yellow_piece, green_piece, blue_piece];
-  const [piece, set_piece] = useState(null);
-
-  socket?.emit('board_view_opened');
-
-  socket.once('piece_color_assigned', (piece_num) => {
-    if (piece == null){
-      set_piece(pieces[(piece_num - 1) % 4]);
-    }
-  });
+  const [lastPlaced, setLastPlaced] = useState(null);
+  const [images, setImages] = useState(createImages(gameState));
 
   //Defines the colors of each space on the gameboard, as well as the top and bottom rows with the displayed number indices
   let rcs = [["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000"],
@@ -158,51 +184,19 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
              ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000"]];
 
   //Called when a game space is clicked
-  function add_piece(i) {
-
-    socket?.emit('piece_placed', i, last_placed, piece);
-    set_last_placed(i);
-
-    if (submitted_vis){
-      socket?.emit('player_unsubmitted', num_submitted);
-      set_submitted_vis(false);
+  function addPiece(i) {
+    let tempImages = images.slice();
+    if (lastPlaced != null){
+      tempImages[lastPlaced] = null;
     }
-
-    set_submit_vis(true);
+    setLastPlaced(i);
+    tempImages[i] = colorStringToPiece(gameState?.self.pieceColor);
+    setImages(tempImages);
   }
-
-  socket.on('piece_placed2', (master_images) => {
-    set_images(master_images);
-  });
 
   function submit(){
-    set_submitted_vis(true);
-    socket?.emit('player_submitted', num_submitted);
+    setSubmittedVis(true);
   }
-
-  socket.on('player_submitted2', (num_submitted2) => {
-    let locked = images.slice();
-    set_num_submitted(num_submitted2);
-
-    if (num_submitted2 == 4){
-
-      for (let i = 0; i < 480; i++){
-        if (locked[i] == null){
-          locked[i] = trans_piece;
-        }
-      }
-
-      set_images(locked);
-      //note that because socket may be null we add the ?
-      socket?.emit('all_submitted', locked);
-    }
-
-  });
-
-  socket.on('player_unsubmitted2', (num_submitted2) => {
-    console.log(`client learned that player unsubmitted: ${socket.id}`);
-    set_num_submitted(num_submitted2);
-  });
 
   //add the switch view functionality
   const viewChanger = () =>{
@@ -215,7 +209,7 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
     items.push(
       <>
         <div className="hcboard-row">
-          <HCRow row_colors={rcs[i + 1]} letter={letters[i]} row_num={i} images = {images} add_piece = {add_piece} />
+          <HCRow rowColors={rcs[i + 1]} letter={letters[i]} rowNum={i} images = {images} addPiece = {addPiece} />
         </div>
       </>
     );
@@ -226,7 +220,7 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
     <>
       <div className="back-button">
         <button style={{width: '11vw', height: '8.3vh', zIndex: '201', left: '2vw', top: '1.5vw', position: 'absolute', backgroundColor: 'transparent'}} onClick = {viewChanger} />
-        <img src={back_button} style={{width: '11vw', height: '8.3vh', zIndex: '200', left: '2vw', top: '1.5vw', position: 'absolute'}}/>
+        <img src={backButton} style={{width: '11vw', height: '8.3vh', zIndex: '200', left: '2vw', top: '1.5vw', position: 'absolute'}}/>
       </div>
       <div className="top-section">
         <div className="score-row">
@@ -245,17 +239,19 @@ export default function BoardScreen({socket, gameState, switchView, images, set_
           <TopRow lh="2.5vh" />
         </div>
       </div>
-      {submit_vis && (
+      {gameState?.self.yourTurn && (
         <>
           <div className="submit-button">
-            <button style={{width: '15vw', height: '6.4vh', 'z-index': '201', 'left': '40.2vw', top: '92vh', position: 'absolute', 'background-color': 'transparent'}} onClick = {submit} />
-            <img src={submit_button} style={{width: '15vw', height: '6.4vh', 'z-index': '200', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
-            <div className="how-many-submitted" style={{'z-index': '202', left: '55.5vw', top: '91.7vh', color: '#ffffff', fontSize: '2vw', position: 'absolute', width: '3vw', fontWeight: 'bold'}}>{num_submitted}/4</div>
+            <button style={{width: '15vw', height: '6.4vh', 'zIndex': '201', 'left': '40.2vw', top: '92vh', position: 'absolute', 'backgroundColor': 'transparent'}} onClick = {submit} />
+            <img src={submitButton} style={{width: '15vw', height: '6.4vh', 'zIndex': '200', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
           </div>
         </>
       )}
-      {submitted_vis && (
-          <img src={submitted} style={{width: '15vw', height: '6.4vh', zIndex: '202', left: '40.2vw', top: '92vh', position: 'absolute'}}/>
+      {submittedVis && (
+          <img src={submitted} style={{width: '15vw', height: '6.4vh', zIndex: '203', left: '40.2vw', top: '92vh', position: 'absolute'}}/>
+      )}
+      {!gameState?.self.yourTurn && (
+          <img src={submitButtonGray} style={{width: '15vw', height: '6.4vh', zIndex: '202', left: '40.2vw', top: '92vh', position: 'absolute'}} />
       )}
     </>
   );
