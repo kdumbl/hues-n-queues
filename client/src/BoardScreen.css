@@ -76,6 +76,17 @@ h1 {
   width: 1.754vw;
 }
 
+.hc-lastClue {
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  border: 1px solid #555;
+  font-family: monospace;
+  font-size: 20px;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
 .board-row:after {
   clear: both;
   content: '';
