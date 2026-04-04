@@ -13,13 +13,11 @@ const gavin: Player = {
   socketId: "45",
   pieceColor: "RED",
   profileURL: "rgebrgbergbj",
-  isClueGiver: false,
+  isClueGiver: true,
   yourTurn: true,
   score: 50,
-  piece: {
-    x: 12,
-    y: 8,
-  },
+  clue: "",
+  piece: null,
   secondPiece: null,
 };
 
@@ -31,10 +29,8 @@ const ruby: Player = {
   isClueGiver: false,
   yourTurn: false,
   score: 27,
-  piece: {
-    x: 4,
-    y: 4,
-  },
+  clue: "",
+  piece: null,
   secondPiece: null,
 };
 
@@ -43,9 +39,10 @@ const jackson: Player = {
   socketId: "47",
   pieceColor: "GREEN",
   profileURL: "rgebrgbergbj",
-  isClueGiver: true,
+  isClueGiver: false,
   yourTurn: false,
   score: 9,
+  clue: "",
   piece: null,
   secondPiece: null,
 };
@@ -58,70 +55,98 @@ const kurt: Player = {
   isClueGiver: false,
   yourTurn: false,
   score: 67,
-  piece: {
-    x: 8,
-    y: 8,
-  },
+  clue: "",
+  piece: null,
   secondPiece: null,
 };
 
-let others: Player[] = [ruby, jackson, kurt];
-
 const curr_game: GameState = {
-  self: gavin,
-  otherPlayers: others,
+  players: [gavin, ruby, jackson, kurt],
 };
+
+function masterToIndividualGameState(masterGameState, connectionOrder) {
+  console.log(connectionOrder);
+  if (connectionOrder == 0) {
+    console.log("Assigned as if connOrder was 0");
+    return masterGameState;
+  } else if (connectionOrder == 1) {
+    let indGameState: GameState = {
+      players: [
+        masterGameState.players[1],
+        masterGameState.players[2],
+        masterGameState.players[3],
+        masterGameState.players[0],
+      ],
+    };
+    console.log("Assigned as if connOrder was 1");
+    return indGameState;
+  } else if (connectionOrder == 2) {
+    let indGameState: GameState = {
+      players: [
+        masterGameState.players[2],
+        masterGameState.players[3],
+        masterGameState.players[0],
+        masterGameState.players[1],
+      ],
+    };
+    console.log("Assigned as if connOrder was 2");
+    return indGameState;
+  } else if (connectionOrder == 3) {
+    let indGameState: GameState = {
+      players: [
+        masterGameState.players[3],
+        masterGameState.players[0],
+        masterGameState.players[1],
+        masterGameState.players[2],
+      ],
+    };
+    console.log("Assigned as if connOrder was 3");
+    return indGameState;
+  } else {
+    console.log("We messed up");
+  }
+}
 
 export default function App() {
   //global react variables
   const socketRef = useRef<Socket | null>(null);
   const [view, setView] = useState<View>("game");
   const [gameState, setGameState] = useState<GameState>(curr_game);
+  const [connectionNumber, setConnectionNumber] = useState(null);
 
-  //create socket only once on app render and store as a react ref
-  useEffect(() => {
-    const socket = io("http://localhost:5001");
-    socketRef.current = socket;
+  if (socketRef.current == null) {
+    const socket2 = io("http://localhost:5001");
+    socketRef.current = socket2;
+  }
 
-    //all listeners must get put here so they are shared between all app subcomponents, board and game screen
-    socket.on("connect", () => {
-      console.log(`Client: Connected ${socket.id}`);
-    });
+  socketRef.current.once("connect", () => {
+    console.log(`Client: Connected ${socketRef.current.id}`);
+    socketRef.current.emit("new user");
+  });
 
-    /**
-    //initial state that server will send after connection
-    //doesnt work rn cause we need db connection to pull that info
-    socket.on("init", (newState: GameState) =>{
-      setGameState(newState);
-      console.log("Client state initialized")
-    })
-    */
+  socketRef.current.once("new user accepted", (connectionNum) => {
+    if (connectionNumber == null) {
+      setConnectionNumber(connectionNum);
+      setGameState(masterToIndividualGameState(gameState, connectionNum));
+    }
+  });
 
-    socket.on("update_pieces2", (images) => {
-      set_images(images);
-    });
-
-    //might listen for a new gamestate
-    //ideally we can make this the only game related thing the server ever sends. Keep it simple.
-    socket.on("test_gamestate", (newState: GameState) => {
-      setGameState(newState);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  socketRef.current.on("gameState updated", (newGameState) => {
+    setGameState(masterToIndividualGameState(newGameState, connectionNumber));
+  });
 
   //now to pass down the socket and state to both boardscreen and gamescreen; known as props
   const gameSharedProps = {
     socket: socketRef.current,
     gameState,
     switchView: (v: View) => setView(v),
+    connectionNumber,
   };
   const boardSharedProps = {
     socket: socketRef.current,
     gameState,
     switchView: (v: View) => setView(v),
+    connectionNumber,
   };
 
   //html to be returned see how the props are passed down

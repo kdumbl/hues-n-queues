@@ -5,6 +5,7 @@ import { Socket } from 'socket.io-client';
 import type { GameState } from "./types";
 import warpedBoard from "./assets/warped_board.png";
 import LeaderboardSort from './LeaderboardSort';
+import { rcs } from './ColorPalettes';
 
 
 type Panel = "settings" | "leaderboard" | null;
@@ -13,9 +14,8 @@ function generateLeaderboard(gameState){
   let LEADERBOARD = [];
   if (gameState != undefined){
     let general = [];
-    general[0] = [gameState.self.score, gameState.self.name];
-    for (let i = 1; i < 4; i++){
-      general[i] = [gameState.otherPlayers[i - 1].score, gameState.otherPlayers[i - 1].name];
+    for (let i = 0; i < 4; i++){
+      general[i] = [gameState.players[i].score, gameState.players[i].name];
     }
     general = LeaderboardSort(general);
     for (let i = 0; i < 4; i++){
@@ -50,18 +50,21 @@ interface Props {
   socket: Socket| null;
   gameState: GameState | undefined;
   switchView: (v:"board" | "game") => void;
+  connectionNumber: number | null;
 }
 
 //pass in the props
-export default function GameScreen({socket, gameState, switchView}: Props) {
+export default function GameScreen({socket, gameState, switchView, connectionNumber}: Props) {
   const [isDeckHovered, setIsDeckHovered] = useState(false);
   const [activePanel, setActivePanel] = useState<Panel>(null);
   const [colorblind, setColorblind] = useState(false);
   const [isTableHovered, setIsTableHovered] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedColorIndex, setSelectedColorIndex] = useState<string | null>(null);
   const [cueText, setCueText] = useState('');
   const [cardDrawn, setCardDrawn] = useState(false);
   const [announcement, setAnnouncement] = useState<string | null>(null);
+  const [possibleColors, setPossibleColors] = useState([["", ""], ["", ""], ["", ""], ["", ""]]);
 
   const toggle = (panel: Panel) =>
     setActivePanel(prev => (prev === panel ? null : panel));
@@ -77,6 +80,28 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
     switchView("board");
     console.log("View Switched!");
   };
+
+  function chooseCardColors(){
+    if (possibleColors[0][0] == ""){
+      let ind1 = Math.floor(Math.random() * 480);
+      let ind2 = -1;
+      let ind3 = -1;
+      let ind4 = -1;
+      while (ind2 == -1 || ind2 == ind1){
+        ind2 = Math.floor(Math.random() * 480);
+      }
+      while (ind3 == -1 || ind3 == ind1 || ind3 == ind2){
+        ind3 = Math.floor(Math.random() * 480);
+      }
+      while (ind4 == -1 || ind4 == ind1 || ind4 == ind2 || ind4 == ind3){
+        ind4 = Math.floor(Math.random() * 480);
+      }
+      let knife: Array<Array<string>> = [[rcs[Math.floor(ind1 / 30) + 1][ind1 % 30], '' + ind1], [rcs[Math.floor(ind2 / 30) + 1][ind2 % 30], '' + ind2], [rcs[Math.floor(ind3 / 30) + 1][ind3 % 30], '' + ind3], [rcs[Math.floor(ind4 / 30) + 1][ind4 % 30], '' + ind4]];
+      setPossibleColors(knife);
+      return knife;
+    }
+    return possibleColors;
+  }
 
   return (
     <div className="hc-stage">
@@ -97,12 +122,12 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
       <div className="hc-lampBulb" />
 
       {/* body */}
-      <div className="hc-body" style={{background: color_string_to_background(gameState?.otherPlayers[0].pieceColor)}} />
-      <div className="hc-body2" style={{background: color_string_to_background(gameState?.otherPlayers[1].pieceColor)}} />
-      <div className="hc-body3" style={{background: color_string_to_background(gameState?.otherPlayers[2].pieceColor)}} />
-      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '33.73vw', top: '54vh'}}>{gameState?.otherPlayers[0].name}</div>
-      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '48.3vw', top: '48vh'}}>{gameState?.otherPlayers[1].name}</div>
-      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '62.4%', top: '54vh'}}>{gameState?.otherPlayers[2].name}</div>
+      <div className="hc-body" style={{background: color_string_to_background(gameState?.players[1].pieceColor)}} />
+      <div className="hc-body2" style={{background: color_string_to_background(gameState?.players[2].pieceColor)}} />
+      <div className="hc-body3" style={{background: color_string_to_background(gameState?.players[3].pieceColor)}} />
+      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '33.73vw', top: '54vh'}}>{gameState?.players[1].name}</div>
+      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '48.3vw', top: '48vh'}}>{gameState?.players[2].name}</div>
+      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '62.4%', top: '54vh'}}>{gameState?.players[3].name}</div>
 
       {/* table */}
       <div className="hc-tableTop" />
@@ -123,9 +148,8 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
       {cardDrawn && (
         <div style={{
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
+          top: '20%',
+          left: '41%',
           width: '260px',
           height: '420px',
           background: 'linear-gradient(155deg, #1c1c1c, #2e2e2e)',
@@ -142,17 +166,19 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
         }}>
           <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '0 20px', width: '100%', boxSizing: 'border-box' as const}}>
-            {['#e74c3c','#f1c40f','#2ecc71','#3498db'].map(color => (
+            {chooseCardColors().map(color => (
               <div
-                key={color}
-                onClick={() => setSelectedColor(color)}
+                key={color[0]}
+                onClick={() => {
+                  setSelectedColor(color[0]);
+                  setSelectedColorIndex(color[1]);}}
                 style={{
                   height: '80px',
                   borderRadius: '10px',
-                  background: color,
-                  boxShadow: selectedColor === color ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)',
+                  background: color[0],
+                  boxShadow: selectedColor === color[0] ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)',
                   cursor: 'pointer',
-                  transform: selectedColor === color ? 'scale(1.05)' : 'scale(1)',
+                  transform: selectedColor === color[0] ? 'scale(1.05)' : 'scale(1)',
                   transition: 'all 0.15s ease'
                 }}
               />
@@ -163,6 +189,8 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
             placeholder="Enter yourrr cue!"
             value={cueText}
             onChange={e => setCueText(e.target.value)}
+            maxLength={16}
+            minLength={1}
             style={{
               width: 'calc(100% - 40px)',
               padding: '8px 12px',
@@ -180,6 +208,11 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
             onClick={() => {
               showAnnouncement(`Jackson's hint is ${cueText}`);
               setCardDrawn(false);
+              setPossibleColors([["", ""], ["", ""], ["", ""], ["", ""]]);
+              socket?.emit("clue_submitted", selectedColorIndex, cueText, connectionNumber);
+              setSelectedColor("");
+              setSelectedColorIndex("");
+              setCueText("");
             }}
             style={{
               padding: '8px 24px',
@@ -197,7 +230,7 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
       )}
 
       {/* deck */}
-      <button
+      {gameState.players[0].isClueGiver && gameState.players[0].yourTurn && (<button
         type="button"
         className={`hc-deckButton ${isDeckHovered ? "isDeckHovered" : ""}`}
         onMouseEnter={() => setIsDeckHovered(true)}
@@ -214,7 +247,7 @@ export default function GameScreen({socket, gameState, switchView}: Props) {
           </div>
         </div>
         <div className="hc-deckTip">Draw a card</div>
-      </button>
+      </button> )}
 
       {/* announcement banner */}
       {announcement && (
