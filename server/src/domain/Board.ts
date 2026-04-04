@@ -4,6 +4,7 @@ import { BoardDoc } from "../persistence/docs";
 
 export class Board {
   // 2D Array storing the userId of the occupying player, or null if empty
+  //16 rows 30 columns
   public grid: (string | null)[][];
   public occupiedSpaces: string[];
 
@@ -44,7 +45,7 @@ export class Board {
    */
   public getCoordinateColor(coordinate: string): string | undefined {
     if (!this.isValidPlacement(coordinate)) return undefined;
-    
+
     const { row, col } = this.parseCoordinate(coordinate);
     return ColorOption.MASTER_PALETTE[row][col];
   }
@@ -71,7 +72,7 @@ export class Board {
   public placePiece(coordinate: string, player: Player): boolean {
     if (this.isValidPlacement(coordinate)) {
       const { row, col } = this.parseCoordinate(coordinate);
-      
+
       if (this.grid[row][col] === null) {
         this.grid[row][col] = player.userId;
         this.occupiedSpaces.push(coordinate);
@@ -113,7 +114,7 @@ export class Board {
     const board = new Board();
 
     // Deep copy the 2D array from the document to avoid reference mutations
-    board.grid = doc.grid.map(row => [...row]);
+    board.grid = doc.grid.map((row) => [...row]);
     board.occupiedSpaces = [...doc.occupiedSpaces];
 
     return board;

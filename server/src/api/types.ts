@@ -1,7 +1,6 @@
 export interface GameState {
   //client described state of game
-  self: Player;
-  otherPlayers: Player[];
+  players: Player[];
 }
 
 export interface Player {
@@ -10,8 +9,9 @@ export interface Player {
   pieceColor: string;
   profileURL: string;
   isClueGiver: boolean;
-  yourTurn: boolean
+  yourTurn: boolean;
   score: number;
+  clue: string | undefined;
   piece: {
     x: number;
     y: number;
