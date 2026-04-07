@@ -9,81 +9,96 @@ import "./GameScreen.css";
 import "./App.css";
 
 const gavin: Player = {
-    name: "TheGooseMafia",
-    socketId: "45",
-    pieceColor: "RED",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: true,
-    yourTurn: true,
-    score: 50,
-    clue: "",
-    piece: null,
-    secondPiece: null,
-  };
+  name: "TheGooseMafia",
+  socketId: "45",
+  pieceColor: "RED",
+  profileURL: "rgebrgbergbj",
+  isClueGiver: true,
+  yourTurn: true,
+  score: 50,
+  clue: "",
+  piece: null,
+  secondPiece: null,
+};
 
 const ruby: Player = {
-    name: "GutsMan",
-    socketId: "46",
-    pieceColor: "YELLOW",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: false,
-    score: 27,
-    clue: "",
-    piece: null,
-    secondPiece: null,
-  };
+  name: "GutsMan",
+  socketId: "46",
+  pieceColor: "YELLOW",
+  profileURL: "rgebrgbergbj",
+  isClueGiver: false,
+  yourTurn: false,
+  score: 27,
+  clue: "",
+  piece: null,
+  secondPiece: null,
+};
 
 const jackson: Player = {
-    name: "dather9",
-    socketId: "47",
-    pieceColor: "GREEN",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: false,
-    score: 9,
-    clue: "",
-    piece: null,
-    secondPiece: null,
-  };
+  name: "dather9",
+  socketId: "47",
+  pieceColor: "GREEN",
+  profileURL: "rgebrgbergbj",
+  isClueGiver: false,
+  yourTurn: false,
+  score: 9,
+  clue: "",
+  piece: null,
+  secondPiece: null,
+};
 
 const kurt: Player = {
-    name: "DumblDum",
-    socketId: "48",
-    pieceColor: "BLUE",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: false,
-    score: 67,
-    clue: "",
-    piece: null,
-    secondPiece: null,
-  };
+  name: "DumblDum",
+  socketId: "48",
+  pieceColor: "BLUE",
+  profileURL: "rgebrgbergbj",
+  isClueGiver: false,
+  yourTurn: false,
+  score: 67,
+  clue: "",
+  piece: null,
+  secondPiece: null,
+};
 
 const curr_game: GameState = {
-    players: [gavin, ruby, jackson, kurt]
-  };
+  players: [gavin, ruby, jackson, kurt],
+};
 
-function masterToIndividualGameState(masterGameState, connectionOrder){
+function masterToIndividualGameState(masterGameState, connectionOrder) {
   console.log(connectionOrder);
-  if (connectionOrder == 0){
+  if (connectionOrder == 0) {
     console.log("Assigned as if connOrder was 0");
     return masterGameState;
-  } else if (connectionOrder == 1){
+  } else if (connectionOrder == 1) {
     let indGameState: GameState = {
-      players: [masterGameState.players[1], masterGameState.players[2], masterGameState.players[3], masterGameState.players[0]]
+      players: [
+        masterGameState.players[1],
+        masterGameState.players[2],
+        masterGameState.players[3],
+        masterGameState.players[0],
+      ],
     };
     console.log("Assigned as if connOrder was 1");
     return indGameState;
-  } else if (connectionOrder == 2){
+  } else if (connectionOrder == 2) {
     let indGameState: GameState = {
-      players: [masterGameState.players[2], masterGameState.players[3], masterGameState.players[0], masterGameState.players[1]]
+      players: [
+        masterGameState.players[2],
+        masterGameState.players[3],
+        masterGameState.players[0],
+        masterGameState.players[1],
+      ],
     };
     console.log("Assigned as if connOrder was 2");
     return indGameState;
-  } else if (connectionOrder == 3){
+  } else if (connectionOrder == 3) {
     let indGameState: GameState = {
-      players: [masterGameState.players[3], masterGameState.players[0], masterGameState.players[1], masterGameState.players[2]]
+      players: [
+        masterGameState.players[3],
+        masterGameState.players[0],
+        masterGameState.players[1],
+        masterGameState.players[2],
+      ],
     };
     console.log("Assigned as if connOrder was 3");
     return indGameState;
@@ -99,7 +114,7 @@ export default function App() {
   const [gameState, setGameState] = useState<GameState>(curr_game);
   const [connectionNumber, setConnectionNumber] = useState(null);
 
-  if (socketRef.current == null){
+  if (socketRef.current == null) {
     const socket2 = io("http://localhost:5001");
     socketRef.current = socket2;
   }
@@ -110,15 +125,15 @@ export default function App() {
   });
 
   socketRef.current.once("new user accepted", (connectionNum) => {
-    if (connectionNumber == null){
+    if (connectionNumber == null) {
       setConnectionNumber(connectionNum);
       setGameState(masterToIndividualGameState(gameState, connectionNum));
     }
   });
 
   socketRef.current.on("gameState updated", (newGameState) => {
-      setGameState(masterToIndividualGameState(newGameState, connectionNumber));
-  })
+    setGameState(masterToIndividualGameState(newGameState, connectionNumber));
+  });
 
   //now to pass down the socket and state to both boardscreen and gamescreen; known as props
   const gameSharedProps = {

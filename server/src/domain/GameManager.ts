@@ -19,7 +19,16 @@ export class GameManager {
   private currentClueGiverIndex: number = 0;
   private roundsHosted: Map<string, number>; //string is userId
 
-  constructor(players: Player[]) {
+  //split into this constructor and setUpGame function
+  constructor() {
+    this.players = [];
+    this.board = new Board();
+    this.roundsHosted = new Map();
+    this.gameState = GameState.SETUP;
+  }
+
+  //added so we can create game object in gamestore withought knowing players. Just moved func from constructor.
+  public setUpGame(players: Player[]): void {
     if (players.length < 3 || players.length > 10) {
       console.warn("The game is designed for 3 to 10 players.");
     }

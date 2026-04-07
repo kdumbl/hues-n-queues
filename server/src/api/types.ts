@@ -11,13 +11,13 @@ export interface Player {
   isClueGiver: boolean;
   yourTurn: boolean;
   score: number;
-  clue: string;
+  clue: string | undefined;
   piece: {
-    x: number,
-    y: number,
+    x: number;
+    y: number;
   } | null;
   secondPiece: {
-    x: number,
-    y: number,
+    x: number;
+    y: number;
   } | null;
 }
