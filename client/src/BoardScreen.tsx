@@ -9,7 +9,6 @@ import backButton from "./assets/back_button.png";
 import submitButton from "./assets/submit_button.png";
 import submitButtonGray from "./assets/submit_button_gray.png";
 import transPiece from "./assets/pieces/transparent_piece.png";
-import submitted from "./assets/submitted.png";
 import { rcs } from "./ColorPalettes";
 import { Socket } from "socket.io-client";
 import type { GameState } from "./types";
@@ -20,6 +19,32 @@ interface Props {
   gameState: GameState | undefined;
   switchView: (v:"board" | "game") => void;
   connectionNumber: number | null;
+}
+
+function masterToIndividualGameState(masterGameState, connectionOrder){
+  console.log(connectionOrder);
+  if (connectionOrder == 0){
+    console.log("Assigned as if connOrder was 0");
+    return masterGameState;
+  } else if (connectionOrder == 1){
+    let indGameState: GameState = {
+      players: [masterGameState.players[1], masterGameState.players[2], masterGameState.players[3], masterGameState.players[0]]
+    };
+    console.log("Assigned as if connOrder was 1");
+    return indGameState;
+  } else if (connectionOrder == 2){
+    let indGameState: GameState = {
+      players: [masterGameState.players[2], masterGameState.players[3], masterGameState.players[0], masterGameState.players[1]]
+    };
+    console.log("Assigned as if connOrder was 2");
+    return indGameState;
+  } else if (connectionOrder == 3){
+    let indGameState: GameState = {
+      players: [masterGameState.players[3], masterGameState.players[0], masterGameState.players[1], masterGameState.players[2]]
+    };
+    console.log("Assigned as if connOrder was 3");
+    return indGameState;
+  }
 }
 
 //Creates two rows of grayscale rectangles representing score in the top left
@@ -66,6 +91,8 @@ function colorStringToPiece(colorString){
 //Generates layout of pieces from gameState
 function createImages(gameState){
   let images = [];
+  console.log(gameState.players[0].yourTurn);
+  console.log(!gameState.players[0].isClueGiver);
   if (gameState.players[0].yourTurn && !gameState.players[0].isClueGiver){
     images = Array(480).fill(null);
   } else {
@@ -79,6 +106,7 @@ function createImages(gameState){
       images[gameState.players[i].secondPiece.y * 30 + gameState.players[i].secondPiece.x] = colorStringToPiece(gameState.players[i].pieceColor);
     }
   }
+  console.log("Just recreated images btw");
   return images;
 }
 
@@ -154,25 +182,49 @@ function HCRow({rowColors, letter, rowNum, images, addPiece}){
 export default function BoardScreen({socket, gameState, switchView, connectionNumber}: Props) {
 
   const items = [];
-  const [submittedVis, setSubmittedVis] = useState(false);
   const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"];
   const [lastPlaced, setLastPlaced] = useState(null);
+  const [lastPlacedSecondRound, setLastPlacedSecondRound] = useState(null);
   const [images, setImages] = useState(createImages(gameState));
+  const [lastClueGiver, setLastClueGiver] = useState(0);
 
   //Called when a game space is clicked
   function addPiece(i) {
-    let tempImages = images.slice();
-    if (lastPlaced != null){
-      tempImages[lastPlaced] = null;
+    if (gameState.players[0].yourTurn){
+      let tempImages = images.slice();
+      if (gameState.players[0].secondClue == ""){
+        if (lastPlaced != null){
+          tempImages[lastPlaced] = null;
+        }
+        setLastPlaced(i);
+      } else {
+        if (lastPlacedSecondRound != null){
+          tempImages[lastPlacedSecondRound] = null;
+        }
+        setLastPlacedSecondRound(i);
+      }
+      tempImages[i] = colorStringToPiece(gameState?.players[0].pieceColor);
+      setImages(tempImages);
     }
-    setLastPlaced(i);
-    tempImages[i] = colorStringToPiece(gameState?.players[0].pieceColor);
-    setImages(tempImages);
   }
 
+  socket?.on("gameState updated", (masterGameState) => {
+    setImages(createImages(masterToIndividualGameState(masterGameState, connectionNumber)));
+    if (gameState.players[lastClueGiver].isClueGiver == false){
+      for (let i = 0; i < 4; i++){
+        if (gameState.players[i].isClueGiver == true){
+          setLastClueGiver(i);
+        }
+      }
+    }
+  })
+
   function submit(){
-    setSubmittedVis(true);
-    socket?.emit("guess_submitted", lastPlaced, connectionNumber);
+    if (gameState.players[0].secondClue == ""){
+      socket?.emit("guess_submitted", lastPlaced, connectionNumber);
+    } else {
+      socket?.emit("guess_submitted", lastPlacedSecondRound, connectionNumber);
+    }
   }
 
   //add the switch view functionality
@@ -216,7 +268,7 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
           <TopRow lh="2.5vh" />
         </div>
       </div>
-      {gameState?.players[0].yourTurn && !gameState.players[0].isClueGiver && (
+      {gameState?.players[0].yourTurn && !gameState.players[0].isClueGiver && lastPlaced != null && (
         <>
           <div className="submit-button">
             <button style={{width: '15vw', height: '6.4vh', 'zIndex': '201', 'left': '40.2vw', top: '92vh', position: 'absolute', 'backgroundColor': 'transparent'}} onClick = {submit} />
@@ -224,14 +276,14 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
           </div>
         </>
       )}
-      {submittedVis && (
-          <img src={submitted} style={{width: '15vw', height: '6.4vh', zIndex: '203', left: '40.2vw', top: '92vh', position: 'absolute'}}/>
-      )}
       {!gameState?.players[0].yourTurn && (
           <img src={submitButtonGray} style={{width: '15vw', height: '6.4vh', zIndex: '202', left: '40.2vw', top: '92vh', position: 'absolute'}} />
       )}
       {gameState?.players[0].clue != "" && (
         <div className="hc-lastClue" style={{position: 'absolute', right: '8vw', top: '40vh'}}>Your clue is: <br /> {gameState?.players[0].clue} </div>
+      )}
+      {gameState?.players[0].secondClue != "" && (
+        <div className="hc-lastClue" style={{position: 'absolute', right: '2.9vw', top: '55vh'}}>Your second clue is: <br /> {gameState?.players[0].secondClue} </div>
       )}
     </>
   );

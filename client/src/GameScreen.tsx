@@ -6,6 +6,7 @@ import type { GameState } from "./types";
 import warpedBoard from "./assets/warped_board.png";
 import LeaderboardSort from './LeaderboardSort';
 import { rcs } from './ColorPalettes';
+import validateClue from './ValidateClue';
 
 
 type Panel = "settings" | "leaderboard" | null;
@@ -65,6 +66,7 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
   const [cardDrawn, setCardDrawn] = useState(false);
   const [announcement, setAnnouncement] = useState<string | null>(null);
   const [possibleColors, setPossibleColors] = useState([["", ""], ["", ""], ["", ""], ["", ""]]);
+  const [clueErrorMessage, setClueErrorMessage] = useState<string | boolean>("");
 
   const toggle = (panel: Panel) =>
     setActivePanel(prev => (prev === panel ? null : panel));
@@ -145,25 +147,62 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
       onClick = {viewChanger}
       />
 
+      {gameState.players[0].secondClue != "" && gameState.players[0].yourTurn && gameState.players[0].isClueGiver && (
+        <div className="hc-cardBackground">
+        <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
+          <button
+            onClick={() => {
+              setAnnouncement(null);
+              socket?.emit("score with 6", connectionNumber);
+            }}
+            className="hc-cardOption"
+            style = {{fontFamily: 'Courier New, monospace'}}
+          >End round here</button>
+        </div>
+      )}
+
+      {gameState.players[0].clue != "" && gameState.players[0].secondClue == "" && gameState.players[0].yourTurn && gameState.players[0].isClueGiver && (
+        <div className="hc-cardBackground">
+        <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
+          <input
+            type="text"
+            placeholder="Enter yourrr cue!"
+            value={cueText}
+            onChange={e => setCueText(e.target.value)}
+            maxLength={16}
+            minLength={1}
+            className="hc-cardInput"
+            style={{fontFamily: 'Courier New, monospace'}}
+          />
+          <button
+            onClick={() => {
+              if (validateClue(cueText, true)[0]){
+                showAnnouncement(`${gameState?.players[0].name}'s second hint is ${cueText}`);
+                socket?.emit("second clue submitted", cueText, connectionNumber);
+                setCueText("");
+                setClueErrorMessage("");
+              } else {
+                setClueErrorMessage(validateClue(cueText, true)[1]);
+              }
+            }}
+            className="hc-cardOption"
+            style = {{fontFamily: 'Courier New, monospace'}}
+          >Give another clue</button>
+          {clueErrorMessage != "" && (
+            <div style={{fontFamily: 'Courier New, monospace', fontSize: '11px', letterSpacing: '1.5px', color: '#ccc'}}>{clueErrorMessage}</div>
+          )}
+          <button
+            onClick={() => {
+              socket?.emit("score with 3", connectionNumber);
+            }}
+            className="hc-cardOption"
+            style = {{fontFamily: 'Courier New, monospace'}}
+          >End round here</button>
+        </div>
+      )}
+
       {cardDrawn && (
-        <div style={{
-          position: 'absolute',
-          top: '20%',
-          left: '41%',
-          width: '260px',
-          height: '420px',
-          background: 'linear-gradient(155deg, #1c1c1c, #2e2e2e)',
-          border: '2px solid #3e3e3e',
-          borderRadius: '16px',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.95)',
-          zIndex: 300,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '16px',
-          animation: 'panelIn 0.25s ease'
-        }}>
+        <div className="hc-cardBackground">
           <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '0 20px', width: '100%', boxSizing: 'border-box' as const}}>
             {chooseCardColors().map(color => (
@@ -191,41 +230,30 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
             onChange={e => setCueText(e.target.value)}
             maxLength={16}
             minLength={1}
-            style={{
-              width: 'calc(100% - 40px)',
-              padding: '8px 12px',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid #444',
-              borderRadius: '6px',
-              color: '#fff',
-              fontFamily: 'Courier New, monospace',
-              fontSize: '11px',
-              outline: 'none',
-              letterSpacing: '0.5px'
-            }}
+            className="hc-cardInput"
+            style={{fontFamily: 'Courier New, monospace'}}
           />
           <button
             onClick={() => {
-              showAnnouncement(`Jackson's hint is ${cueText}`);
-              setCardDrawn(false);
-              setPossibleColors([["", ""], ["", ""], ["", ""], ["", ""]]);
-              socket?.emit("clue_submitted", selectedColorIndex, cueText, connectionNumber);
-              setSelectedColor("");
-              setSelectedColorIndex("");
-              setCueText("");
+              if (validateClue(cueText, false)[0]){
+                showAnnouncement(`${gameState?.players[0].name}'s hint is ${cueText}`);
+                setCardDrawn(false);
+                setPossibleColors([["", ""], ["", ""], ["", ""], ["", ""]]);
+                socket?.emit("clue submitted", selectedColorIndex, cueText, connectionNumber);
+                setSelectedColor("");
+                setSelectedColorIndex("");
+                setCueText("");
+                setClueErrorMessage("");
+              } else {
+                setClueErrorMessage(validateClue(cueText, false)[1]);
+              }
             }}
-            style={{
-              padding: '8px 24px',
-              background: 'rgba(255,216,74,0.12)',
-              border: '1px solid rgba(255,216,74,0.45)',
-              borderRadius: '6px',
-              color: '#ffd84a',
-              fontFamily: 'Courier New, monospace',
-              fontSize: '11px',
-              letterSpacing: '1.5px',
-              cursor: 'pointer',
-            }}
+            className="hc-cardOption"
+            style = {{fontFamily: 'Courier New, monospace'}}
           >Submit Cue</button>
+          {clueErrorMessage != "" && (
+            <div style={{fontFamily: 'Courier New, monospace', fontSize: '11px', letterSpacing: '1.5px', color: '#ccc'}}>{clueErrorMessage}</div>
+          )}
         </div>
       )}
 

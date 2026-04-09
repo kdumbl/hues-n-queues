@@ -12,6 +12,7 @@ export interface Player {
   yourTurn: boolean;
   score: number;
   clue: string;
+  secondClue: string;
   piece: {
     x: number,
     y: number,

@@ -1,19 +1,20 @@
-export class ScoringCalc {
-  
+
   /**
    * Calculates the points a player earns for a specific piece.
    * @param target The grid coordinate of the target color (e.g., "H-14")
    * @param guess The grid coordinate where the player placed their piece (e.g., "I-15")
    * @returns The integer score (3, 2, 1, or 0)
    */
-  public static calculate(target: string, guess: string): number {
+  export default function calculate(target: string, guess: string): number {
     const [targetRowStr, targetColStr] = target.split("-");
-    const targetRow = targetRowStr.charCodeAt(0); // Convert letter to ASCII number
+    //const targetRow = targetRowStr.charCodeAt(0); // Convert letter to ASCII number
+    const targetRow = parseInt(targetRowStr, 10)
     const targetCol = parseInt(targetColStr, 10);
 
     // Parse the guess coordinate
     const [guessRowStr, guessColStr] = guess.split("-");
-    const guessRow = guessRowStr.charCodeAt(0);
+    //const guessRow = guessRowStr.charCodeAt(0);
+    const guessRow = parseInt(guessRowStr, 10);
     const guessCol = parseInt(guessColStr, 10);
 
     // Calculate the absolute distance in rows and columns
@@ -38,4 +39,3 @@ export class ScoringCalc {
       return 0;
     }
   }
-}
