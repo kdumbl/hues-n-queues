@@ -9,7 +9,6 @@ import "./GameScreen.css";
 import "./App.css";
 
 const gavin: Player = {
-<<<<<<< Updated upstream
   name: "TheGooseMafia",
   socketId: "45",
   pieceColor: "RED",
@@ -18,6 +17,7 @@ const gavin: Player = {
   yourTurn: true,
   score: 50,
   clue: "",
+  secondClue: "",
   piece: null,
   secondPiece: null,
 };
@@ -31,6 +31,7 @@ const ruby: Player = {
   yourTurn: false,
   score: 27,
   clue: "",
+  secondClue: "",
   piece: null,
   secondPiece: null,
 };
@@ -44,6 +45,7 @@ const jackson: Player = {
   yourTurn: false,
   score: 9,
   clue: "",
+  secondClue: "",
   piece: null,
   secondPiece: null,
 };
@@ -57,65 +59,10 @@ const kurt: Player = {
   yourTurn: false,
   score: 67,
   clue: "",
+  secondClue: "",
   piece: null,
   secondPiece: null,
 };
-=======
-    name: "TheGooseMafia",
-    socketId: "45",
-    pieceColor: "RED",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: true,
-    yourTurn: true,
-    score: 50,
-    clue: "",
-    secondClue: "",
-    piece: null,
-    secondPiece: null,
-  };
-
-const ruby: Player = {
-    name: "GutsMan",
-    socketId: "46",
-    pieceColor: "YELLOW",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: false,
-    score: 27,
-    clue: "",
-    secondClue: "",
-    piece: null,
-    secondPiece: null,
-  };
-
-const jackson: Player = {
-    name: "dather9",
-    socketId: "47",
-    pieceColor: "GREEN",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: false,
-    score: 9,
-    clue: "",
-    secondClue: "",
-    piece: null,
-    secondPiece: null,
-  };
-
-const kurt: Player = {
-    name: "DumblDum",
-    socketId: "48",
-    pieceColor: "BLUE",
-    profileURL: "rgebrgbergbj",
-    isClueGiver: false,
-    yourTurn: false,
-    score: 67,
-    clue: "",
-    secondClue: "",
-    piece: null,
-    secondPiece: null,
-  };
->>>>>>> Stashed changes
 
 const curr_game: GameState = {
   players: [gavin, ruby, jackson, kurt],

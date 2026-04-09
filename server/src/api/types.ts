@@ -11,18 +11,14 @@ export interface Player {
   isClueGiver: boolean;
   yourTurn: boolean;
   score: number;
-<<<<<<< Updated upstream
-  clue: string | undefined;
-=======
   clue: string;
   secondClue: string;
->>>>>>> Stashed changes
   piece: {
     x: number;
     y: number;
   } | null;
   secondPiece: {
-    x: number;
-    y: number;
+    x: number,
+    y: number,
   } | null;
 }

@@ -221,9 +221,9 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
 
   function submit(){
     if (gameState.players[0].secondClue == ""){
-      socket?.emit("guess_submitted", lastPlaced, connectionNumber);
+      socket?.emit("guess submitted", lastPlaced, connectionNumber);
     } else {
-      socket?.emit("guess_submitted", lastPlacedSecondRound, connectionNumber);
+      socket?.emit("guess submitted", lastPlacedSecondRound, connectionNumber);
     }
   }
 

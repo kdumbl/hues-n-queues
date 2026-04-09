@@ -193,6 +193,7 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
           )}
           <button
             onClick={() => {
+              setAnnouncement(null);
               socket?.emit("score with 3", connectionNumber);
             }}
             className="hc-cardOption"
