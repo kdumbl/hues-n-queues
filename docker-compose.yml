@@ -8,7 +8,8 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - MONGO_URI=mongodb://mongo:27017/mydb
+      - MONGO_URI_PROD=mongodb://mongo:27017/huesncues
+      - JWT_SECRET=some-long-random-string-change-this
     depends_on:
       - mongo
 

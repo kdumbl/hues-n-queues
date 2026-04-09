@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import BoardScreen from "./BoardScreen.tsx";
 import GameScreen from "./GameScreen.tsx";
+import Login from "./Login.tsx";
 import type { Player, GameState, View } from "./types.ts";
 import { io, Socket } from "socket.io-client";
 
 import "./BoardScreen.css";
 import "./GameScreen.css";
 import "./App.css";
+import "./Login.css";
 
 const gavin: Player = {
   name: "TheGooseMafia",
@@ -110,11 +112,15 @@ function masterToIndividualGameState(masterGameState, connectionOrder) {
 }
 
 export default function App() {
-  //global react variables
   const socketRef = useRef<Socket | null>(null);
-  const [view, setView] = useState<View>("game");
+  const [view, setView] = useState<View>("login");
   const [gameState, setGameState] = useState<GameState>(curr_game);
   const [connectionNumber, setConnectionNumber] = useState(null);
+  const [currentUser, setCurrentUser] = useState<{
+    token: string;
+    userId: string;
+    username: string;
+  } | null>(null);
 
   if (socketRef.current == null) {
     const socket2 = io("http://localhost:5001");
@@ -137,7 +143,6 @@ export default function App() {
     setGameState(masterToIndividualGameState(newGameState, connectionNumber));
   });
 
-  //now to pass down the socket and state to both boardscreen and gamescreen; known as props
   const gameSharedProps = {
     socket: socketRef.current,
     gameState,
@@ -151,10 +156,16 @@ export default function App() {
     connectionNumber,
   };
 
-  //html to be returned see how the props are passed down
   return (
     <div>
-      {view === "game" ? (
+      {view === "login" ? (
+        <Login
+          onSuccess={(token, userId, username) => {
+            setCurrentUser({ token, userId, username });
+            setView("game");
+          }}
+        />
+      ) : view === "game" ? (
         <GameScreen {...gameSharedProps} />
       ) : (
         <BoardScreen {...boardSharedProps} />

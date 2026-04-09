@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 import { initSockets } from "./api/sockets/index";
 import connectDB from "./persistence/db";
+import authRoutes from "./api/routes/authRoutes";
 
 dotenv.config();
 
@@ -19,12 +20,15 @@ const io = new Server(httpServer, {
 
 //middleware stuff
 app.use(express.json());
+app.use(cors());
 //app.use(); //eventaully require authentication here
 
 //http routing
 app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "ok" });
 });
+
+app.use("/auth", authRoutes);
 
 initSockets(io); //socket connection given to socket layer
 
