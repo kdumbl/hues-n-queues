@@ -1,74 +1,30 @@
-import { ColorCard } from "./ColorCard";
-import { ColorOption } from "./ColorOption";
 import { PlayerDoc } from "../persistence/docs";
+
 export class Player {
   public userId: string;
   public playerName: string;
   public socketId: string;
   public score: number = 0;
   public isClueGiver: boolean = false;
-  public _piecesRemaining: number = 2;
+  
+  // UI-specific attributes required by GameState DTO
+  public pieceColor: string;
+  public profileURL: string = "";
+  public yourTurn: boolean = false;
 
-  constructor(userId: string, name: string, socketId: string) {
+  constructor(userId: string, playerName: string, socketId: string, pieceColor: string) {
     this.userId = userId;
-    this.playerName = name;
+    this.playerName = playerName;
     this.socketId = socketId;
+    this.pieceColor = pieceColor;
   }
 
-  // Getter for piecesRemaining
-  public get piecesRemaining(): number {
-    return this._piecesRemaining;
-  }
-
-  /**
-   * Called when a player provides a text clue.
-   */
-  public giveClue(clue: string): string {
-    console.log(`${this.playerName} gives clue: ${clue}`);
-    return clue;
-  }
-
-  /**
-   * Logic for placing a guess piece on the board.
-   */
-  public placePiece(): void {
-    if (this._piecesRemaining > 0) {
-      this._piecesRemaining--;
-      console.log(
-        `${this.playerName} placed a piece. Remaining: ${this._piecesRemaining}`,
-      );
-    } else {
-      console.warn(`${this.playerName} has no pieces left!`);
-    }
-  }
-
-  /**
-   * Used by the ClueGiver to pick one of the 4 options from a ColorCard.
-   */
-  public pickColor(card: ColorCard, index: number): ColorOption | undefined {
-    if (!this.isClueGiver) {
-      console.error("Only the Clue Giver can pick the target color.");
-      return undefined;
-    }
-    return card.getOption(index);
-  }
-
-  /**
-   * Skips or finishes a turn.
-   */
-  public passTurn(): void {
-    console.log(`${this.playerName} passed their turn.`);
-  }
-
-  /**
-   * Helper to reset pieces at the start of a new round.
-   */
   public resetPieces(): void {
-    this._piecesRemaining = 2;
+    // Logic for clearing local state if necessary
   }
 
   /**
-   * Converts the Player instance into a plain object suitable for MongoDB storage.
+   * Converts domain player to a database document.
    */
   public toDocument(): PlayerDoc {
     return {
@@ -77,15 +33,19 @@ export class Player {
       socketId: this.socketId,
       score: this.score,
       isClueGiver: this.isClueGiver,
-      _piecesRemaining: this._piecesRemaining,
+      _piecesRemaining: 2, // This is a transient field for game logic, not stored in DB but required by the interface
     };
   }
 
-  public static fromDocument(doc: PlayerDoc): Player {
-    const player = new Player(doc.userId, doc.playerName, doc.socketId);
+  /**
+   * Rehydrates a Player from a document.
+   * Note: Since pieceColor isn't in the DB PlayerDoc, we provide a default 
+   * or allow the Mapper to assign it during game load.
+   */
+  public static fromDocument(doc: PlayerDoc, pieceColor: string = "RED"): Player {
+    const player = new Player(doc.userId, doc.playerName, doc.socketId, pieceColor);
     player.score = doc.score;
     player.isClueGiver = doc.isClueGiver;
-    player._piecesRemaining = doc._piecesRemaining;
     return player;
   }
 }
