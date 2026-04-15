@@ -90,29 +90,35 @@ export class GameManager {
     return isValid;
   }
 
-  public submitGuess(socketId: string, positionIndex: number) {
+public submitGuess(socketId: string, positionIndex: number) {
     if (!this.currentTurnManager) throw new Error("No active round");
     const player = this.getPlayerBySocketId(socketId);
     
-    // Safety check: ensure it is actually this player's turn
     if (!player || !player.yourTurn || player.isClueGiver) return;
 
     const x = positionIndex % 30;
     const y = Math.floor(positionIndex / 30);
-    const coordString = `${y}-${x}`; // Using numeric string format
+    const coordString = `${y}-${x}`; 
 
     const success = this.board.placePiece(x, y, player.userId);
     if (success) {
       this.currentTurnManager.receiveGuess(player, coordString);
       
-      // Check if this player has used both pieces
+      const expectedGuesses = this.currentTurnManager.currentPhase === "GUESS_ONE" ? 1 : 2;
       const playerGuesses = this.currentTurnManager.roundGuesses.get(player);
-      if (playerGuesses && playerGuesses.length >= 2) {
+      
+      if (playerGuesses && playerGuesses.length >= expectedGuesses) {
         player.yourTurn = false; 
       }
 
       if (this.currentTurnManager.allPlayersGuessed(this.players.length)) {
-        this.currentTurnManager.resolveRound();
+        // Capture the returned scores!
+        const scores = this.currentTurnManager.resolveRound();
+        
+        if (scores) {
+          this.updateTotalScores(scores); // Actually apply the points to the players!
+        }
+        
         // Return turn to Clue Giver for Clue 2 or final scoring
         const giver = this.players.find(p => p.isClueGiver);
         if (giver) giver.yourTurn = true;
@@ -120,13 +126,16 @@ export class GameManager {
     }
   }
 
-  public endRoundAndScore() {
+public endRoundAndScore() {
     if (!this.currentTurnManager) return;
-    const scores = this.currentTurnManager.resolveRound();
+    
+    // Force scoring in case the button was clicked before everyone placed their final guess
+    const scores = this.currentTurnManager.forceScoring();
     if (scores) {
       this.updateTotalScores(scores);
-      this.startNewRound();
     }
+    
+    this.startNewRound();
   }
 
   public updateTotalScores(roundScores: Map<Player, number>): void {

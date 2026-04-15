@@ -14,16 +14,18 @@ export function registerGameHandlers(io: Server, socket: Socket) {
     }
   });
 
-  socket.on("clue submitted", async (selectedColorIndex: number, cueText: string) => {
+socket.on("clue submitted", async (colorIndexRaw: string | number, cueText: string, connectionNum?: number) => {
     try {
-      const updatedState = await GameController.handleClue(gameId, socket.id, cueText, selectedColorIndex);
+      // Ensure the index is a number before passing it to the controller
+      const colorIndex = typeof colorIndexRaw === "string" ? parseInt(colorIndexRaw, 10) : colorIndexRaw;
+      const updatedState = await GameController.handleClue(gameId, socket.id, cueText, colorIndex);
       io.emit("gameState updated", updatedState);
     } catch (err) {
       socket.emit("error", "Failed to submit clue");
     }
   });
 
-  socket.on("second clue submitted", async (cueText: string) => {
+socket.on("second clue submitted", async (cueText: string, connectionNum?: number) => {
     try {
       const updatedState = await GameController.handleClue(gameId, socket.id, cueText);
       io.emit("gameState updated", updatedState);

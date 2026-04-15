@@ -28,7 +28,26 @@ export class TurnManager {
   }
 
   public allPlayersGuessed(totalPlayers: number): boolean {
-    return this.roundGuesses.size === totalPlayers - 1;
+    // If not everyone has guessed at least once, return false
+    if (this.roundGuesses.size !== totalPlayers - 1) return false;
+    
+    // Determine how many guesses each player SHOULD have based on the phase
+    const expectedGuesses = this.currentPhase === TurnPhase.GUESS_ONE ? 1 : 2;
+    
+    // Check if every guesser has reached the expected amount
+    for (const guesses of this.roundGuesses.values()) {
+      if (guesses.length < expectedGuesses) return false;
+    }
+    return true;
+  }
+
+public forceScoring(): Map<Player, number> | null {
+    // If we already hit the scoring phase naturally, prevent double counting
+    if (this.currentPhase === TurnPhase.SCORING) {
+      return null; 
+    }
+    this.currentPhase = TurnPhase.SCORING;
+    return this.calculateScores();
   }
 
   public getTargetIndex(): number | undefined {
@@ -40,8 +59,16 @@ export class TurnManager {
     return y * 30 + x;
   }
 
-  public setTarget(optionIndex: number): void {
-    this.targetOption = this.activeCard.getOption(optionIndex);
+public setTarget(boardIndex: number): void {
+    // The frontend sends an absolute board index (0-479) instead of a card option index (0-3).
+    // We calculate the Y and X coordinates directly to match the format calculateScores expects.
+    const x = boardIndex % 30;
+    const y = Math.floor(boardIndex / 30);
+    
+    // We mock a ColorOption object so calculateScores can read the gridCoordinates
+    this.targetOption = {
+      gridCoordinates: `${y}-${x}`
+    } as any; 
   }
 
   public validateClue(cue: string): boolean {
