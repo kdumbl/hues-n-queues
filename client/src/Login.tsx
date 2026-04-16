@@ -8,7 +8,6 @@ interface LoginProps {
 }
 
 export default function Login({ onSuccess }: LoginProps) {
-  console.log('onSuccess prop:', onSuccess);
   const [activeTab, setActiveTab] = useState<Tab>('login');
 
   const [loginEmail, setLoginEmail] = useState('');
@@ -23,6 +22,7 @@ export default function Login({ onSuccess }: LoginProps) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    console.log('handleLogin called');
     setError(null);
     if (!loginEmail || !loginPassword) {
       setError('Please fill in all fields.');
@@ -36,8 +36,9 @@ export default function Login({ onSuccess }: LoginProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
-
+      console.log('res status:', res.status); // add this
       const data = await res.json();
+      console.log('data:', data); // add this
 
       if (!res.ok) {
         setError(data.error || 'Login failed.');
@@ -45,8 +46,10 @@ export default function Login({ onSuccess }: LoginProps) {
       }
 
       localStorage.setItem('token', data.token);
+      console.log('about to call onSuccess', onSuccess);
       onSuccess?.(data.token, data.userId, data.username);
     } catch (err) {
+      console.log('error:', err); // add this
       setError('Could not reach the server. Try again.');
     } finally {
       setLoading(false);
@@ -77,6 +80,7 @@ export default function Login({ onSuccess }: LoginProps) {
       });
 
       const data = await res.json();
+      console.log(data);
 
       if (!res.ok) {
         setError(data.error || 'Registration failed.');
@@ -84,6 +88,7 @@ export default function Login({ onSuccess }: LoginProps) {
       }
 
       localStorage.setItem('token', data.token);
+      console.log('about to call onSuccess', onSuccess);
       onSuccess?.(data.token, data.userId, data.username);
     } catch (err) {
       setError('Could not reach the server. Try again.');
@@ -99,7 +104,6 @@ export default function Login({ onSuccess }: LoginProps) {
       <div className="ln-floorLip" />
       <div className="ln-spotlight" />
 
-      {/* Lamp */}
       <div className="ln-lampCord" />
       <div className="ln-lampShade" />
       <div className="ln-lampRim" />
@@ -126,7 +130,6 @@ export default function Login({ onSuccess }: LoginProps) {
         </div>
 
         <div className="ln-body">
-
           {activeTab === 'login' && (
             <div className="ln-form" key="login">
               <div className="ln-field">
@@ -213,7 +216,6 @@ export default function Login({ onSuccess }: LoginProps) {
               </button>
             </div>
           )}
-
         </div>
       </div>
     </div>

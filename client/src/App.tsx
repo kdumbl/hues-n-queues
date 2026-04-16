@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import BoardScreen from "./BoardScreen.tsx";
 import GameScreen from "./GameScreen.tsx";
 import Login from "./Login.tsx";
-import type { Player, GameState, View } from "./types.ts";
+import type { Player, GameState, View } from "./types.ts";do
 import { io, Socket } from "socket.io-client";
 
 import "./BoardScreen.css";
@@ -71,12 +71,10 @@ const curr_game: GameState = {
 };
 
 function masterToIndividualGameState(masterGameState, connectionOrder) {
-  console.log(connectionOrder);
   if (connectionOrder == 0) {
-    console.log("Assigned as if connOrder was 0");
     return masterGameState;
   } else if (connectionOrder == 1) {
-    let indGameState: GameState = {
+    return {
       players: [
         masterGameState.players[1],
         masterGameState.players[2],
@@ -84,10 +82,8 @@ function masterToIndividualGameState(masterGameState, connectionOrder) {
         masterGameState.players[0],
       ],
     };
-    console.log("Assigned as if connOrder was 1");
-    return indGameState;
   } else if (connectionOrder == 2) {
-    let indGameState: GameState = {
+    return {
       players: [
         masterGameState.players[2],
         masterGameState.players[3],
@@ -95,10 +91,8 @@ function masterToIndividualGameState(masterGameState, connectionOrder) {
         masterGameState.players[1],
       ],
     };
-    console.log("Assigned as if connOrder was 2");
-    return indGameState;
   } else if (connectionOrder == 3) {
-    let indGameState: GameState = {
+    return {
       players: [
         masterGameState.players[3],
         masterGameState.players[0],
@@ -106,8 +100,6 @@ function masterToIndividualGameState(masterGameState, connectionOrder) {
         masterGameState.players[2],
       ],
     };
-    console.log("Assigned as if connOrder was 3");
-    return indGameState;
   }
 }
 
@@ -115,33 +107,36 @@ export default function App() {
   const socketRef = useRef<Socket | null>(null);
   const [view, setView] = useState<View>("login");
   const [gameState, setGameState] = useState<GameState>(curr_game);
-  const [connectionNumber, setConnectionNumber] = useState(null);
+  const [connectionNumber, setConnectionNumber] = useState<number | null>(null);
   const [currentUser, setCurrentUser] = useState<{
     token: string;
     userId: string;
     username: string;
   } | null>(null);
 
-  if (socketRef.current == null) {
+  useEffect(() => {
     const socket2 = io("http://localhost:5001");
     socketRef.current = socket2;
-  }
 
-  socketRef.current.once("connect", () => {
-    console.log(`Client: Connected ${socketRef.current.id}`);
-    socketRef.current.emit("new user");
-  });
+    socket2.on("connect", () => {
+      console.log(`Client: Connected ${socket2.id}`);
+      socket2.emit("new user");
+    });
 
-  socketRef.current.once("new user accepted", (connectionNum) => {
-    if (connectionNumber == null) {
+    socket2.on("new user accepted", (connectionNum) => {
       setConnectionNumber(connectionNum);
-      setGameState(masterToIndividualGameState(gameState, connectionNum));
-    }
-  });
+      setGameState(prev => masterToIndividualGameState(prev, connectionNum));
+    });
 
-  socketRef.current.on("gameState updated", (newGameState) => {
-    setGameState(masterToIndividualGameState(newGameState, connectionNumber));
-  });
+    socket2.on("gameState updated", (newGameState) => {
+      setConnectionNumber(prev => {
+        setGameState(masterToIndividualGameState(newGameState, prev));
+        return prev;
+      });
+    });
+
+    return () => { socket2.disconnect(); };
+  }, []);
 
   const gameSharedProps = {
     socket: socketRef.current,
@@ -161,6 +156,7 @@ export default function App() {
       {view === "login" ? (
         <Login
           onSuccess={(token, userId, username) => {
+            console.log('onSuccess called', token, userId, username);
             setCurrentUser({ token, userId, username });
             setView("game");
           }}

@@ -13,14 +13,13 @@ router.post("/register", async (req: Request, res: Response) => {
   try {
     const user = await AuthService.register(username, email, password);
  
-    // Create a JWT token containing the user's id and username
     const token = jwt.sign(
-      { userId: user.id, username: user.username },
+      { userId: user._id, username: user.username },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
  
-    res.status(201).json({ token, userId: user.id, username: user.username });
+    res.status(201).json({ token, userId: user._id, username: user.username });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
@@ -34,12 +33,12 @@ router.post("/login", async (req: Request, res: Response) => {
     const user = await AuthService.login(email, password);
  
     const token = jwt.sign(
-      { userId: user.id, username: user.username },
+      { userId: user._id, username: user.username },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
  
-    res.status(200).json({ token, userId: user.id, username: user.username });
+    res.status(200).json({ token, userId: user._id, username: user.username });
   } catch (err: any) {
     res.status(401).json({ error: err.message });
   }
