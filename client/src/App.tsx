@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import BoardScreen from "./BoardScreen.tsx";
 import GameScreen from "./GameScreen.tsx";
+import Login from "./Login.tsx";
 import type { Player, GameState, View } from "./types.ts";
 import { io, Socket } from "socket.io-client";
 
 import "./BoardScreen.css";
 import "./GameScreen.css";
 import "./App.css";
+import "./Login.css";
 
 // Keeps the shifting logic intact
 function masterToIndividualGameState(masterGameState: GameState, connectionOrder: number): GameState {
@@ -79,8 +81,15 @@ export default function App() {
 
   return (
     <div>
-      {view === "game" ? (
-        <GameScreen {...sharedProps} />
+      {view === "login" ? (
+        <Login
+        onSuccess={(token, userId, username) => {
+       setCurrentUser({ token, userId, username });
+       setView("game");
+        }}
+        />
+      ) : view === "game" ? (
+        <GameScreen {...gameSharedProps} />
       ) : (
         <BoardScreen {...sharedProps} />
       )}

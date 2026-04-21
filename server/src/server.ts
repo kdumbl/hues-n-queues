@@ -1,3 +1,11 @@
+import dotenv from "dotenv";
+import http from "http";
+import express, { Application, Request, Response } from "express";
+import { Server } from "socket.io";
+import cors from "cors";
+import { initSockets } from "./api/sockets/index";
+import connectDB from "./persistence/db";
+import authRoutes from "./api/routes/authRoutes";
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -8,6 +16,7 @@ import connectDB from './persistence/db';
 const app = express();
 app.use(cors());
 app.use(express.json());
+//app.use(); //eventaully require authentication here
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -17,13 +26,15 @@ const io = new Server(httpServer, {
   }
 });
 
-// Connect to Database
-connectDB();
+app.use("/auth", authRoutes);
 
+//socket connection given to socket layer
 // Initialize Sockets
 setupSockets(io); // Updated function call name
 
 const PORT = process.env.PORT || 5001;
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+connectDB().then(() => {
+  httpServer.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 });
