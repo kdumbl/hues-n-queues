@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import BoardScreen from "./BoardScreen.tsx";
 import GameScreen from "./GameScreen.tsx";
 import Login from "./Login.tsx";
-import type { Player, GameState, View } from "./types.ts";do
+import type { Player, GameState, View } from "./types.ts";
 import { io, Socket } from "socket.io-client";
 
 import "./BoardScreen.css";
@@ -155,11 +155,10 @@ export default function App() {
     <div>
       {view === "login" ? (
         <Login
-          onSuccess={(token, userId, username) => {
-            console.log('onSuccess called', token, userId, username);
-            setCurrentUser({ token, userId, username });
-            setView("game");
-          }}
+        onSuccess={(token, userId, username) => {
+       setCurrentUser({ token, userId, username });
+       setView("game");
+        }}
         />
       ) : view === "game" ? (
         <GameScreen {...gameSharedProps} />
