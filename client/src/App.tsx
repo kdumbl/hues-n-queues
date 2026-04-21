@@ -10,143 +10,71 @@ import "./GameScreen.css";
 import "./App.css";
 import "./Login.css";
 
-const gavin: Player = {
-  name: "TheGooseMafia",
-  socketId: "45",
-  pieceColor: "RED",
-  profileURL: "rgebrgbergbj",
-  isClueGiver: true,
-  yourTurn: true,
-  score: 50,
-  clue: "",
-  secondClue: "",
-  piece: null,
-  secondPiece: null,
-};
-
-const ruby: Player = {
-  name: "GutsMan",
-  socketId: "46",
-  pieceColor: "YELLOW",
-  profileURL: "rgebrgbergbj",
-  isClueGiver: false,
-  yourTurn: false,
-  score: 27,
-  clue: "",
-  secondClue: "",
-  piece: null,
-  secondPiece: null,
-};
-
-const jackson: Player = {
-  name: "dather9",
-  socketId: "47",
-  pieceColor: "GREEN",
-  profileURL: "rgebrgbergbj",
-  isClueGiver: false,
-  yourTurn: false,
-  score: 9,
-  clue: "",
-  secondClue: "",
-  piece: null,
-  secondPiece: null,
-};
-
-const kurt: Player = {
-  name: "DumblDum",
-  socketId: "48",
-  pieceColor: "BLUE",
-  profileURL: "rgebrgbergbj",
-  isClueGiver: false,
-  yourTurn: false,
-  score: 67,
-  clue: "",
-  secondClue: "",
-  piece: null,
-  secondPiece: null,
-};
-
-const curr_game: GameState = {
-  players: [gavin, ruby, jackson, kurt],
-};
-
-function masterToIndividualGameState(masterGameState, connectionOrder) {
-  if (connectionOrder == 0) {
-    return masterGameState;
-  } else if (connectionOrder == 1) {
-    return {
-      players: [
-        masterGameState.players[1],
-        masterGameState.players[2],
-        masterGameState.players[3],
-        masterGameState.players[0],
-      ],
-    };
-  } else if (connectionOrder == 2) {
-    return {
-      players: [
-        masterGameState.players[2],
-        masterGameState.players[3],
-        masterGameState.players[0],
-        masterGameState.players[1],
-      ],
-    };
-  } else if (connectionOrder == 3) {
-    return {
-      players: [
-        masterGameState.players[3],
-        masterGameState.players[0],
-        masterGameState.players[1],
-        masterGameState.players[2],
-      ],
-    };
-  }
+// Keeps the shifting logic intact
+function masterToIndividualGameState(masterGameState: GameState, connectionOrder: number): GameState {
+  if (!masterGameState || !masterGameState.players || masterGameState.players.length < 4) return masterGameState;
+  
+  if (connectionOrder === 0) return masterGameState;
+  
+  const p = masterGameState.players;
+  if (connectionOrder === 1) return { players: [p[1], p[2], p[3], p[0]] };
+  if (connectionOrder === 2) return { players: [p[2], p[3], p[0], p[1]] };
+  if (connectionOrder === 3) return { players: [p[3], p[0], p[1], p[2]] };
+  
+  return masterGameState;
 }
 
 export default function App() {
   const socketRef = useRef<Socket | null>(null);
-  const [view, setView] = useState<View>("login");
-  const [gameState, setGameState] = useState<GameState>(curr_game);
+  const [view, setView] = useState<View>("game");
+  
+  // We start with null until the server gives us our first real state
+  const [gameState, setGameState] = useState<GameState | null>(null);
   const [connectionNumber, setConnectionNumber] = useState<number | null>(null);
-  const [currentUser, setCurrentUser] = useState<{
-    token: string;
-    userId: string;
-    username: string;
-  } | null>(null);
 
   useEffect(() => {
-    const socket2 = io("http://localhost:5001");
-    socketRef.current = socket2;
+    // Initialize socket connection only once when the component mounts
+    socketRef.current = io("http://localhost:5001");
+    const socket = socketRef.current;
 
-    socket2.on("connect", () => {
-      console.log(`Client: Connected ${socket2.id}`);
-      socket2.emit("new user");
+    socket.on("connect", () => {
+      console.log(`Client: Connected ${socket.id}`);
+      socket.emit("new user");
     });
 
-    socket2.on("new user accepted", (connectionNum) => {
+    socket.on("new user accepted", (connectionNum: number) => {
       setConnectionNumber(connectionNum);
-      setGameState(prev => masterToIndividualGameState(prev, connectionNum));
     });
 
-    socket2.on("gameState updated", (newGameState) => {
-      setConnectionNumber(prev => {
-        setGameState(masterToIndividualGameState(newGameState, prev));
-        return prev;
-      });
+    socket.on("gameState updated", (newGameState: GameState) => {
+      // Store the MASTER game state from the server
+      setGameState(newGameState);
     });
 
-    return () => { socket2.disconnect(); };
+    // Cleanup function when component unmounts
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
-  const gameSharedProps = {
+  // Derive the shifted layout cleanly during the render phase
+  const individualGameState = (connectionNumber !== null && gameState)
+    ? masterToIndividualGameState(gameState, connectionNumber)
+    : gameState;
+
+  // Don't try to render the game until we have an assigned connection and game state
+  if (!socketRef.current || connectionNumber === null || !individualGameState) {
+    return (
+      <div style={{ color: "white", textAlign: "center", marginTop: "20vh" }}>
+        <h2>Waiting for players...</h2>
+        <p>Open 4 windows in total to start the game!</p>
+      </div>
+    );
+  }
+
+  const sharedProps = {
     socket: socketRef.current,
-    gameState,
-    switchView: (v: View) => setView(v),
-    connectionNumber,
-  };
-  const boardSharedProps = {
-    socket: socketRef.current,
-    gameState,
+    gameState: individualGameState,
     switchView: (v: View) => setView(v),
     connectionNumber,
   };
@@ -163,7 +91,7 @@ export default function App() {
       ) : view === "game" ? (
         <GameScreen {...gameSharedProps} />
       ) : (
-        <BoardScreen {...boardSharedProps} />
+        <BoardScreen {...sharedProps} />
       )}
     </div>
   );

@@ -18,190 +18,115 @@ export class TurnManager {
   public targetOption?: ColorOption;
   public currentPhase: TurnPhase;
   public currentClues: string[] = [];
-
-  // Maps a Player to the list of coordinates they guessed this round (max 2)
   public roundGuesses: Map<Player, string[]> = new Map();
 
   constructor(clueGiver: Player, activeCard: ColorCard) {
     this.clueGiver = clueGiver;
     this.activeCard = activeCard;
     this.currentPhase = TurnPhase.CLUE_ONE;
-
-    // Initialize the clue giver
     this.clueGiver.isClueGiver = true;
   }
 
-  public setTarget(optionIndex: number): void {
-    if (this.currentPhase !== TurnPhase.CLUE_ONE) {
-      console.warn("Target color can only be set during the initial phase.");
-      return;
+  public allPlayersGuessed(totalPlayers: number): boolean {
+    // If not everyone has guessed at least once, return false
+    if (this.roundGuesses.size !== totalPlayers - 1) return false;
+    
+    // Determine how many guesses each player SHOULD have based on the phase
+    const expectedGuesses = this.currentPhase === TurnPhase.GUESS_ONE ? 1 : 2;
+    
+    // Check if every guesser has reached the expected amount
+    for (const guesses of this.roundGuesses.values()) {
+      if (guesses.length < expectedGuesses) return false;
     }
+    return true;
+  }
 
-    this.targetOption = this.activeCard.getOption(optionIndex);
-    if (this.targetOption) {
-      console.log(
-        `${this.clueGiver.playerName} has selected their target color.`,
-      );
-    } else {
-      console.error("Invalid option index selected.");
+public forceScoring(): Map<Player, number> | null {
+    // If we already hit the scoring phase naturally, prevent double counting
+    if (this.currentPhase === TurnPhase.SCORING) {
+      return null; 
     }
+    this.currentPhase = TurnPhase.SCORING;
+    return this.calculateScores();
+  }
+
+  public getTargetIndex(): number | undefined {
+    if (!this.targetOption) return undefined;
+    // FIX: Parse numeric gridCoordinates string "y-x" or letter "A-x"
+    const parts = this.targetOption.gridCoordinates.split("-");
+    const y = isNaN(parseInt(parts[0])) ? parts[0].toUpperCase().charCodeAt(0) - 65 : parseInt(parts[0], 10);
+    const x = parseInt(parts[1], 10);
+    return y * 30 + x;
+  }
+
+public setTarget(boardIndex: number): void {
+    // The frontend sends an absolute board index (0-479) instead of a card option index (0-3).
+    // We calculate the Y and X coordinates directly to match the format calculateScores expects.
+    const x = boardIndex % 30;
+    const y = Math.floor(boardIndex / 30);
+    
+    // We mock a ColorOption object so calculateScores can read the gridCoordinates
+    this.targetOption = {
+      gridCoordinates: `${y}-${x}`
+    } as any; 
   }
 
   public validateClue(cue: string): boolean {
     const lowerCue = cue.toLowerCase().trim();
+    const forbiddenWords = ["red", "blue", "yellow", "green", "orange", "purple", "black", "white", "brown", "pink", "titty"];
+    if (forbiddenWords.some((word) => lowerCue.includes(word))) return false;
 
-    // Basic forbidden words (Common colors) [cite: 51]
-    const forbiddenWords = [
-      "red",
-      "blue",
-      "yellow",
-      "green",
-      "orange",
-      "purple",
-      "black",
-      "white",
-      "brown",
-      "pink",
-      "titty",
-    ];
-
-    if (forbiddenWords.some((word) => lowerCue.includes(word))) {
-      console.warn("Invalid clue: Cannot use common color names.");
-      return false;
-    }
-
-    const coordinateRegex = /^[a-pA-P]-?\d{1,2}$/;
-    if (coordinateRegex.test(lowerCue)) {
-      console.warn("Invalid clue: Cannot refer to board positions.");
-      return false;
-    }
-
-    // Ensure it's strictly a 1-word or 2-word cue based on the phase [cite: 49, 57]
-    const wordCount = lowerCue.split(/\s+/).length;
-    if (this.currentPhase === TurnPhase.CLUE_ONE && wordCount !== 1) {
-      console.warn("Invalid clue: The first clue must be exactly one word.");
-      return false;
-    }
-    if (this.currentPhase === TurnPhase.CLUE_TWO && wordCount > 2) {
-      console.warn("Invalid clue: The second clue can be up to two words.");
-      return false;
-    }
+    // FIX: Regex now allows numeric strings like "14-5"
+    const coordinateRegex = /^([a-pA-P]|\d{1,2})-?\d{1,2}$/;
+    if (coordinateRegex.test(lowerCue)) return false;
 
     this.currentClues.push(cue);
     return true;
   }
 
   public receiveGuess(player: Player, coordinate: string): void {
-    if (player === this.clueGiver) {
-      console.warn("The clue giver cannot guess!");
-      return;
-    }
-
-    if (
-      this.currentPhase !== TurnPhase.GUESS_ONE &&
-      this.currentPhase !== TurnPhase.GUESS_TWO
-    ) {
-      console.warn("It is not currently a guessing phase.");
-      return;
-    }
-
-    if (!this.roundGuesses.has(player)) {
-      this.roundGuesses.set(player, []);
-    }
-
-    const playerGuesses = this.roundGuesses.get(player)!;
-
-    if (playerGuesses.length >= 2) {
-      console.warn(
-        `${player.playerName} has already placed all their pieces for this round.`,
-      );
-      return;
-    }
-
-    playerGuesses.push(coordinate);
-    console.log(`${player.playerName} guessed coordinate ${coordinate}.`);
+    if (player === this.clueGiver) return;
+    if (!this.roundGuesses.has(player)) this.roundGuesses.set(player, []);
+    this.roundGuesses.get(player)!.push(coordinate);
   }
 
-  /**
-   * Evaluates all guesses, calculates points for guessers and the clue giver,
-   * and returns a Map to be consumed by the GameManager.
-   */
   private calculateScores(): Map<Player, number> {
     const roundScores = new Map<Player, number>();
     let clueGiverPoints = 0;
+    if (!this.targetOption) return roundScores;
 
-    if (!this.targetOption) {
-      console.error("Cannot score: No target option was set.");
-      return roundScores;
-    }
-
-    const targetCoord = this.targetOption.gridCoordinates;
+    // Standardize target to object {x, y}
+    const parts = this.targetOption.gridCoordinates.split("-");
+    const targetY = isNaN(parseInt(parts[0])) ? parts[0].toUpperCase().charCodeAt(0) - 65 : parseInt(parts[0], 10);
+    const targetObj = { y: targetY, x: parseInt(parts[1], 10) };
 
     for (const [player, guesses] of this.roundGuesses.entries()) {
       let playerTotal = 0;
-
       for (const guess of guesses) {
-        const pts = ScoringCalc.calculate(targetCoord, guess);
+        const pts = ScoringCalc.calculate(targetObj, guess);
         playerTotal += pts;
-
-        // If a guess scores 2 or 3 points, it is inside the 3x3 frame.
-        // The clue giver gets 1 point for each of these pieces.
-        if (pts >= 2) {
-          clueGiverPoints += 1;
-        }
+        if (pts >= 2) clueGiverPoints += 1;
       }
       roundScores.set(player, playerTotal);
     }
-
-    // Enforce the max of 9 points for the clue giver
-    if (clueGiverPoints > 9) {
-      clueGiverPoints = 9;
-    }
-
-    roundScores.set(this.clueGiver, clueGiverPoints);
-    console.log(
-      `[Scoring] ${this.clueGiver.playerName} (Clue Giver) earned ${clueGiverPoints} points.`,
-    );
-
+    roundScores.set(this.clueGiver, Math.min(clueGiverPoints, 9));
     return roundScores;
   }
 
-  /**
-   * Advances the phase or triggers scoring based on the current state.
-   * Returns a Map of scores ONLY when the phase shifts to SCORING, otherwise null.
-   */
   public resolveRound(): Map<Player, number> | null {
-    switch (this.currentPhase) {
-      case TurnPhase.CLUE_ONE:
-        this.currentPhase = TurnPhase.GUESS_ONE;
-        console.log("Moving to first guess phase.");
-        return null;
-      case TurnPhase.GUESS_ONE:
-        this.currentPhase = TurnPhase.CLUE_TWO;
-        console.log("Moving to second clue phase.");
-        return null;
-      case TurnPhase.CLUE_TWO:
-        this.currentPhase = TurnPhase.GUESS_TWO;
-        console.log("Moving to second guess phase.");
-        return null;
-      case TurnPhase.GUESS_TWO:
-        this.currentPhase = TurnPhase.SCORING;
-        console.log("Round over! Calculating scores...");
-        const scores = this.calculateScores();
-        this.clueGiver.isClueGiver = false; // Clean up role
-        return scores;
-      case TurnPhase.SCORING:
-        console.log("Scoring is complete. Ready for next round.");
-        return null;
+    const phases = [TurnPhase.CLUE_ONE, TurnPhase.GUESS_ONE, TurnPhase.CLUE_TWO, TurnPhase.GUESS_TWO, TurnPhase.SCORING];
+    const currentIndex = phases.indexOf(this.currentPhase);
+    this.currentPhase = phases[currentIndex + 1] || TurnPhase.SCORING;
+
+    if (this.currentPhase === TurnPhase.SCORING) {
+      return this.calculateScores();
     }
+    return null;
   }
 
   public toDocument(): TurnDoc {
     const guesses: Record<string, string[]> = {};
-    this.roundGuesses.forEach((guessesArr, player) => {
-      guesses[player.userId] = [...guessesArr];
-    });
-
+    this.roundGuesses.forEach((arr, player) => { guesses[player.userId] = [...arr]; });
     return {
       clueGiver: this.clueGiver.toDocument(),
       activeCard: this.activeCard.toDocument(),
@@ -212,33 +137,14 @@ export class TurnManager {
     };
   }
 
-  /**
-   * Recreates a TurnManager from a plain Mongo document.
-   */
-  public static fromDocument(
-    doc: TurnDoc,
-    playerMap: Map<string, Player>, // Map userId -> Player instance
-  ): TurnManager {
-    const clueGiver = playerMap.get(doc.clueGiver.userId)!;
-    const activeCard = ColorCard.fromDocument(doc.activeCard);
-
-    const tm = new TurnManager(clueGiver, activeCard);
-
+  public static fromDocument(doc: TurnDoc, playerMap: Map<string, Player>): TurnManager {
+    const tm = new TurnManager(playerMap.get(doc.clueGiver.userId)!, ColorCard.fromDocument(doc.activeCard));
     tm.currentPhase = doc.currentPhase as TurnPhase;
     tm.currentClues = [...doc.currentClues];
-    tm.targetOption = doc.targetOption
-      ? ColorOption.fromDocument(doc.targetOption)
-      : undefined;
-
-    // Reconstruct the roundGuesses Map using playerMap
-    tm.roundGuesses = new Map();
-    for (const userId in doc.roundGuesses) {
-      const player = playerMap.get(userId);
-      if (player) {
-        tm.roundGuesses.set(player, [...doc.roundGuesses[userId]]);
-      }
+    tm.targetOption = doc.targetOption ? ColorOption.fromDocument(doc.targetOption) : undefined;
+    for (const id in doc.roundGuesses) {
+      if (playerMap.has(id)) tm.roundGuesses.set(playerMap.get(id)!, [...doc.roundGuesses[id]]);
     }
-
     return tm;
   }
 }
