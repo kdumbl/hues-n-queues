@@ -4,35 +4,59 @@ import './Login.css';
 type Tab = 'login' | 'create';
 
 interface LoginProps {
-  onLogin?: (email: string, password: string) => void;
-  onCreate?: (username: string, email: string, password: string) => void;
+  onSuccess?: (token: string, userId: string, username: string) => void;
 }
 
-export default function Login({ onLogin, onCreate }: LoginProps) {
+export default function Login({ onSuccess }: LoginProps) {
   const [activeTab, setActiveTab] = useState<Tab>('login');
 
-  //login fields
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  //acct fields
   const [createUsername, setCreateUsername] = useState('');
   const [createEmail, setCreateEmail] = useState('');
   const [createPassword, setCreatePassword] = useState('');
   const [createConfirm, setCreateConfirm] = useState('');
 
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    console.log('handleLogin called');
     setError(null);
     if (!loginEmail || !loginPassword) {
       setError('Please fill in all fields.');
       return;
     }
-    onLogin?.(loginEmail, loginPassword);
+
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:5001/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      console.log('res status:', res.status); // add this
+      const data = await res.json();
+      console.log('data:', data); // add this
+
+      if (!res.ok) {
+        setError(data.error || 'Login failed.');
+        return;
+      }
+
+      localStorage.setItem('token', data.token);
+      console.log('about to call onSuccess', onSuccess);
+      onSuccess?.(data.token, data.userId, data.username);
+    } catch (err) {
+      console.log('error:', err); // add this
+      setError('Could not reach the server. Try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     setError(null);
     if (!createUsername || !createEmail || !createPassword || !createConfirm) {
       setError('Please fill in all fields.');
@@ -42,7 +66,35 @@ export default function Login({ onLogin, onCreate }: LoginProps) {
       setError('Passwords do not match.');
       return;
     }
-    onCreate?.(createUsername, createEmail, createPassword);
+
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:5001/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: createUsername,
+          email: createEmail,
+          password: createPassword,
+        }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      if (!res.ok) {
+        setError(data.error || 'Registration failed.');
+        return;
+      }
+
+      localStorage.setItem('token', data.token);
+      console.log('about to call onSuccess', onSuccess);
+      onSuccess?.(data.token, data.userId, data.username);
+    } catch (err) {
+      setError('Could not reach the server. Try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -52,7 +104,6 @@ export default function Login({ onLogin, onCreate }: LoginProps) {
       <div className="ln-floorLip" />
       <div className="ln-spotlight" />
 
-      {/* Lamp */}
       <div className="ln-lampCord" />
       <div className="ln-lampShade" />
       <div className="ln-lampRim" />
@@ -61,7 +112,6 @@ export default function Login({ onLogin, onCreate }: LoginProps) {
       <div className="ln-card">
         <div className="ln-brand">HUES & CUES</div>
 
-        {/*tabs that switch between thee screens :3*/}
         <div className="ln-tabs">
           <button
             type="button"
@@ -79,9 +129,7 @@ export default function Login({ onLogin, onCreate }: LoginProps) {
           </button>
         </div>
 
-        {/* Panel body */}
         <div className="ln-body">
-
           {activeTab === 'login' && (
             <div className="ln-form" key="login">
               <div className="ln-field">
@@ -108,8 +156,9 @@ export default function Login({ onLogin, onCreate }: LoginProps) {
                   autoComplete="current-password"
                 />
               </div>
-              <button type="button" className="ln-submit" onClick={handleLogin}>
-                Sign In
+              {error && <div className="ln-error">{error}</div>}
+              <button type="button" className="ln-submit" onClick={handleLogin} disabled={loading}>
+                {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </div>
           )}
@@ -162,8 +211,8 @@ export default function Login({ onLogin, onCreate }: LoginProps) {
                 />
               </div>
               {error && <div className="ln-error">{error}</div>}
-              <button type="button" className="ln-submit" onClick={handleCreate}>
-                Create Account
+              <button type="button" className="ln-submit" onClick={handleCreate} disabled={loading}>
+                {loading ? 'Creating...' : 'Create Account'}
               </button>
             </div>
           )}
