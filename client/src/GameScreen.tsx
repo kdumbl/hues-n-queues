@@ -166,7 +166,7 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
         <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
           <input
             type="text"
-            placeholder="Enter yourrr cue!"
+            placeholder="Enter your cue!"
             value={cueText}
             onChange={e => setCueText(e.target.value)}
             maxLength={16}
@@ -226,7 +226,7 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
           </div>
           <input
             type="text"
-            placeholder="Enter yourrr cue!"
+            placeholder="Enter your cue!"
             value={cueText}
             onChange={e => setCueText(e.target.value)}
             maxLength={16}

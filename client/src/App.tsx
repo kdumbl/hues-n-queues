@@ -11,25 +11,33 @@ import "./App.css";
 import "./Login.css";
 
 // Keeps the shifting logic intact
-function masterToIndividualGameState(masterGameState: GameState, connectionOrder: number): GameState {
-  if (!masterGameState || !masterGameState.players || masterGameState.players.length < 4) return masterGameState;
-  
+function masterToIndividualGameState(
+  masterGameState: GameState,
+  connectionOrder: number,
+): GameState {
+  if (
+    !masterGameState ||
+    !masterGameState.players ||
+    masterGameState.players.length < 4
+  )
+    return masterGameState;
+
   if (connectionOrder === 0) return masterGameState;
-  
+
   const p = masterGameState.players;
   if (connectionOrder === 1) return { players: [p[1], p[2], p[3], p[0]] };
   if (connectionOrder === 2) return { players: [p[2], p[3], p[0], p[1]] };
   if (connectionOrder === 3) return { players: [p[3], p[0], p[1], p[2]] };
-  
+
   return masterGameState;
 }
 
 export default function App() {
   const socketRef = useRef<Socket | null>(null);
-  const [view, setView] = useState<View>("game");
-  
+  const [view, setView] = useState<View>("login");
+
   // We start with null until the server gives us our first real state
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameState, setGameState] = useState<GameState | undefined>(undefined);
   const [connectionNumber, setConnectionNumber] = useState<number | null>(null);
 
   useEffect(() => {
@@ -58,11 +66,13 @@ export default function App() {
   }, []);
 
   // Derive the shifted layout cleanly during the render phase
-  const individualGameState = (connectionNumber !== null && gameState)
-    ? masterToIndividualGameState(gameState, connectionNumber)
-    : gameState;
+  const individualGameState: GameState | undefined =
+    connectionNumber !== null && gameState
+      ? masterToIndividualGameState(gameState, connectionNumber)
+      : gameState;
 
   // Don't try to render the game until we have an assigned connection and game state
+  /*
   if (!socketRef.current || connectionNumber === null || !individualGameState) {
     return (
       <div style={{ color: "white", textAlign: "center", marginTop: "20vh" }}>
@@ -71,7 +81,7 @@ export default function App() {
       </div>
     );
   }
-
+*/
   const sharedProps = {
     socket: socketRef.current,
     gameState: individualGameState,
@@ -79,17 +89,23 @@ export default function App() {
     connectionNumber,
   };
 
+  const [currentUser, setCurrentUser] = useState<{
+    token: string;
+    userId: string;
+    username: string;
+  } | null>(null);
+
   return (
     <div>
       {view === "login" ? (
         <Login
-        onSuccess={(token, userId, username) => {
-       setCurrentUser({ token, userId, username });
-       setView("game");
-        }}
+          onSuccess={(token, userId, username) => {
+            setCurrentUser({ token, userId, username });
+            setView("game");
+          }}
         />
       ) : view === "game" ? (
-        <GameScreen {...gameSharedProps} />
+        <GameScreen {...sharedProps} />
       ) : (
         <BoardScreen {...sharedProps} />
       )}

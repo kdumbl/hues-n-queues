@@ -1,17 +1,12 @@
 import dotenv from "dotenv";
 import http from "http";
-import express, { Application, Request, Response } from "express";
 import { Server } from "socket.io";
-import cors from "cors";
-import { initSockets } from "./api/sockets/index";
 import connectDB from "./persistence/db";
 import authRoutes from "./api/routes/authRoutes";
-import express from 'express';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
-import cors from 'cors';
-import { setupSockets } from './api/sockets/index'; // Updated import name
-import connectDB from './persistence/db';
+import express from "express";
+import { createServer } from "http";
+import cors from "cors";
+import { setupSockets } from "./api/sockets/index"; // Updated import name
 
 const app = express();
 app.use(cors());
@@ -22,8 +17,8 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:5173", // or your frontend URL
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 app.use("/auth", authRoutes);
