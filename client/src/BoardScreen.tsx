@@ -59,8 +59,8 @@ function ScoreRows(){
   const secondRow = [];
 
   for (let i = 0; i < 26; i++){
-    firstRow.push(<div className="hcscorediv" style={{background: frColors[i]}}>{frNums[i]}</div>);
-    secondRow.push(<div className="hcscorediv" style={{background: srColors[i], color: '#000000'}}>{srNums[i]}</div>)
+    firstRow.push(<div className="hcscorediv" style={{background: frColors[i]}} key={`fr-${i}`}>{frNums[i]}</div>);
+    secondRow.push(<div className="hcscorediv" style={{background: srColors[i], color: '#000000'}} key={`sr-${i}`}>{srNums[i]}</div>)
   }
 
   return (
@@ -117,7 +117,7 @@ function TopRow({ lh }){
   const items = [];
 
   for (let i = 1; i < 31; i++) {
-    items.push(<div className="hcsquarediv" style={{background: '#000000', lineHeight: lh}}>{i}</div>);
+    items.push(<div className="hcsquarediv" style={{background: '#000000', lineHeight: lh}} key={`top-${i}`}>{i}</div>);
   }
 
   return (
@@ -222,8 +222,10 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
   function submit(){
     if (gameState.players[0].secondClue == ""){
       socket?.emit("guess submitted", lastPlaced, connectionNumber);
+      setLastPlaced(null); // Reset placement so button grays out on next turn
     } else {
       socket?.emit("guess submitted", lastPlacedSecondRound, connectionNumber);
+      setLastPlacedSecondRound(null); // Reset placement so button grays out on next turn
     }
   }
 
@@ -268,15 +270,22 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
           <TopRow lh="2.5vh" />
         </div>
       </div>
-      {gameState?.players[0].yourTurn && !gameState.players[0].isClueGiver && lastPlaced != null && (
-        <>
-          <div className="submit-button">
-            <button style={{width: '15vw', height: '6.4vh', 'zIndex': '201', 'left': '40.2vw', top: '92vh', position: 'absolute', 'backgroundColor': 'transparent'}} onClick = {submit} />
-            <img src={submitButton} style={{width: '15vw', height: '6.4vh', 'zIndex': '200', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
-          </div>
-        </>
+
+      {/* Active Submit Button */}
+      {gameState?.players[0].yourTurn && !gameState.players[0].isClueGiver && 
+        ((gameState?.players[0].secondClue == "" && lastPlaced != null) || 
+         (gameState?.players[0].secondClue != "" && lastPlacedSecondRound != null)) && (
+        <div className="submit-button">
+          <button style={{width: '15vw', height: '6.4vh', 'zIndex': '201', 'left': '40.2vw', top: '92vh', position: 'absolute', 'backgroundColor': 'transparent'}} onClick = {submit} />
+          <img src={submitButton} style={{width: '15vw', height: '6.4vh', 'zIndex': '200', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
+        </div>
       )}
-      {!gameState?.players[0].yourTurn && (
+
+      {/* Gray Submit Button */}
+      {(!gameState?.players[0].yourTurn || 
+       (gameState?.players[0].yourTurn && !gameState.players[0].isClueGiver && 
+        ((gameState?.players[0].secondClue == "" && lastPlaced == null) || 
+         (gameState?.players[0].secondClue != "" && lastPlacedSecondRound == null)))) && (
           <img src={submitButtonGray} style={{width: '15vw', height: '6.4vh', zIndex: '202', left: '40.2vw', top: '92vh', position: 'absolute'}} />
       )}
       {gameState?.players[0].clue != "" && (

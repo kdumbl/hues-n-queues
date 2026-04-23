@@ -47,7 +47,6 @@ export class GameManager {
       return;
     }
 
-    // CRITICAL FIX: Reset ALL players before assigning the new Clue Giver
     this.board.resetBoard();
     for (const player of this.players) {
       player.isClueGiver = false;
@@ -71,8 +70,11 @@ export class GameManager {
     return this.players.find(p => p.socketId === socketId);
   }
 
+  /**
+   * Sequential Logic Change: When a clue is submitted, only the FIRST guesser 
+   * following the clue giver is allowed to move.
+   */
   public submitClue(socketId: string, clueText: string, colorIndex?: number) {
-    console.log(`submitClue called with clueText: "${clueText}" and colorIndex: ${colorIndex}`);
     if (!this.currentTurnManager) throw new Error("No active round");
     
     if (colorIndex !== undefined && this.currentTurnManager.currentPhase === "CLUE_ONE") {
@@ -82,15 +84,27 @@ export class GameManager {
     const isValid = this.currentTurnManager.validateClue(clueText);
     if (isValid) {
       this.currentTurnManager.resolveRound();
-      // CRITICAL FIX: Pass the turn from Clue Giver to all Guessers
-      this.players.forEach(p => {
-        p.yourTurn = !p.isClueGiver;
-      });
+      
+      // Reset everyone's turn
+      this.players.forEach(p => p.yourTurn = false);
+      
+      // Find the first guesser after the current clue giver
+      // (currentClueGiverIndex was already incremented at the start of the round,
+      // so we use the clue giver's actual current index)
+      const giverIndex = this.players.findIndex(p => p.isClueGiver);
+      const firstGuesser = this.getNextGuesser(giverIndex + 1);
+      if (firstGuesser) {
+        firstGuesser.yourTurn = true;
+      }
     }
     return isValid;
   }
 
-public submitGuess(socketId: string, positionIndex: number) {
+  /**
+   * Sequential Logic Change: After a successful guess, the turn is immediately
+   * revoked from the current player and passed to the next guesser.
+   */
+  public submitGuess(socketId: string, positionIndex: number) {
     if (!this.currentTurnManager) throw new Error("No active round");
     const player = this.getPlayerBySocketId(socketId);
     
@@ -104,29 +118,43 @@ public submitGuess(socketId: string, positionIndex: number) {
     if (success) {
       this.currentTurnManager.receiveGuess(player, coordString);
       
-      const expectedGuesses = this.currentTurnManager.currentPhase === "GUESS_ONE" ? 1 : 2;
-      const playerGuesses = this.currentTurnManager.roundGuesses.get(player);
-      
-      if (playerGuesses && playerGuesses.length >= expectedGuesses) {
-        player.yourTurn = false; 
-      }
+      // Revoke turn immediately after submission
+      player.yourTurn = false; 
 
       if (this.currentTurnManager.allPlayersGuessed(this.players.length)) {
         // Capture the returned scores!
         const scores = this.currentTurnManager.resolveRound();
         
         if (scores) {
-          this.updateTotalScores(scores); // Actually apply the points to the players!
         }
         
         // Return turn to Clue Giver for Clue 2 or final scoring
         const giver = this.players.find(p => p.isClueGiver);
         if (giver) giver.yourTurn = true;
+      } else {
+        // Pass turn to the next player in the rotation
+        const currentPlayerIndex = this.players.indexOf(player);
+        const nextGuesser = this.getNextGuesser(currentPlayerIndex + 1);
+        if (nextGuesser) {
+          nextGuesser.yourTurn = true;
+        }
       }
     }
   }
 
-public endRoundAndScore() {
+  /**
+   * Helper to find the next player who is NOT the clue giver.
+   */
+  private getNextGuesser(startIndex: number): Player | undefined {
+    for (let i = 0; i < this.players.length; i++) {
+      const idx = (startIndex + i) % this.players.length;
+      const p = this.players[idx];
+      if (!p.isClueGiver) return p;
+    }
+    return undefined;
+  }
+
+  public endRoundAndScore() {
     if (!this.currentTurnManager) return;
     
     // Force scoring in case the button was clicked before everyone placed their final guess
