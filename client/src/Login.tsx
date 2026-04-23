@@ -3,6 +3,8 @@ import './Login.css';
 
 type Tab = 'login' | 'create';
 
+//proibably use session storage instead of local storage as we run game locally
+
 interface LoginProps {
   onSuccess?: (token: string, userId: string, username: string) => void;
 }

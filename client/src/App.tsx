@@ -41,10 +41,12 @@ export default function App() {
   const [connectionNumber, setConnectionNumber] = useState<number | null>(null);
 
   useEffect(() => {
+
     // Initialize socket connection only once when the component mounts
     socketRef.current = io("http://localhost:5001");
     const socket = socketRef.current;
 
+    //someone visits site
     socket.on("connect", () => {
       console.log(`Client: Connected ${socket.id}`);
       socket.emit("new user");
@@ -101,6 +103,8 @@ export default function App() {
         <Login
           onSuccess={(token, userId, username) => {
             setCurrentUser({ token, userId, username });
+            //emit new user when login?
+            //socketRef.current.emit('new user')
             setView("game");
           }}
         />
