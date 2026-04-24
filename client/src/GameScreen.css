@@ -109,12 +109,22 @@
   z-index: 7;
 }
 
-/* table */
-.hc-tableTop {
+.hc-tableGroup {
   position: absolute;
-  bottom: 27%;
+  bottom: 17%;
   left: 50%;
   transform: translateX(-50%);
+  width: 350px;
+  height: 200px;
+  z-index: 9;
+}
+
+.hc-tableTop {
+  position: absolute;
+  /* sit above the leg, leg is 78 px tall, base is 18 px,
+     place tabletop so its bottom aligns above the leg     */
+  bottom: 96px;
+  left: 0;
   width: 350px;
   height: 120px;
   background: radial-gradient(ellipse at 48% 30%, #d8a428 0%, #8c5c12 55%, #5e3c08 100%);
@@ -123,26 +133,56 @@
     inset 0 -12px 26px rgba(0, 0, 0, 0.5);
   border: 5px solid #a07018;
   z-index: 10;
+  overflow: visible;
+}
+
+.hc-tableBoard {
+  position: absolute;
+  width: 250px;
+  height: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  pointer-events: none;
 }
 
 .hc-tableButton {
   position: absolute;
-  width: 13vw;
-  height: 12vh;
-  bottom: 31vh;
-  left: 43.1vw;
-  background-color: transparent;
+  inset: 0;
+  z-index: 12;
+  border-radius: 50%;
+  background: transparent;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
-  transform: skew(-22.8deg);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 202;
+  padding: 0;
 }
 
 .hc-tableButton.isDeckHovered {
-  opacity: 0.75;
-  transform: scale(0.96);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.hc-tableLeg {
+  position: absolute;
+  bottom: 18px;     /* sits on top of the base */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35px;
+  height: 78px;
+  background: linear-gradient(90deg, #6a4810, #c09030, #6a4810);
+  z-index: 9;
+}
+
+.hc-tableBase {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 18px;
+  background: linear-gradient(90deg, #4a3008, #9a7020, #4a3008);
+  border-radius: 5px;
+  z-index: 9;
 }
 
 /*body3 (rightmost)*/
@@ -204,29 +244,6 @@
     inset 0 -12px 26px rgba(0, 0, 0, 0.5);
   border: 2px solid #030303;
   z-index: 3;
-}
-
-.hc-tableLeg {
-  position: absolute;
-  bottom: 18%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 35px;
-  height: 78px;
-  background: linear-gradient(90deg, #6a4810, #c09030, #6a4810);
-  z-index: 9;
-}
-
-.hc-tableBase {
-  position: absolute;
-  bottom: 17%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 110px;
-  height: 18px;
-  background: linear-gradient(90deg, #4a3008, #9a7020, #4a3008);
-  border-radius: 5px;
-  z-index: 9;
 }
 
 /*  deck button  */
@@ -329,7 +346,8 @@
 .hc-cardBackground {
   position: absolute;
   top: 20%;
-  left: 41%;
+  left: 50%;
+  transform: translateX(-50%);
   width: 260px;
   height: 420px;
   background: linear-gradient(155deg, #1c1c1c, #2e2e2e);

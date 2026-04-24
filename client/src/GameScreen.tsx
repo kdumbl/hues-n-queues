@@ -54,7 +54,6 @@ interface Props {
   connectionNumber: number | null;
 }
 
-//pass in the props
 export default function GameScreen({socket, gameState, switchView, connectionNumber}: Props) {
   const [isDeckHovered, setIsDeckHovered] = useState(false);
   const [activePanel, setActivePanel] = useState<Panel>(null);
@@ -76,9 +75,7 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
     setTimeout(() => setAnnouncement(null), 1000000);
   };
 
-  //add the switch view functionality
   const viewChanger = () =>{
-    //this call that setView func defined in app.tsx
     switchView("board");
     console.log("View Switched!");
   };
@@ -105,6 +102,8 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
     return possibleColors;
   }
 
+  if (!gameState) return null;
+
   return (
     <div className="hc-stage">
       {/* wall */}
@@ -123,29 +122,42 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
       <div className="hc-lampRim" />
       <div className="hc-lampBulb" />
 
-      {/* body */}
+      {/* bodies */}
       <div className="hc-body" style={{background: color_string_to_background(gameState?.players[1].pieceColor)}} />
       <div className="hc-body2" style={{background: color_string_to_background(gameState?.players[2].pieceColor)}} />
       <div className="hc-body3" style={{background: color_string_to_background(gameState?.players[3].pieceColor)}} />
-      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '33.73vw', top: '54vh'}}>{gameState?.players[1].name}</div>
-      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '48.3vw', top: '48vh'}}>{gameState?.players[2].name}</div>
-      <div className="hc-deckTip" style={{'zIndex': '200', position: 'absolute', left: '62.4%', top: '54vh'}}>{gameState?.players[3].name}</div>
 
-      {/* table */}
-      <div className="hc-tableTop" />
-      <div className="hc-tableLeg" />
-      <div className="hc-tableBase" />
+      {/* player name labels — all offset from true center */}
+      <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: 'calc(50% - 16vw)', transform: 'translateX(-50%)', top: '54vh' }}>
+        {gameState?.players[1].name}
+      </div>
+      <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '48vh' }}>
+        {gameState?.players[2].name}
+      </div>
+      <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: 'calc(50% + 16vw)', transform: 'translateX(-50%)', top: '54vh' }}>
+        {gameState?.players[3].name}
+      </div>
 
-      <img src={warpedBoard} style={{'zIndex': '200', position: 'absolute', 'width': '250px', height: 'auto', left: '43%', top: '58vh'}} />
+      <div className="hc-tableGroup">
+        <div className="hc-tableTop">
+          <img
+            src={warpedBoard}
+            className="hc-tableBoard"
+            alt="Game board"
+          />
 
-      {/* added the switch view here; I assume this is button we want it on */}
-      <button
-      type="button"
-      className={`hc-tableButton ${isTableHovered ? "isDeckHovered" : ""}`}
-      onMouseEnter={() => setIsTableHovered(true)}
-      onMouseLeave={() => setIsTableHovered(false)}
-      onClick = {viewChanger}
-      />
+          <button
+            type="button"
+            className={`hc-tableButton ${isTableHovered ? "isDeckHovered" : ""}`}
+            onMouseEnter={() => setIsTableHovered(true)}
+            onMouseLeave={() => setIsTableHovered(false)}
+            onClick={viewChanger}
+            aria-label="Open game board"
+          />
+        </div>
+        <div className="hc-tableLeg" />
+        <div className="hc-tableBase" />
+      </div>
 
       {gameState.players[0].secondClue != "" && gameState.players[0].yourTurn && gameState.players[0].isClueGiver && (
         <div className="hc-cardBackground">
@@ -339,7 +351,7 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
         </div>
       )}
 
-      {/* leaderboard dipslay */}
+      {/* leaderboard display */}
       {activePanel === "leaderboard" && (
         <div className="hc-panel">
           <div className="hc-panelHeader">Leaderboard</div>
