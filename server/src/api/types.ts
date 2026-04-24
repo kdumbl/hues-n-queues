@@ -18,7 +18,12 @@ export interface Player {
     y: number;
   } | null;
   secondPiece: {
-    x: number,
-    y: number,
+    x: number;
+    y: number;
   } | null;
+}
+
+export interface tokenPayload {
+  userId: string;
+  username: string;
 }

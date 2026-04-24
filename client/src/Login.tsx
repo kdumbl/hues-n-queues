@@ -47,7 +47,7 @@ export default function Login({ onSuccess }: LoginProps) {
         return;
       }
 
-      localStorage.setItem('token', data.token);
+      sessionStorage.setItem('token', data.token);
       console.log('about to call onSuccess', onSuccess);
       onSuccess?.(data.token, data.userId, data.username);
     } catch (err) {
@@ -89,7 +89,7 @@ export default function Login({ onSuccess }: LoginProps) {
         return;
       }
 
-      localStorage.setItem('token', data.token);
+      sessionStorage.setItem('token', data.token);
       console.log('about to call onSuccess', onSuccess);
       onSuccess?.(data.token, data.userId, data.username);
     } catch (err) {

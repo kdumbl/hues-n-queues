@@ -2,7 +2,7 @@ import React from 'react';
 import './Lobby.css';
 
 interface LobbyProps {
-  currentUser: { token: string; userId: string; username: string };
+  currentUser: { token: string; userId: string; username: string } | null;
   onCreateGame: () => void;
   onJoinGame: (code: string) => void;
 }
@@ -34,7 +34,7 @@ export default function Lobby({ currentUser, onCreateGame, onJoinGame }: LobbyPr
 
       <div className="lb-card">
         <div className="lb-brand">HUES & CUES</div>
-        <div className="lb-welcome">Welcome, {currentUser.username}</div>
+        <div className="lb-welcome">Welcome, {currentUser ? currentUser.username : ""}</div>
 
         <div className="lb-section">
           <div className="lb-sectionTitle">New Game</div>

@@ -7,7 +7,9 @@ export class GameController {
   private static gameRepo = new GameRepository();
 
   public static async handleGuess(gameId: string, socketId: string, positionIndex: number) {
-    const game: GameManager = getGame(gameId);
+    
+    const game: GameManager | undefined = getGame(gameId);
+  
     if (!game) throw new Error("Game not found");
 
     game.submitGuess(socketId, positionIndex);
@@ -19,7 +21,7 @@ export class GameController {
   }
 
   public static async handleClue(gameId: string, socketId: string, clueText: string, colorIndex?: number) {
-    const game: GameManager = getGame(gameId);
+    const game: GameManager | undefined = getGame(gameId);
     if (!game) throw new Error("Game not found");
 
     game.submitClue(socketId, clueText, colorIndex);
@@ -27,7 +29,7 @@ export class GameController {
   }
 
   public static async handleScoring(gameId: string) {
-    const game: GameManager = getGame(gameId);
+    const game: GameManager | undefined= getGame(gameId);
     if (!game) throw new Error("Game not found");
 
     game.endRoundAndScore();

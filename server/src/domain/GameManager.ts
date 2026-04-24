@@ -11,6 +11,7 @@ export enum GameState {
 }
 
 export class GameManager {
+  public gameId: string;
   public players: Player[];
   public board: Board;
   public currentTurnManager?: TurnManager;
@@ -18,7 +19,8 @@ export class GameManager {
   private currentClueGiverIndex: number = 0;
   private roundsHosted: Map<string, number>;
 
-  constructor() {
+  constructor(gameId: string) {
+    this.gameId = gameId;
     this.players = [];
     this.board = new Board();
     this.roundsHosted = new Map();
