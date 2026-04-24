@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { getGame, createGame } from "../../gameStore";
+import { getGame, createGame, deleteGame } from "../../gameStore";
 import { Player } from "../../domain/Player";
 import { GameMapper } from "../../persistence/mappers/GameMapper";
 import { registerGameHandlers } from "./gameHandlers";
@@ -13,21 +13,26 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     const game = getGame(gameId)
     socket.join(gameId);
     socket.data.gameId = gameId;
-    
+    const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
+    game.players.push(newPlayer);
     io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
-    socket.emit("game joined", gameId);
+    socket.emit("game joined", gameId, game.players.length - 1);
+
+    console.log(`game joined ${game.gameId} by ${socket.data.user.username}`);
   });
 
   socket.on("create game", () => {
     const gameId = createGame();
     const game = getGame(gameId);
-    const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, "RED");
+    const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
     game.players.push(newPlayer);
-    addrandys(game);
+    //addrandys(game);
     socket.join(gameId);
     socket.data.gameId = gameId;
     io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
-    socket.emit("game created");
+    socket.emit("game created", gameId);
+
+    console.log(`game created ${game.gameId} by ${socket.data.user.username}`);
   });
 
   socket.on("start game", () => {
@@ -36,15 +41,34 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     game.setUpGame(game.players);
     game.startGame();
     io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+    io.to(gameId).emit("game started");
+
+    console.log(`game started ${game.gameId} by ${socket.data.user.username}`);
   });
 
-  function addrandys(game: GameManager){
-    const newPlayer1 = new Player("1", "Ab", "123", "YELLOW");
-    game.players.push(newPlayer1);
-    const newPlayer2 = new Player("2", "Bo", "231", "GREEN");
-    game.players.push(newPlayer2);
-    const newPlayer3 = new Player("3", "Ca", "312", "BLUE");
-    game.players.push(newPlayer3);
+  socket.on("leave lobby", (gameId: string) => {
+    const game = getGame(socket.data.gameId);
+    socket.leave(gameId);
+    game.players = game.players.filter (
+      (player) => player.socketId !== socket.id
+    );
+    io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+
+    console.log(`game left ${game.gameId} by ${socket.data.user.username}`);
+    if(game.players.length < 1){
+      deleteGame(gameId);
+      console.log(`deleted game ${gameId}`)
+    }
+  });
+
+  function getColor(game: GameManager){
+    const colors = ["RED", "GREEN", "BLUE", "YELLOW"];
+    const playerColors = game.players.map(p => p.pieceColor);
+    const availableColors = colors.filter(
+    (color) => !playerColors.includes(color)
+    );
+
+    return availableColors[0];
   }
 
   /*

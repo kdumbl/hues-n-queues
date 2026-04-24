@@ -17,7 +17,7 @@ export default function Lobby({ currentUser, onCreateGame, onJoinGame }: LobbyPr
       return;
     }
     setError(null);
-    onJoinGame(joinCode.toUpperCase());
+    onJoinGame(joinCode);
   };
 
   return (

@@ -3,6 +3,7 @@ import BoardScreen from "./BoardScreen.tsx";
 import GameScreen from "./GameScreen.tsx";
 import Lobby from "./Lobby.tsx";
 import Login from "./Login.tsx";
+import LobbyRoom from "./LobbyRoom.tsx";
 import type { Player, GameState, View } from "./types.ts";
 import { io, Socket } from "socket.io-client";
 
@@ -41,6 +42,7 @@ export default function App() {
   // We start with null until the server gives us our first real state
   const [gameState, setGameState] = useState<GameState | undefined>(undefined);
   const [connectionNumber, setConnectionNumber] = useState<number | null>(null);
+  const [gameId, setgameId] = useState<string |null>(null);
 
   const [currentUser, setCurrentUser] = useState<{
     token: string;
@@ -80,22 +82,23 @@ export default function App() {
       console.log(`Client: Connected ${socket.id}`);
     });
 
-    socket.on("game created", () =>{
+    socket.on("game created", (gameId) =>{
       setConnectionNumber(0);
-      setView("game");
-      socket.emit("start game");
+      setgameId(gameId);
+      setView("lobbyroom");
     })
 
-    socket.on("game joined", () =>{
-      setView("game");
+    socket.on("game joined", (gameId, connectionNum) =>{
+      setgameId(gameId);
+      setConnectionNumber(connectionNum);
+      setView("lobbyroom");
     })
 
     socket.on("new user accepted", (connectionNum: number) => {
-      setConnectionNumber(connectionNum);
+      
     });
 
     socket.on("gameState updated", (newGameState: GameState) => {
-      // Store the MASTER game state from the server
       setGameState(newGameState);
     });
 
@@ -123,22 +126,34 @@ export default function App() {
     onJoinGame: (code: string) => {socketRef.current?.emit("join game", code)},
   };
 
-  if(!currentUser) return <Login
+  const LobbyRoomProp = {
+    socket: socketRef.current,
+    gameId: gameId,
+    currentUser: currentUser,
+    players: gameState?.players,
+    onLeave: () => {setView("lobby")},
+    onStart: () => {setView("game")}
+  };
+
+  if(!currentUser) { return <Login
           onSuccess={(token, userId, username) => {
             setCurrentUser({ token, userId, username });
             setView("lobby");
           }}
         />
-
+        } else {
   return (
     <div>
       {view === "game" ? (
         <GameScreen {...sharedProps} />
       ) : view === "board" ? (
         <BoardScreen {...sharedProps} />
-      ) : (
+      ) : view === "lobby" ? (
         <Lobby {...LobbyProp} />
+      ) : (
+        <LobbyRoom {...LobbyRoomProp} />
       )}
     </div>
   );
+}
 }
