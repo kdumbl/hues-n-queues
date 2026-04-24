@@ -3,6 +3,8 @@ import './Login.css';
 
 type Tab = 'login' | 'create';
 
+//proibably use session storage instead of local storage as we run game locally
+
 interface LoginProps {
   onSuccess?: (token: string, userId: string, username: string) => void;
 }
@@ -45,7 +47,7 @@ export default function Login({ onSuccess }: LoginProps) {
         return;
       }
 
-      localStorage.setItem('token', data.token);
+      sessionStorage.setItem('token', data.token);
       console.log('about to call onSuccess', onSuccess);
       onSuccess?.(data.token, data.userId, data.username);
     } catch (err) {
@@ -87,7 +89,7 @@ export default function Login({ onSuccess }: LoginProps) {
         return;
       }
 
-      localStorage.setItem('token', data.token);
+      sessionStorage.setItem('token', data.token);
       console.log('about to call onSuccess', onSuccess);
       onSuccess?.(data.token, data.userId, data.username);
     } catch (err) {

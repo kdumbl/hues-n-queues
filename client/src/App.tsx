@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import BoardScreen from "./BoardScreen.tsx";
 import GameScreen from "./GameScreen.tsx";
+import Lobby from "./Lobby.tsx";
 import Login from "./Login.tsx";
+import LobbyRoom from "./LobbyRoom.tsx";
 import type { Player, GameState, View } from "./types.ts";
 import { io, Socket } from "socket.io-client";
 
@@ -9,6 +11,7 @@ import "./BoardScreen.css";
 import "./GameScreen.css";
 import "./App.css";
 import "./Login.css";
+
 
 // Keeps the shifting logic intact
 function masterToIndividualGameState(
@@ -39,55 +42,7 @@ export default function App() {
   // We start with null until the server gives us our first real state
   const [gameState, setGameState] = useState<GameState | undefined>(undefined);
   const [connectionNumber, setConnectionNumber] = useState<number | null>(null);
-
-  useEffect(() => {
-    // Initialize socket connection only once when the component mounts
-    socketRef.current = io("http://localhost:5001");
-    const socket = socketRef.current;
-
-    socket.on("connect", () => {
-      console.log(`Client: Connected ${socket.id}`);
-      socket.emit("new user");
-    });
-
-    socket.on("new user accepted", (connectionNum: number) => {
-      setConnectionNumber(connectionNum);
-    });
-
-    socket.on("gameState updated", (newGameState: GameState) => {
-      // Store the MASTER game state from the server
-      setGameState(newGameState);
-    });
-
-    // Cleanup function when component unmounts
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  // Derive the shifted layout cleanly during the render phase
-  const individualGameState: GameState | undefined =
-    connectionNumber !== null && gameState
-      ? masterToIndividualGameState(gameState, connectionNumber)
-      : gameState;
-
-  // Don't try to render the game until we have an assigned connection and game state
-  /*
-  if (!socketRef.current || connectionNumber === null || !individualGameState) {
-    return (
-      <div style={{ color: "white", textAlign: "center", marginTop: "20vh" }}>
-        <h2>Waiting for players...</h2>
-        <p>Open 4 windows in total to start the game!</p>
-      </div>
-    );
-  }
-*/
-  const sharedProps = {
-    socket: socketRef.current,
-    gameState: individualGameState,
-    switchView: (v: View) => setView(v),
-    connectionNumber,
-  };
+  const [gameId, setgameId] = useState<string |null>(null);
 
   const [currentUser, setCurrentUser] = useState<{
     token: string;
@@ -95,20 +50,110 @@ export default function App() {
     username: string;
   } | null>(null);
 
-  return (
-    <div>
-      {view === "login" ? (
-        <Login
+  //runs on site load
+  useEffect(() => {
+  const token = sessionStorage.getItem("token");
+  if (token) {
+    setCurrentUser({
+      token,
+      userId: "",
+      username: "",
+    });
+    setView("lobby");
+  } else {
+    console.log("failed reauth")
+  }
+}, []);
+
+  //runs anytime a change to currentUser is made
+  useEffect(() => {
+    //stops a connection if user isnt logged in.
+    if (!currentUser) return;
+
+    // Initialize socket connection only once and auth it using JWT
+    const socket = io("http://localhost:5001", {
+      auth: {
+        token: currentUser.token,
+      },
+    });
+    socketRef.current = socket;
+    
+    socket.on("connect", () => {
+      console.log(`Client: Connected ${socket.id}`);
+    });
+
+    socket.on("game created", (gameId) =>{
+      setConnectionNumber(0);
+      setgameId(gameId);
+      setView("lobbyroom");
+    })
+
+    socket.on("game joined", (gameId, connectionNum) =>{
+      setgameId(gameId);
+      setConnectionNumber(connectionNum);
+      setView("lobbyroom");
+    })
+
+    socket.on("new user accepted", (connectionNum: number) => {
+      
+    });
+
+    socket.on("gameState updated", (newGameState: GameState) => {
+      setGameState(newGameState);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [currentUser]);
+
+  // Derive the shifted layout cleanly during the render phase
+  const individualGameState: GameState | undefined =
+    connectionNumber !== null && gameState
+      ? masterToIndividualGameState(gameState, connectionNumber)
+      : gameState;
+
+  const sharedProps = {
+    socket: socketRef.current,
+    gameState: individualGameState,
+    switchView: (v: View) => setView(v),
+    connectionNumber,
+  };
+
+  const LobbyProp = {
+    currentUser: currentUser,
+    onCreateGame: () => {socketRef.current?.emit("create game")},
+    onJoinGame: (code: string) => {socketRef.current?.emit("join game", code)},
+  };
+
+  const LobbyRoomProp = {
+    socket: socketRef.current,
+    gameId: gameId,
+    currentUser: currentUser,
+    players: gameState?.players,
+    onLeave: () => {setView("lobby")},
+    onStart: () => {setView("game")}
+  };
+
+  if(!currentUser) { return <Login
           onSuccess={(token, userId, username) => {
             setCurrentUser({ token, userId, username });
-            setView("game");
+            setView("lobby");
           }}
         />
-      ) : view === "game" ? (
+        } else {
+  return (
+    <div>
+      {view === "game" ? (
         <GameScreen {...sharedProps} />
-      ) : (
+      ) : view === "board" ? (
         <BoardScreen {...sharedProps} />
+      ) : view === "lobby" ? (
+        <Lobby {...LobbyProp} />
+      ) : (
+        <LobbyRoom {...LobbyRoomProp} />
       )}
     </div>
   );
+}
 }

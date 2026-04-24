@@ -1,17 +1,78 @@
 import { Server, Socket } from "socket.io";
-import { getGame } from "../../gameStore";
+import { getGame, createGame, deleteGame } from "../../gameStore";
 import { Player } from "../../domain/Player";
 import { GameMapper } from "../../persistence/mappers/GameMapper";
+import { registerGameHandlers } from "./gameHandlers";
+import { create } from "node:domain";
+import { GameManager } from "../../domain/GameManager";
 
-// The 4 dummy profiles to assign to the 4 windows
-const DUMMY_PROFILES = [
-  { userId: "u1", name: "TheGooseMafia", color: "RED" },
-  { userId: "u2", name: "GutsMan", color: "YELLOW" },
-  { userId: "u3", name: "dather9", color: "GREEN" },
-  { userId: "u4", name: "DumblDum", color: "BLUE" },
-];
 
 export function registerLobbyHandlers(io: Server, socket: Socket) {
+
+  socket.on("join game", (gameId: string) => {
+    const game = getGame(gameId)
+    socket.join(gameId);
+    socket.data.gameId = gameId;
+    const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
+    game.players.push(newPlayer);
+    io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+    socket.emit("game joined", gameId, game.players.length - 1);
+
+    console.log(`game joined ${game.gameId} by ${socket.data.user.username}`);
+  });
+
+  socket.on("create game", () => {
+    const gameId = createGame();
+    const game = getGame(gameId);
+    const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
+    game.players.push(newPlayer);
+    //addrandys(game);
+    socket.join(gameId);
+    socket.data.gameId = gameId;
+    io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+    socket.emit("game created", gameId);
+
+    console.log(`game created ${game.gameId} by ${socket.data.user.username}`);
+  });
+
+  socket.on("start game", () => {
+    const gameId = socket.data.gameId;
+    const game = getGame(socket.data.gameId);
+    game.setUpGame(game.players);
+    game.startGame();
+    io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+    io.to(gameId).emit("game started");
+
+    console.log(`game started ${game.gameId} by ${socket.data.user.username}`);
+  });
+
+  socket.on("leave lobby", (gameId: string) => {
+    const game = getGame(socket.data.gameId);
+    socket.leave(gameId);
+    game.players = game.players.filter (
+      (player) => player.socketId !== socket.id
+    );
+    io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+
+    console.log(`game left ${game.gameId} by ${socket.data.user.username}`);
+    if(game.players.length < 1){
+      deleteGame(gameId);
+      console.log(`deleted game ${gameId}`)
+    }
+  });
+
+  function getColor(game: GameManager){
+    const colors = ["RED", "GREEN", "BLUE", "YELLOW"];
+    const playerColors = game.players.map(p => p.pieceColor);
+    const availableColors = colors.filter(
+    (color) => !playerColors.includes(color)
+    );
+
+    return availableColors[0];
+  }
+
+  /*
+
   socket.on("new user", () => {
     // Grab the singleton instance we defined in gameStore.ts
     const game = getGame("default-game");
@@ -47,4 +108,6 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
        socket.emit("error", "Game is full");
     }
   });
+
+  */
 }

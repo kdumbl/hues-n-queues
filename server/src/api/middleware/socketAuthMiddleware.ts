@@ -1,17 +1,29 @@
-//Things we wanna do everytime a socket is opened
-//authenitcate user, store user name into socket
 import { Socket, Server } from "socket.io";
-import type { GameState } from "../types";
-import { gameController } from "../controllers/gameController";
+import jwt from "jsonwebtoken";
+import { tokenPayload } from "../types";
 
-//current game cause we dont have lobby functionality yet.
-const GAME_ID = "69addc260263ad653bdd46f7";
+export function authSocket(io: Server): void {
+  const JWT_SECRET = process.env.JWT_SECRET || "fallback-dev-secret";
 
-//for now lets just assign connections one of the random users we have in db
-// will change with login page
-export function setupSocket(io: Server, socket: Socket): void {
-  //send an initial emit to set up the client with current info
-  //later this will be connected to the database and pull info from there
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token || socket.handshake.query.token;
 
-  io.emit("init");
+    if (!token) {
+      return next(new Error("Authentication error"));
+    }
+
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+
+      if (typeof decoded === "string") {
+        return next(new Error("Invalid token payload"));
+      }
+
+      socket.data.user = decoded as tokenPayload;
+
+      next();
+    } catch (err) {
+      next(new Error("Authentication error"));
+    }
+  });
 }

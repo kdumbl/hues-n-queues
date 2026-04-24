@@ -1,21 +1,30 @@
+import { error } from "node:console";
 import { GameManager } from "./domain/GameManager";
 
 const games = new Map<string, GameManager>();
 
-//for testing just one game instance at a time.
-export const tempGame = new GameManager();
+export const tempGame = new GameManager("tempgame");
 
-//will need to add a game id to gamemanager class
-export function createGame(gameId: string) {
-  //const game = new GameManager();
-  //does nothing for now just uses tempGame
+export function createGame(): string {
+  const gameId = generateGameId();
+  const game = new GameManager(gameId);
+  games.set(gameId, game);
+  return gameId;
 }
 
 export function getGame(gameId: string) {
-  //return games.get(gameId);
-  return tempGame;
+  const game = games.get(gameId);
+  if(game){
+    return game;
+  } else{
+    throw new Error("no game found");
+  }
 }
 
 export function deleteGame(gameId: string) {
   games.delete(gameId);
+}
+
+function generateGameId(): string {
+  return Math.random().toString(36).substring(2, 8); 
 }
