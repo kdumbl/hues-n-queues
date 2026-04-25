@@ -116,7 +116,6 @@ export default function App() {
   const sharedProps = {
     socket: socketRef.current,
     gameState: individualGameState,
-    switchView: (v: View) => setView(v),
     connectionNumber,
   };
 
@@ -146,8 +145,6 @@ export default function App() {
     <div>
       {view === "game" ? (
         <GameScreen {...sharedProps} />
-      ) : view === "board" ? (
-        <BoardScreen {...sharedProps} />
       ) : view === "lobby" ? (
         <Lobby {...LobbyProp} />
       ) : (
