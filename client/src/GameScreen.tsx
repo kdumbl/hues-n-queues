@@ -44,7 +44,7 @@ function color_string_to_background(colorString){
 function indexToGrid(colorIndex){
   let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
   let gridPosition = letters[Math.floor(colorIndex / 30)];
-  gridPosition += ('-' + (1 + colorIndex % 30));
+  gridPosition += (1 + colorIndex % 30);
   return gridPosition;
 }
 
@@ -254,25 +254,32 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
           <div style={{fontFamily: 'Impact', fontSize: '36px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '0 20px', width: '100%', boxSizing: 'border-box' as const}}>
             {chooseCardColors().map(color => (
-              <>
-                <div
-                  key={color[0]}
-                  onClick={() => {
-                    setSelectedColor(color[0]);
-                    setSelectedColorIndex(color[1]);}}
-                  style={{
-                    height: '80px',
-                    borderRadius: '10px',
-                    background: color[0],
-                    boxShadow: selectedColor === color[0] ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)',
-                    cursor: 'pointer',
-                    transform: selectedColor === color[0] ? 'scale(1.05)' : 'scale(1)',
-                    transition: 'all 0.15s ease',
-                    color: '#000'
-                  }}>
-                &nbsp;{indexToGrid(color[1])} </div>
-              </>
-
+              <div
+                key={color[0]}
+                onClick={() => {
+                  setSelectedColor(color[0]);
+                  setSelectedColorIndex(color[1]);
+                }}
+                style={{
+                  height: '80px',
+                  borderRadius: '10px',
+                  background: color[0],
+                  boxShadow: selectedColor === color[0] ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)',
+                  cursor: 'pointer',
+                  transform: selectedColor === color[0] ? 'scale(1.05)' : 'scale(1)',
+                  transition: 'all 0.15s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontFamily: 'Courier New, monospace',
+                  fontWeight: 'bold',
+                  fontSize: '18px',
+                  textShadow: '0px 0px 4px rgba(0,0,0,0.8)'
+                }}
+              >
+                {indexToGrid(color[1])}
+              </div>
             ))}
           </div>
           <input
