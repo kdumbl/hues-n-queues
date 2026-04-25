@@ -40,7 +40,7 @@
 /*  spotlight  */
 .hc-spotlight {
   position: absolute;
-  top: 120px;
+  top: 16vh;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
@@ -61,61 +61,61 @@
 .hc-lampCord {
   position: absolute;
   top: 0;
-  left: calc(50% - 2px);
-  width: 7px;
-  height: 66px;
+  left: calc(49.7vw);
+  width: 7.5px;
+  height: 10vh;
   background: #555;
-  z-index: 5;
+  z-index: 11;
 }
 
 .hc-lampShade {
   position: absolute;
-  top: 54px;
+  top: 5vh;
   left: 50%;
   transform: translateX(-50%);
-  width: 170px;
-  height: 82px;
+  width: 172.5px;
+  height: 11.4vh;
   background: linear-gradient(180deg, #131626, #0c1020);
   border-radius: 52% 52% 0 0 / 100% 100% 0 0;
   border: 2px solid #252a50;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.9),
     inset 0 -5px 16px rgba(255, 215, 60, 0.12);
-  z-index: 6;
+  z-index: 12;
 }
 
 .hc-lampRim {
   position: absolute;
-  top: 138px;
-  left: 50%;
+  top: 17vh;
+  left: 50vw;
   transform: translateX(-50%);
-  width: 171px;
-  height: 18px;
+  width: 172.5px;
+  height: 2.7vh;
   background: linear-gradient(180deg, #d4a828, #7a5e0e);
   border-radius: 0 0 50% 50% / 0 0 100% 100%;
-  z-index: 6;
+  z-index: 12;
 }
 
 .hc-lampBulb {
   position: absolute;
-  top: 138px;
-  left: 50%;
+  top: 17vh;
+  left: 50vw;
   transform: translateX(-50%);
-  width: 40px;
-  height: 24px;
+  width: 42px;
+  height: 3.4vh;
   border-radius: 50%;
   background: radial-gradient(circle at 38% 32%, #fffff0, #ffe066);
   box-shadow: 0 0 55px 25px rgba(255, 230, 80, 0.65),
     0 0 110px 60px rgba(255, 195, 40, 0.2);
-  z-index: 7;
+  z-index: 13;
 }
 
 .hc-tableGroup {
   position: absolute;
-  bottom: 17%;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 14vh;
+  left: 50vw;
+  transform: translateX(-50vw);
   width: 350px;
-  height: 200px;
+  height: 30vh;
   z-index: 9;
 }
 
@@ -123,10 +123,11 @@
   position: absolute;
   /* sit above the leg, leg is 78 px tall, base is 18 px,
      place tabletop so its bottom aligns above the leg     */
-  bottom: 96px;
-  left: 0;
-  width: 350px;
-  height: 120px;
+  bottom: 22vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 450px;
+  height: 17vh;
   background: radial-gradient(ellipse at 48% 30%, #d8a428 0%, #8c5c12 55%, #5e3c08 100%);
   border-radius: 50%;
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
@@ -139,8 +140,9 @@
 .hc-tableBoard {
   position: absolute;
   width: 250px;
-  height: auto;
+  height: 13vh;
   left: 50%;
+  transform: translateX(-50%);
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 11;
@@ -164,35 +166,35 @@
 
 .hc-tableLeg {
   position: absolute;
-  bottom: 18px;     /* sits on top of the base */
+  bottom: 7vh;     /* sits on top of the base */
   left: 50%;
   transform: translateX(-50%);
-  width: 35px;
-  height: 78px;
+  width: 45px;
+  height: 20vh;
   background: linear-gradient(90deg, #6a4810, #c09030, #6a4810);
   z-index: 9;
 }
 
 .hc-tableBase {
   position: absolute;
-  bottom: 0;
+  bottom: 7vh;
   left: 50%;
   transform: translateX(-50%);
-  width: 110px;
-  height: 18px;
+  width: 120px;
+  height: 3vh;
   background: linear-gradient(90deg, #4a3008, #9a7020, #4a3008);
   border-radius: 5px;
   z-index: 9;
 }
 
-/*body3 (rightmost)*/
+/*center*/
 .hc-body2{
   position: absolute;
-  bottom: 25%;
+  bottom: 22vh;
   left: 50%;
   transform: translateX(-50%);
-  width: 160px;
-  height: 300px;
+  width: 150px;
+  height: 40vh;
   background: radial-gradient(ellipse at 40% 30%, #f60202 0%, #c81515 55%, #5f0202 100%);
   border-radius: 50%;
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
@@ -201,28 +203,62 @@
   z-index: 3;
 }
 
-/*head*/
+/*left head*/
 .hc-head{
   position: absolute;
-  bottom: 25%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 250px;
-  height: 250px;
+  bottom: 55vh;
+  right: 57%;
+  transform: translateX(-56%);
+  width: 110px;
+  height: 110px;
   background: radial-gradient(ellipse at 40% 30%, #f60202 0%, #c81515 55%, #5f0202 100%);
   border-radius: 50%;
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
     inset 0 -12px 26px rgba(0, 0, 0, 0.5);
   border: 2px solid #030303;
+  z-index: 4
 }
 
-/*body2 (middle)*/
+/*middle head*/
+.hc-head2{
+  position: absolute;
+  bottom: 60vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(ellipse at 40% 30%, #f60202 0%, #c81515 55%, #5f0202 100%);
+  border-radius: 50%;
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
+    inset 0 -12px 26px rgba(0, 0, 0, 0.5);
+  border: 2px solid #030303;
+  z-index: 4
+}
+
+/*right head*/
+.hc-head3{
+  position: absolute;
+  bottom: 55vh;
+  left: 57%;
+  transform: translateX(56%);
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(ellipse at 40% 30%, #f60202 0%, #c81515 55%, #5f0202 100%);
+  border-radius: 50%;
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
+    inset 0 -12px 26px rgba(0, 0, 0, 0.5);
+  border: 2px solid #030303;
+  z-index: 4
+}
+
+/*right*/
 .hc-body3 {
   position: absolute;
-  bottom: 20%;
-  left: 60%;
-  width: 160px;
-  height: 300px;
+  bottom: 17vh;
+  left: 57%;
+  transform: translateX(30%);
+  width: 150px;
+  height: 40vh;
   background: radial-gradient(ellipse at 15% 10%, #0532ff 0%, #2b28c9 55%, #0e025f 100%);
   border-radius: 50%;
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
@@ -231,13 +267,14 @@
   z-index: 3;
 }
 
-/*body1 (leftmost)*/
+/*left*/
 .hc-body {
   position: absolute;
-  bottom: 20%;
-  right: 60%;
-  width: 160px;
-  height: 300px;
+  bottom: 17vh;
+  right: 57%;
+  transform: translateX(-30%);
+  width: 150px;
+  height: 40vh;
   background: radial-gradient(ellipse at 15% 10%, #229508 0%, #166904 55%, #105301 100%);
   border-radius: 50%;
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.92),
@@ -282,14 +319,14 @@
 }
 
 .backCard {
-  top: 6px;
-  left: -6px;
+  top: -6px;
+  left: 6px;
   background: #0e0e0e;
 }
 
 .midCard {
-  top: 3px;
-  left: -3px;
+  top: -3px;
+  left: 3px;
   background: #0e0e0e;
 }
 

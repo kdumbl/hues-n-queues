@@ -43,9 +43,9 @@ export class TurnManager {
 
 public forceScoring(): Map<Player, number> | null {
     // If we already hit the scoring phase naturally, prevent double counting
-    if (this.currentPhase === TurnPhase.SCORING) {
-      return null; 
-    }
+    //if (this.currentPhase === TurnPhase.SCORING) {
+    //  return null; 
+    //}
     this.currentPhase = TurnPhase.SCORING;
     return this.calculateScores();
   }
