@@ -47,8 +47,58 @@ function masterToIndividualGameState(masterGameState, connectionOrder){
   }
 }
 
+//Converts String versions of color from gameState into image addresses of that color of piece
+function colorStringToPiece(colorString){
+  if (colorString == "RED"){
+    return redPiece;
+  } else if (colorString == "YELLOW"){
+    return yellowPiece;
+  } else if (colorString == "GREEN"){
+    return greenPiece;
+  } else {
+    return bluePiece;
+  }
+}
+
+function scoreToIndex(score){
+  if (score <= 25){
+    return score;
+  } else {
+    return Math.round(77 - score);
+  }
+}
+
+function createScoreImages(gameState){
+  let images = []
+  let redImages = Array(52).fill(transPiece);
+  let yellowImages = Array(52).fill(transPiece);
+  let greenImages = Array(52).fill(transPiece);
+  let blueImages = Array(52).fill(transPiece);
+
+  for (let i = 0; i < 4; i++){
+    if (gameState.players[i].pieceColor == "RED"){
+      redImages[scoreToIndex(gameState.players[i].score)] = redPiece;
+    }
+    if (gameState.players[i].pieceColor == "YELLOW"){
+      yellowImages[scoreToIndex(gameState.players[i].score)] = yellowPiece;
+    }
+    if (gameState.players[i].pieceColor == "GREEN"){
+      greenImages[scoreToIndex(gameState.players[i].score)] = greenPiece;
+    }
+    if (gameState.players[i].pieceColor == "BLUE"){
+      blueImages[scoreToIndex(gameState.players[i].score)] = bluePiece;
+    }
+  }
+
+  images = [redImages, yellowImages, greenImages, blueImages]
+
+  return images;
+}
+
 //Creates two rows of grayscale rectangles representing score in the top left
-function ScoreRows(){
+function ScoreRows(scoreImages){
+
+  let lefts = ["-0.8vw", "1.6vw", "3.6vw", "5.6vw", "7.6vw", "9.6vw", "11.6vw", "13.5vw", "15.5vw", "17.5vw", "19.4vw", "21.5vw", "23.4vw", "25.4vw", "27.4vw", "29.3vw", "31.3vw", "33.3vw", "35.2vw", "37.2vw", "39.2vw", "41.2vw", "43.2vw", "45.2vw", "47.1vw", "49.1vw"];
 
   const frColors = ["#000000", "#414141", "#424443", "#464646", "#474948", "#4a4c4b", "#4d4d4d", "#4f4f4f", "#525453", "#545655", "#575757", "#595b5a", "#5d5d5d", "#5e605f", "#606261", "#636363", "#676765", "#696969", "#6b6d6c", "#6f6f6f", "#707271", "#737574", "#767676", "#797979", "#7b7d7c", "#7e807f"];
   const frNums = ["", "", "", "", "", "5", "", "", "", "", "10", "", "", "", "", "15", "", "", "", "", "20", "", "", "", "", "25"];
@@ -59,8 +109,22 @@ function ScoreRows(){
   const secondRow = [];
 
   for (let i = 0; i < 26; i++){
-    firstRow.push(<div className="hcscorediv" style={{background: frColors[i]}} key={`fr-${i}`}>{frNums[i]}</div>);
-    secondRow.push(<div className="hcscorediv" style={{background: srColors[i], color: '#000000'}} key={`sr-${i}`}>{srNums[i]}</div>)
+    firstRow.push(
+      <>
+        <div className="hcscorediv" style={{background: frColors[i]}} key={`fr-${i}`}>{frNums[i]}</div>
+        <img src={scoreImages.scoreImages[0][i]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "16vh"}}></img>
+        <img src={scoreImages.scoreImages[1][i]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "13.8vh"}}></img>
+        <img src={scoreImages.scoreImages[2][i]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "11.55vh"}}></img>
+        <img src={scoreImages.scoreImages[3][i]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "9.3vh"}}></img>
+      </>);
+    secondRow.push(
+      <>
+        <div className="hcscorediv" style={{background: srColors[i], color: '#000000'}} key={`sr-${i}`}>{srNums[i]}</div>
+        <img src={scoreImages.scoreImages[0][i + 26]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "6.5vh"}}></img>
+        <img src={scoreImages.scoreImages[1][i + 26]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "4.3vh"}}></img>
+        <img src={scoreImages.scoreImages[2][i + 26]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "2.05vh"}}></img>
+        <img src={scoreImages.scoreImages[3][i + 26]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "-0.2vh"}}></img>
+      </>);
   }
 
   return (
@@ -75,24 +139,9 @@ function ScoreRows(){
   );
 }
 
-//Converts String versions of color from gameState into image addresses of that color of piece
-function colorStringToPiece(colorString){
-  if (colorString == "RED"){
-    return redPiece;
-  } else if (colorString == "YELLOW"){
-    return yellowPiece;
-  } else if (colorString == "GREEN"){
-    return greenPiece;
-  } else {
-    return bluePiece;
-  }
-}
-
 //Generates layout of pieces from gameState
 function createImages(gameState){
   let images = [];
-  console.log(gameState.players[0].yourTurn);
-  console.log(!gameState.players[0].isClueGiver);
   if (gameState.players[0].yourTurn && !gameState.players[0].isClueGiver){
     images = Array(480).fill(null);
   } else {
@@ -106,7 +155,6 @@ function createImages(gameState){
       images[gameState.players[i].secondPiece.y * 30 + gameState.players[i].secondPiece.x] = colorStringToPiece(gameState.players[i].pieceColor);
     }
   }
-  console.log("Just recreated images btw");
   return images;
 }
 
@@ -186,6 +234,7 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
   const [lastPlaced, setLastPlaced] = useState(null);
   const [lastPlacedSecondRound, setLastPlacedSecondRound] = useState(null);
   const [images, setImages] = useState(createImages(gameState));
+  const [scoreImages, setScoreImages] = useState(createScoreImages(gameState));
   const [lastClueGiver, setLastClueGiver] = useState(0);
 
   //Called when a game space is clicked
@@ -210,6 +259,7 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
 
   socket?.on("gameState updated", (masterGameState) => {
     setImages(createImages(masterToIndividualGameState(masterGameState, connectionNumber)));
+    setScoreImages(createScoreImages(masterToIndividualGameState(masterGameState, connectionNumber)));
     if (gameState.players[lastClueGiver].isClueGiver == false){
       for (let i = 0; i < 4; i++){
         if (gameState.players[i].isClueGiver == true){
@@ -254,14 +304,14 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
         <img src={backButton} style={{width: '11vw', height: '8.3vh', zIndex: '200', left: '2vw', top: '1.5vw', position: 'absolute'}}/>
       </div>
       <div className="top-section">
-        <div className="score-row">
-          <ScoreRows />
+        <div className="score-row" style={{position: 'absolute', top: '5.5vh'}}>
+          <ScoreRows scoreImages = {scoreImages} />
         </div>
         {/* added the switch view func to the logo*/}
-        <img src={logo} style={{width: '11vw', height: '19vh', marginTop: '0.37vh', marginLeft: '0.1vw'}}/>
+        <img src={logo} style={{position: 'absolute', width: '11vw', height: '19vh', right: '21vw', top: '5.7vh'}}/>
       </div>
 
-      <div className="hcboard">
+      <div className="hcboard" style={{position: 'absolute', top: '5vh'}}>
         <div className="hcboard-row">
           <TopRow lh={'1.3vh'}/>
         </div>
@@ -276,8 +326,8 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
         ((gameState?.players[0].secondClue == "" && lastPlaced != null) || 
          (gameState?.players[0].secondClue != "" && lastPlacedSecondRound != null)) && (
         <div className="submit-button">
-          <button style={{width: '15vw', height: '6.4vh', 'zIndex': '201', 'left': '40.2vw', top: '92vh', position: 'absolute', 'backgroundColor': 'transparent'}} onClick = {submit} />
-          <img src={submitButton} style={{width: '15vw', height: '6.4vh', 'zIndex': '200', 'left': '40.2vw', top: '92vh', position: 'absolute'}}/>
+          <button style={{width: '14vw', height: '6vh', 'zIndex': '201', 'left': '40.7vw', top: '92.6vh', position: 'absolute', 'backgroundColor': 'transparent'}} onClick = {submit} />
+          <img src={submitButton} style={{width: '14vw', height: '6vh', 'zIndex': '200', 'left': '40.7vw', top: '92.6vh', position: 'absolute'}}/>
         </div>
       )}
 
@@ -286,7 +336,7 @@ export default function BoardScreen({socket, gameState, switchView, connectionNu
        (gameState?.players[0].yourTurn && !gameState.players[0].isClueGiver && 
         ((gameState?.players[0].secondClue == "" && lastPlaced == null) || 
          (gameState?.players[0].secondClue != "" && lastPlacedSecondRound == null)))) && (
-          <img src={submitButtonGray} style={{width: '15vw', height: '6.4vh', zIndex: '202', left: '40.2vw', top: '92vh', position: 'absolute'}} />
+          <img src={submitButtonGray} style={{width: '14vw', height: '6vh', zIndex: '202', left: '40.7vw', top: '92.6vh', position: 'absolute'}} />
       )}
       {gameState?.players[0].clue != "" && (
         <div className="hc-lastClue" style={{position: 'absolute', right: '8vw', top: '40vh'}}>Your clue is: <br /> {gameState?.players[0].clue} </div>

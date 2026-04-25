@@ -41,6 +41,13 @@ function color_string_to_background(colorString){
   }
 }
 
+function indexToGrid(colorIndex){
+  let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
+  let gridPosition = letters[Math.floor(colorIndex / 30)];
+  gridPosition += ('-' + (1 + colorIndex % 30));
+  return gridPosition;
+}
+
 const rankClass = (i: number) =>
   i === 0 ? "hc-lbRow isFirst"
   : i === 1 ? "hc-lbRow isSecond"
@@ -59,8 +66,8 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
   const [activePanel, setActivePanel] = useState<Panel>(null);
   const [colorblind, setColorblind] = useState(false);
   const [isTableHovered, setIsTableHovered] = useState(false);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedColorIndex, setSelectedColorIndex] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedColorIndex, setSelectedColorIndex] = useState<string>("");
   const [cueText, setCueText] = useState('');
   const [cardDrawn, setCardDrawn] = useState(false);
   const [announcement, setAnnouncement] = useState<string | null>(null);
@@ -127,18 +134,37 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
       <div className="hc-body2" style={{background: color_string_to_background(gameState?.players[2].pieceColor)}} />
       <div className="hc-body3" style={{background: color_string_to_background(gameState?.players[3].pieceColor)}} />
 
+      {/* heads */}
+      <div className="hc-head" style={{background: color_string_to_background(gameState?.players[1].pieceColor)}} />
+      {gameState.players[1].profileURL && (
+        <img src={gameState.players[1].profileURL} style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', right: '57%', transform: 'translate(-100%, -20%)', bottom: '55%', zIndex: 11}} />
+      )}
+      <img src="https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg" style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', right: '57%', transform: 'translate(-100%, -20%)', bottom: '55%', zIndex: 10}} />
+      
+      <div className="hc-head2" style={{background: color_string_to_background(gameState?.players[2].pieceColor)}} />
+      {gameState.players[2].profileURL && (
+        <img src={gameState.players[2].profileURL} style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '50%', transform: 'translate(-50%, -20%)', bottom: '60%', zIndex: 11}} />
+      )}
+      <img src="https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg" style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '50%', transform: 'translate(-50%, -20%)', bottom: '60%', zIndex: 10}} />
+
+      <div className="hc-head3" style={{background: color_string_to_background(gameState?.players[3].pieceColor)}} />
+      {gameState.players[3].profileURL && (
+        <img src={gameState.players[3].profileURL} style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '57%', transform: 'translate(-100%, -20%)', bottom: '55%', zIndex: 11}} />
+      )}
+      <img src="https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg" style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '57%', transform: 'translate(100%, -20%)', bottom: '55%', zIndex: 10}} />
+
       {/* player name labels — all offset from true center */}
-      <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: 'calc(50% - 16vw)', transform: 'translateX(-50%)', top: '54vh' }}>
+      <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: '43%', transform: 'translateX(-360%)', top: '54vh' }}>
         {gameState?.players[1].name}
       </div>
       <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '48vh' }}>
         {gameState?.players[2].name}
       </div>
-      <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: 'calc(50% + 16vw)', transform: 'translateX(-50%)', top: '54vh' }}>
+      <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: '57%', transform: 'translateX(260%)', top: '54vh' }}>
         {gameState?.players[3].name}
       </div>
 
-      <div className="hc-tableGroup">
+      <div>
         <div className="hc-tableTop">
           <img
             src={warpedBoard}
@@ -161,10 +187,12 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
 
       {gameState.players[0].secondClue != "" && gameState.players[0].yourTurn && gameState.players[0].isClueGiver && (
         <div className="hc-cardBackground">
-        <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
+        <div style={{fontFamily: 'Impact', fontSize: '36px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
           <button
             onClick={() => {
               setAnnouncement(null);
+              setSelectedColor("");
+              setSelectedColorIndex("");
               socket?.emit("score with 6", connectionNumber);
             }}
             className="hc-cardOption"
@@ -175,7 +203,12 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
 
       {gameState.players[0].clue != "" && gameState.players[0].secondClue == "" && gameState.players[0].yourTurn && gameState.players[0].isClueGiver && (
         <div className="hc-cardBackground">
-        <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
+        <div style={{fontFamily: 'Impact', fontSize: '36px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
+          <button
+            onClick={viewChanger}
+            className="hc-cardOption"
+            style = {{fontFamily: 'Courier New, monospace'}}
+          >View board</button>
           <input
             type="text"
             placeholder="Enter your cue!"
@@ -206,6 +239,8 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
           <button
             onClick={() => {
               setAnnouncement(null);
+              setSelectedColor("");
+              setSelectedColorIndex("");
               socket?.emit("score with 3", connectionNumber);
             }}
             className="hc-cardOption"
@@ -216,24 +251,28 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
 
       {cardDrawn && (
         <div className="hc-cardBackground">
-          <div style={{fontFamily: 'Impact', fontSize: '22px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
+          <div style={{fontFamily: 'Impact', fontSize: '36px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '0 20px', width: '100%', boxSizing: 'border-box' as const}}>
             {chooseCardColors().map(color => (
-              <div
-                key={color[0]}
-                onClick={() => {
-                  setSelectedColor(color[0]);
-                  setSelectedColorIndex(color[1]);}}
-                style={{
-                  height: '80px',
-                  borderRadius: '10px',
-                  background: color[0],
-                  boxShadow: selectedColor === color[0] ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)',
-                  cursor: 'pointer',
-                  transform: selectedColor === color[0] ? 'scale(1.05)' : 'scale(1)',
-                  transition: 'all 0.15s ease'
-                }}
-              />
+              <>
+                <div
+                  key={color[0]}
+                  onClick={() => {
+                    setSelectedColor(color[0]);
+                    setSelectedColorIndex(color[1]);}}
+                  style={{
+                    height: '80px',
+                    borderRadius: '10px',
+                    background: color[0],
+                    boxShadow: selectedColor === color[0] ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)',
+                    cursor: 'pointer',
+                    transform: selectedColor === color[0] ? 'scale(1.05)' : 'scale(1)',
+                    transition: 'all 0.15s ease',
+                    color: '#000'
+                  }}>
+                &nbsp;{indexToGrid(color[1])} </div>
+              </>
+
             ))}
           </div>
           <input
@@ -253,8 +292,6 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
                 setCardDrawn(false);
                 setPossibleColors([["", ""], ["", ""], ["", ""], ["", ""]]);
                 socket?.emit("clue submitted", selectedColorIndex, cueText, connectionNumber);
-                setSelectedColor("");
-                setSelectedColorIndex("");
                 setCueText("");
                 setClueErrorMessage("");
               } else {
@@ -271,7 +308,7 @@ export default function GameScreen({socket, gameState, switchView, connectionNum
       )}
 
       {/* deck */}
-      {gameState.players[0].isClueGiver && gameState.players[0].yourTurn && (<button
+      {gameState.players[0].clue == "" && gameState.players[0].isClueGiver && gameState.players[0].yourTurn && (<button
         type="button"
         className={`hc-deckButton ${isDeckHovered ? "isDeckHovered" : ""}`}
         onMouseEnter={() => setIsDeckHovered(true)}

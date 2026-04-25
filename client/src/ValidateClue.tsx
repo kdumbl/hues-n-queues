@@ -27,6 +27,10 @@ export default function validateClue(cue: string, isSecondTime: boolean) {
       return [false, "Cannot use color name in clue."];
     }
 
+    if (lowerCue.length == 0){
+      return [false, "Clue cannot be empty."]
+    }
+
     const coordinateRegex = /^[a-pA-P]-?\d{1,2}$/;
     if (coordinateRegex.test(lowerCue)) {
       return [false, "Cannot refer to board position in clue."];
