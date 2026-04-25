@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Lobby.css';
-
+import { Socket } from "socket.io-client";
 interface LobbyProps {
+  socket: Socket | null;
   currentUser: { token: string; userId: string; username: string } | null;
   onCreateGame: () => void;
   onJoinGame: (code: string) => void;
 }
 
-export default function Lobby({ currentUser, onCreateGame, onJoinGame }: LobbyProps) {
+export default function Lobby({socket, currentUser, onCreateGame, onJoinGame }: LobbyProps) {
   const [joinCode, setJoinCode] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket?.on("lobby error", (message) => {
+      setError(message);
+    });
+    return () => {
+     socket?.off("lobby error");
+    };
+  }, [socket]);
 
   const handleJoin = () => {
     if (!joinCode.trim()) {
