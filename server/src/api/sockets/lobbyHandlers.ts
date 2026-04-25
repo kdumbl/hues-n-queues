@@ -11,14 +11,19 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
 
   socket.on("join game", (gameId: string) => {
     const game = getGame(gameId)
-    socket.join(gameId);
-    socket.data.gameId = gameId;
-    const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
-    game.players.push(newPlayer);
-    io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
-    socket.emit("game joined", gameId, game.players.length - 1);
+      if(alreadyJoined(game, socket.data.user.userId)){
+        socket.emit("lobby error", "User already in game");
+        console.log("error user already in game");
+    } else {
+      socket.join(gameId);
+      socket.data.gameId = gameId;
+      const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
+      game.players.push(newPlayer);
+      io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+      socket.emit("game joined", gameId, game.players.length - 1);
 
-    console.log(`game joined ${game.gameId} by ${socket.data.user.username}`);
+      console.log(`game joined ${game.gameId} by ${socket.data.user.username}`);
+    }
   });
 
   socket.on("create game", () => {
@@ -69,6 +74,11 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     );
 
     return availableColors[0];
+  }
+
+  function alreadyJoined(game: GameManager, userId: string): boolean{
+    const ids = game.players.map(p => p.userId);
+    return ids.includes(userId);
   }
 
   /*
