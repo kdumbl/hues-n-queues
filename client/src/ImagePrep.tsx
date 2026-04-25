@@ -27,10 +27,10 @@ export function colorStringToPiece(colorString){
 
 export function createScoreImages(gameState){
   let images = []
-  let redImages = Array(52).fill(null);
-  let yellowImages = Array(52).fill(null);
-  let greenImages = Array(52).fill(null);
-  let blueImages = Array(52).fill(null);
+  let redImages = Array(52).fill(transPiece);
+  let yellowImages = Array(52).fill(transPiece);
+  let greenImages = Array(52).fill(transPiece);
+  let blueImages = Array(52).fill(transPiece);
 
   for (let i = 0; i < 4; i++){
     if (gameState.players[i].pieceColor == "RED"){
