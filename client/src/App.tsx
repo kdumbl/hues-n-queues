@@ -38,6 +38,7 @@ function masterToIndividualGameState(
 export default function App() {
   const socketRef = useRef<Socket | null>(null);
   const [view, setView] = useState<View>("login");
+  const [socket, setSocket] = useState<Socket | null> (null);
 
   // We start with null until the server gives us our first real state
   const [gameState, setGameState] = useState<GameState | undefined>(undefined);
@@ -77,6 +78,7 @@ export default function App() {
       },
     });
     socketRef.current = socket;
+    setSocket(socket);
     
     socket.on("connect", () => {
       console.log(`Client: Connected ${socket.id}`);
@@ -121,6 +123,7 @@ export default function App() {
   };
 
   const LobbyProp = {
+    socket: socket,
     currentUser: currentUser,
     onCreateGame: () => {socketRef.current?.emit("create game")},
     onJoinGame: (code: string) => {socketRef.current?.emit("join game", code)},
