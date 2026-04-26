@@ -113,6 +113,7 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
   const [images, setImages] = useState(createImages(gameState));
   const [scoreImages, setScoreImages] = useState(createScoreImages(gameState));
   const [lastClueGiver, setLastClueGiver] = useState(0);
+  const [buttonBorderWidth, setButtonBorderWidth] = useState(0.15);
 
   //Called when a game space is clicked
   function addPiece(i) {
@@ -201,7 +202,7 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
     items.push(
       <>
         <div className="hcboard-row">
-          <HCRow rowColors={rcs[i + 1]} letter={letters[i]} rowNum={i} images = {images} addPiece = {addPiece} />
+          <HCRow rowColors={rcs[i + 1]} letter={letters[i]} rowNum={i} images = {images} addPiece = {addPiece} buttonBorderWidth = {buttonBorderWidth} />
         </div>
       </>
     );
@@ -209,6 +210,66 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
 
   return (
     <>
+      {/* nav top-right */}
+      <div className="hc-topNav">
+        <button
+          type="button"
+          className={`hc-navBtn ${activePanel === "leaderboard" ? "isActive" : ""}`}
+          onClick={() => toggle("leaderboard")}
+        >
+          Scores
+        </button>
+        <button
+          type="button"
+          className={`hc-navBtn ${activePanel === "settings" ? "isActive" : ""}`}
+          onClick={() => toggle("settings")}
+        >
+          Settings
+        </button>
+      </div>
+
+      {/* settings label */}
+      {activePanel === "settings" && (
+        <div className="hc-panel">
+          <div className="hc-panelHeader">Settings</div>
+          <div className="hc-panelBody">
+            <div className="hc-settingRow">
+              <span className="hc-settingLabel">Grid line thickness</span>
+                <div>
+                  <input type="range" min="0" max="0.5" step="0.05" value={buttonBorderWidth} className="slider" id="myRange" onChange={
+                    (e) => setButtonBorderWidth(Number(e.target.value))}/>
+                </div>
+            </div>
+          </div>
+        </div>
+        )}
+
+        {/* leaderboard display */}
+        {activePanel === "leaderboard" && (
+          <div className="hc-panel">
+            <div className="hc-panelHeader">Leaderboard</div>
+            <div className="hc-panelBody">
+              <table className="hc-lbTable">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Pts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {generateLeaderboard(gameState).map((p, i) => (
+                    <tr key={p.name} className={rankClass(i)}>
+                      <td className="hc-lbRank">{i + 1}</td>
+                      <td>{p.name}</td>
+                      <td>{p.score.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       {!onBoardScreen && (
         <div className="hc-stage">
           {/* wall */}
@@ -474,71 +535,6 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
               animation: 'panelIn 0.2s ease'
             }}>
               {announcement}
-            </div>
-          )}
-
-          {/* nav top-right */}
-          <div className="hc-topNav">
-            <button
-              type="button"
-              className={`hc-navBtn ${activePanel === "leaderboard" ? "isActive" : ""}`}
-              onClick={() => toggle("leaderboard")}
-            >
-              Scores
-            </button>
-            <button
-              type="button"
-              className={`hc-navBtn ${activePanel === "settings" ? "isActive" : ""}`}
-              onClick={() => toggle("settings")}
-            >
-              Settings
-            </button>
-          </div>
-
-          {/* settings label */}
-          {activePanel === "settings" && (
-            <div className="hc-panel">
-              <div className="hc-panelHeader">Settings</div>
-              <div className="hc-panelBody">
-                <div className="hc-settingRow">
-                  <span className="hc-settingLabel">Colorblind mode</span>
-                  <label className="hc-toggle">
-                    <input
-                      type="checkbox"
-                      checked={colorblind}
-                      onChange={e => setColorblind(e.target.checked)}
-                    />
-                    <span className="hc-toggleSlider" />
-                  </label>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* leaderboard display */}
-          {activePanel === "leaderboard" && (
-            <div className="hc-panel">
-              <div className="hc-panelHeader">Leaderboard</div>
-              <div className="hc-panelBody">
-                <table className="hc-lbTable">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Player</th>
-                      <th>Pts</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {generateLeaderboard(gameState).map((p, i) => (
-                      <tr key={p.name} className={rankClass(i)}>
-                        <td className="hc-lbRank">{i + 1}</td>
-                        <td>{p.name}</td>
-                        <td>{p.score.toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
           )}
         </div>

@@ -69,7 +69,7 @@ export function TopRow({ lh }){
 //images is an array representing whether each space is occupied by a game piece and if so, which color it is
 //Functionally, each element in the array is an image url that is assigned to the source field of an otherwise empty image object over each space
 //add_piece is the function that is called when a space is clicked, defined in HCBoard
-export function HCRow({rowColors, letter, rowNum, images, addPiece}){
+export function HCRow({rowColors, letter, rowNum, images, addPiece, buttonBorderWidth}){
 
   //Value for easier indexing of array
   let base = rowNum * 30;
@@ -84,7 +84,7 @@ export function HCRow({rowColors, letter, rowNum, images, addPiece}){
       items.push(
         <>
           <div style={{position: "relative"}}>
-            <button onClick={() => addPiece(base + i)} className="hcsquarebutt" style={{background: rowColors[i]}}></button>
+            <button onClick={() => addPiece(base + i)} className="hcsquarebutt" style={{background: rowColors[i], border: buttonBorderWidth + 'vw solid #000' }}></button>
             <img src={images[base + i]} style={{width: "2.5vw", height: "auto", zIndex: "200", position: "absolute", left: lefts[i], bottom: "-4vh"}}></img>
           </div>
         </>
@@ -93,7 +93,7 @@ export function HCRow({rowColors, letter, rowNum, images, addPiece}){
       items.push(
         <>
           <div style={{position: "relative"}}>
-            <button onClick={() => addPiece(base + i)} className="hcsquarebutt" style={{background: rowColors[i]}}></button>
+            <button onClick={() => addPiece(base + i)} className="hcsquarebutt" style={{background: rowColors[i], border: buttonBorderWidth + 'vw solid #000'}}></button>
             <img src={images[base + i]} style={{width: "2.5vw", height: "5.5vh", zIndex: "200", position: "absolute", left: lefts[i], bottom: "-4vh"}}></img>
           </div>
         </>

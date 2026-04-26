@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import BoardScreen from "./BoardScreen.tsx";
 import GameScreen from "./GameScreen.tsx";
 import Lobby from "./Lobby.tsx";
 import Login from "./Login.tsx";
