@@ -11,9 +11,12 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
 
   socket.on("join game", (gameId: string) => {
     const game = getGame(gameId)
-      if(alreadyJoined(game, socket.data.user.userId)){
-        socket.emit("lobby error", "User already in game");
-        console.log("error user already in game");
+      if(game.players.length >= 4) {
+        socket.emit("lobby error", "Lobby full");
+        console.log("error Lobby full");
+      } else if(alreadyJoined(game, socket.data.user.userId)){
+        socket.emit("lobby error", "User already in lobby");
+        console.log("error user already in lobby");
     } else {
       socket.join(gameId);
       socket.data.gameId = gameId;
