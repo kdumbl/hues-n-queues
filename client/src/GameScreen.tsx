@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 //import {socket} from "./api/socket.tsx";
 import "./GameScreen.css";
 import "./BoardScreen.css";
@@ -115,6 +115,44 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
   const [lastClueGiver, setLastClueGiver] = useState(0);
   const [buttonBorderWidth, setButtonBorderWidth] = useState(0.15);
 
+  // --- NEW ANNOUNCEMENT & SCORING LOGIC ---
+  const prevScoreRef = useRef(gameState?.players[0]?.score || 0);
+  const [scoreToast, setScoreToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    const currentScore = gameState?.players[0]?.score || 0;
+    if (currentScore > prevScoreRef.current) {
+      const pointsGained = currentScore - prevScoreRef.current;
+      setScoreToast(`+${pointsGained} Points!`);
+      const timer = setTimeout(() => setScoreToast(null), 4000);
+      prevScoreRef.current = currentScore;
+      return () => clearTimeout(timer);
+    } else if (currentScore < prevScoreRef.current) {
+      prevScoreRef.current = currentScore;
+    }
+  }, [gameState?.players[0]?.score]);
+
+  const getInstructions = () => {
+    if (!gameState) return "Waiting for game state...";
+    const me = gameState.players[0];
+
+    if (me.isClueGiver) {
+      if (me.yourTurn) {
+         if (me.clue === "") return "You are the Clue Giver! Draw a card and give a 1-word clue (no color words).";
+         if (me.clue !== "" && me.secondClue === "") return "You can give a 2nd 1-word clue, or end the round.";
+      }
+      return "Clue submitted. Waiting for other players to guess...";
+    } else {
+      if (me.yourTurn) {
+         if (!onBoardScreen) return "It's your turn! Click the board on the table to access the board screen and place your piece.";
+         return "It's your turn! Place your piece on the grid and click Submit.";
+      }
+      if (!onBoardScreen) return "Waiting for your turn... You can click the board to watch the progress.";
+      return "Waiting for your turn...";
+    }
+  };
+  // --- END NEW ANNOUNCEMENT LOGIC ---
+
   //Called when a game space is clicked
   function addPiece(i) {
     if (gameState.players[0].yourTurn){
@@ -210,8 +248,48 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
 
   return (
     <>
+      {/* NEW INSTRUCTION BANNER */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        color: '#fff',
+        textAlign: 'center',
+        padding: '10px',
+        fontFamily: 'Courier New, monospace',
+        fontSize: '16px',
+        zIndex: 1000,
+        borderBottom: '2px solid #444',
+        pointerEvents: 'none'
+      }}>
+        {getInstructions()}
+      </div>
+
+      {/* NEW SCORE TOAST */}
+      {scoreToast && (
+        <div style={{
+          position: 'fixed',
+          top: '50px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: '#2ecc71',
+          color: '#fff',
+          padding: '10px 20px',
+          borderRadius: '8px',
+          fontFamily: 'Impact, sans-serif',
+          fontSize: '24px',
+          zIndex: 1000,
+          boxShadow: '0 4px 6px rgba(0,0,0,0.5)',
+          letterSpacing: '2px'
+        }}>
+          {scoreToast}
+        </div>
+      )}
+
       {/* nav top-right */}
-      <div className="hc-topNav">
+      <div className="hc-topNav" style={{ marginTop: '30px' }}>
         <button
           type="button"
           className={`hc-navBtn ${activePanel === "leaderboard" ? "isActive" : ""}`}
@@ -230,7 +308,7 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
 
       {/* settings label */}
       {activePanel === "settings" && (
-        <div className="hc-panel">
+        <div className="hc-panel" style={{ marginTop: '30px' }}>
           <div className="hc-panelHeader">Settings</div>
           <div className="hc-panelBody">
             <div className="hc-settingRow">
@@ -246,7 +324,7 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
 
         {/* leaderboard display */}
         {activePanel === "leaderboard" && (
-          <div className="hc-panel">
+          <div className="hc-panel" style={{ marginTop: '30px' }}>
             <div className="hc-panelHeader">Leaderboard</div>
             <div className="hc-panelBody">
               <table className="hc-lbTable">

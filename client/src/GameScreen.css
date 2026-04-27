@@ -565,3 +565,22 @@
 
 .hc-lbRow.isThird td { color: #cd7f32; }
 .hc-lbRow.isThird .hc-lbRank { color: #cd7f32 !important; }
+
+.announcement-bar {
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 15px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 2px solid #333;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  transition: background 0.3s ease;
+}
+
+.announcement-bar.scoring {
+  background: #2ecc71; /* Green for points */
+  font-size: 1.2rem;
+}
