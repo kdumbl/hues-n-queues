@@ -84,15 +84,15 @@ export default function LobbyRoom({
         <div className="lr-section">
           {/* Profile Picture URL input for current user */}
           {currentUser && (
-            <div className="lr-pfpInput">
+            <div className="lr-sectionTitle">
               <label htmlFor="pfp-url">Profile Picture URL:</label>
               <input
                 id="pfp-url"
                 type="text"
+                className="lb-input"
                 value={pfpUrl}
                 onChange={handlePfpChange}
                 placeholder="Paste image URL..."
-                style={{ width: '80%' }}
               />
               {pfpUrl && (
                 <img src={pfpUrl} alt="Preview" style={{ width: 40, height: 40, borderRadius: '50%', marginLeft: 8 }} />
