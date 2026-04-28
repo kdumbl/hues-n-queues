@@ -3,6 +3,7 @@ import GameScreen from "./GameScreen.tsx";
 import Lobby from "./Lobby.tsx";
 import Login from "./Login.tsx";
 import LobbyRoom from "./LobbyRoom.tsx";
+import EndScreen from "./EndScreen.tsx";
 import type { Player, GameState, View } from "./types.ts";
 import { io, Socket } from "socket.io-client";
 
@@ -95,13 +96,16 @@ export default function App() {
       setView("lobbyroom");
     })
 
-    socket.on("new user accepted", (connectionNum: number) => {
-      
-    });
-
     socket.on("gameState updated", (newGameState: GameState) => {
       setGameState(newGameState);
     });
+
+    socket.on("game finished", (newGameState: GameState) => {
+      setGameState(newGameState);
+      setView("end");
+      
+      console.log("GAMEOVER");
+    })
 
     return () => {
       socket.disconnect();
@@ -136,6 +140,12 @@ export default function App() {
     onStart: () => {setView("game")}
   };
 
+  const EndScreenProp ={
+    players: gameState?.players ?? [],
+    currentUser: currentUser,
+    onReturnToLobby: () => {setView("lobby"); socket?.emit("leave game", gameId);}
+  };
+
   if(!currentUser) { return <Login
           onSuccess={(token, userId, username) => {
             setCurrentUser({ token, userId, username });
@@ -149,8 +159,10 @@ export default function App() {
         <GameScreen {...sharedProps} />
       ) : view === "lobby" ? (
         <Lobby {...LobbyProp} />
-      ) : (
+      ) : view === "lobbyroom" ? (
         <LobbyRoom {...LobbyRoomProp} />
+      ) : (
+        <EndScreen{...EndScreenProp}/>
       )}
     </div>
   );

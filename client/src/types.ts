@@ -24,4 +24,4 @@ export interface Player {
 }
 
 
-export type View = "login" | "game" | "board"| "lobby" | "lobbyroom";
+export type View = "login" | "game" | "lobby" | "lobbyroom" | "end";
