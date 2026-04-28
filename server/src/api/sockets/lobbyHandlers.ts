@@ -81,6 +81,19 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     return ids.includes(userId);
   }
 
+
+  // Handle profile picture URL update
+  socket.on("update pfp", ({ gameId, url }) => {
+    const game = getGame(gameId);
+    if (!game) return;
+    // Find the player by socketId
+    const player = game.players.find(p => p.socketId === socket.id);
+    if (player) {
+      player.profileURL = url;
+      io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+    }
+  });
+
   /*
 
   socket.on("new user", () => {

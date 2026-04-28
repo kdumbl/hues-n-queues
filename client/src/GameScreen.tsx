@@ -295,22 +295,22 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
 
           {/* heads */}
           <div className="hc-head" style={{background: color_string_to_background(gameState?.players[1].pieceColor)}} />
-          {gameState.players[1].profileURL && (
-            <img src={gameState.players[1].profileURL} style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', right: '57%', transform: 'translate(-100%, -20%)', bottom: '55%', zIndex: 11}} />
-          )}
-          <img src="https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg" style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', right: '57%', transform: 'translate(-100%, -20%)', bottom: '55%', zIndex: 10}} />
+          <img
+            src={gameState.players[1].profileURL || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg"}
+            style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', right: '57%', transform: 'translate(-100%, -20%)', bottom: '55%', zIndex: 10}}
+          />
           
           <div className="hc-head2" style={{background: color_string_to_background(gameState?.players[2].pieceColor)}} />
-          {gameState.players[2].profileURL && (
-            <img src={gameState.players[2].profileURL} style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '50%', transform: 'translate(-50%, -20%)', bottom: '60%', zIndex: 11}} />
-          )}
-          <img src="https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg" style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '50%', transform: 'translate(-50%, -20%)', bottom: '60%', zIndex: 10}} />
+          <img
+            src={gameState.players[2].profileURL || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg"}
+            style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '50%', transform: 'translate(-50%, -20%)', bottom: '60%', zIndex: 10}}
+          />
 
           <div className="hc-head3" style={{background: color_string_to_background(gameState?.players[3].pieceColor)}} />
-          {gameState.players[3].profileURL && (
-            <img src={gameState.players[3].profileURL} style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '57%', transform: 'translate(-100%, -20%)', bottom: '55%', zIndex: 11}} />
-          )}
-          <img src="https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg" style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '57%', transform: 'translate(100%, -20%)', bottom: '55%', zIndex: 10}} />
+          <img
+            src={gameState.players[3].profileURL || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg"}
+            style={{position: 'absolute', borderRadius: '50%', width: '80px', height: 'auto', left: '57%', transform: 'translate(100%, -20%)', bottom: '55%', zIndex: 10}}
+          />
 
           {/* player name labels — all offset from true center */}
           <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: '43%', transform: 'translateX(-360%)', top: '54vh' }}>

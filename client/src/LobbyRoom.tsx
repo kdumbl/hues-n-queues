@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import type { Player } from "./types";
 import "./LobbyRoom.css";
@@ -23,6 +23,8 @@ export default function LobbyRoom({
   onLeave,
   onStart,
 }: LobbyRoomProps) {
+  const [pfpUrl, setPfpUrl] = useState("");
+
   useEffect(() => {
     if (!socket) return;
 
@@ -45,6 +47,21 @@ export default function LobbyRoom({
     onLeave();
   };
 
+  // Find the current player object
+  const currentPlayer = players?.find(p => currentUser && (p.name === currentUser.username || p.socketId === (socket?.id || "")));
+  // Set initial pfpUrl if available
+  useEffect(() => {
+    if (currentPlayer && currentPlayer.profileURL && !pfpUrl) {
+      setPfpUrl(currentPlayer.profileURL);
+    }
+  }, [currentPlayer]);
+
+  const handlePfpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPfpUrl(e.target.value);
+    // Emit to server
+    socket?.emit("update pfp", { gameId, url: e.target.value });
+  };
+
   return (
     <div className="lr-stage">
       <div className="lr-wall" />
@@ -65,6 +82,23 @@ export default function LobbyRoom({
         </div>
 
         <div className="lr-section">
+          {/* Profile Picture URL input for current user */}
+          {currentUser && (
+            <div className="lr-pfpInput">
+              <label htmlFor="pfp-url">Profile Picture URL:</label>
+              <input
+                id="pfp-url"
+                type="text"
+                value={pfpUrl}
+                onChange={handlePfpChange}
+                placeholder="Paste image URL..."
+                style={{ width: '80%' }}
+              />
+              {pfpUrl && (
+                <img src={pfpUrl} alt="Preview" style={{ width: 40, height: 40, borderRadius: '50%', marginLeft: 8 }} />
+              )}
+            </div>
+          )}
           <div className="lr-sectionTitle">Room Code</div>
           <div className="lr-roomCode">{gameId}</div>
           <div className="lr-sectionDesc">
