@@ -38,12 +38,23 @@ socket.on("second clue submitted", async (cueText: string, connectionNum?: numbe
   socket.on("score with 3", async () => {
     const gameId = socket.data.gameId;
     const updatedState = await GameController.handleScoring(gameId);
-    io.to(gameId).emit("gameState updated", updatedState);
+    
+    if(updatedState[1] == 0){
+      io.to(gameId).emit("gameState updated", updatedState[0]);
+    } else {
+      io.to(gameId).emit("game finished", updatedState[0]);
+    }
   });
 
   socket.on("score with 6", async () => {
     const gameId = socket.data.gameId;
     const updatedState = await GameController.handleScoring(gameId);
-    io.to(gameId).emit("gameState updated", updatedState);
+
+    if(updatedState[1] == 0){
+      io.to(gameId).emit("gameState updated", updatedState[0]);
+    } else {
+      io.to(gameId).emit("game finished", updatedState[0]);
+    }
+
   });
 }

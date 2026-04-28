@@ -11,18 +11,24 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
 
   socket.on("join game", (gameId: string) => {
     const game = getGame(gameId)
-      if(alreadyJoined(game, socket.data.user.userId)){
-        socket.emit("lobby error", "User already in game");
-        console.log("error user already in game");
-    } else {
-      socket.join(gameId);
-      socket.data.gameId = gameId;
-      const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
-      game.players.push(newPlayer);
-      io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
-      socket.emit("game joined", gameId, game.players.length - 1);
+      if(game.players.length >= 4) {
+        socket.emit("lobby error", "Lobby full");
+        console.log("error Lobby full");
+      } else if(alreadyJoined(game, socket.data.user.userId)){
+        socket.emit("lobby error", "User already in lobby");
+        console.log("error user already in lobby");
+      } else if(game.gameState == "ACTIVE" || game.gameState == "END") {
+        socket.emit("lobby error", "Game already started");
+        console.log("error game already started");
+      } else {
+        socket.join(gameId);
+        socket.data.gameId = gameId;
+        const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
+        game.players.push(newPlayer);
+        io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
+        socket.emit("game joined", gameId, game.players.length - 1);
 
-      console.log(`game joined ${game.gameId} by ${socket.data.user.username}`);
+        console.log(`game joined ${game.gameId} by ${socket.data.user.username}`);
     }
   });
 
@@ -54,11 +60,26 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
   socket.on("leave lobby", (gameId: string) => {
     const game = getGame(socket.data.gameId);
     socket.leave(gameId);
+    socket.data.gameId = null;
     game.players = game.players.filter (
       (player) => player.socketId !== socket.id
     );
     io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
 
+    console.log(`game left ${game.gameId} by ${socket.data.user.username}`);
+    if(game.players.length < 1){
+      deleteGame(gameId);
+      console.log(`deleted game ${gameId}`)
+    }
+  });
+
+  socket.on("leave game", (gameId: string) => {
+    const game = getGame(socket.data.gameId);
+    socket.leave(gameId);
+    socket.data.gameId = null;
+    game.players = game.players.filter (
+      (player) => player.socketId !== socket.id
+    );
     console.log(`game left ${game.gameId} by ${socket.data.user.username}`);
     if(game.players.length < 1){
       deleteGame(gameId);
@@ -94,43 +115,4 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     }
   });
 
-  /*
-
-  socket.on("new user", () => {
-    // Grab the singleton instance we defined in gameStore.ts
-    const game = getGame("default-game");
-    
-    // Check if this socket is already registered (helps with hot-reloads)
-    let playerIndex = game.players.findIndex(p => p.socketId === socket.id);
-    
-    if (playerIndex === -1 && game.players.length < 4) {
-      // Assign the next available dummy profile
-      const profile = DUMMY_PROFILES[game.players.length];
-      const newPlayer = new Player(profile.userId, profile.name, socket.id, profile.color);
-      game.players.push(newPlayer);
-      playerIndex = game.players.length - 1;
-      
-      console.log(`Assigned socket ${socket.id} to ${profile.name} (Player ${playerIndex})`);
-    }
-
-    if (playerIndex !== -1) {
-      // Tell the client which player they are (0, 1, 2, or 3)
-      socket.emit("new user accepted", playerIndex);
-      
-      // If 4 players have joined and the game hasn't started, initialize the round
-      if (game.players.length === 4 && game.gameState === "SETUP") {
-        console.log("4 players connected, starting game!");
-        game.setUpGame(game.players);
-        game.startGame();
-        io.emit("gameState updated", GameMapper.toDTO(game));
-      } else if (game.players.length === 4) {
-        // If the game already started (e.g. someone refreshed), just send them the current state
-        socket.emit("gameState updated", GameMapper.toDTO(game));
-      }
-    } else {
-       socket.emit("error", "Game is full");
-    }
-  });
-
-  */
 }

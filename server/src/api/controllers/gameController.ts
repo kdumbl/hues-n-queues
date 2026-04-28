@@ -33,6 +33,10 @@ export class GameController {
     if (!game) throw new Error("Game not found");
 
     game.endRoundAndScore();
-    return GameMapper.toDTO(game);
+    if(game.gameState == "ACTIVE"){
+      return [GameMapper.toDTO(game), 0];
+    } else {
+      return [GameMapper.toDTO(game), 1];
+    }
   }
 }

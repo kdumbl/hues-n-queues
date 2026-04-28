@@ -175,7 +175,7 @@ export class GameManager {
   }
 
   private checkGameOverCondition(): boolean {
-    const requiredRounds = this.players.length >= 7 ? 1 : 2;
+    const requiredRounds = 1;
     for (const player of this.players) {
       if ((this.roundsHosted.get(player.userId) || 0) < requiredRounds) return false;
     }
