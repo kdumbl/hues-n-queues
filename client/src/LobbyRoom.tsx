@@ -99,7 +99,9 @@ export default function LobbyRoom({
               )}
             </div>
           )}
+
           <div className="lr-sectionTitle">Room Code:</div>
+
           <div className="lr-roomCode"
           onClick={() => gameId && navigator.clipboard.writeText(gameId)}>
             <span>{gameId}</span>
@@ -111,6 +113,8 @@ export default function LobbyRoom({
               <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
             </svg>
           </div>
+          
+
           <div className="lr-sectionDesc">
             Share this code with friends so they can join your lobby.
           </div>
