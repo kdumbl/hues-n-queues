@@ -138,6 +138,7 @@ export default function Login({ onSuccess }: LoginProps) {
                 <label className="ln-label">Email</label>
                 <input
                   type="email"
+                  minLength={1}
                   className="ln-input"
                   placeholder="you@example.com"
                   value={loginEmail}
@@ -150,6 +151,7 @@ export default function Login({ onSuccess }: LoginProps) {
                 <label className="ln-label">Password</label>
                 <input
                   type="password"
+                  minLength={1}
                   className="ln-input"
                   placeholder="••••••••"
                   value={loginPassword}
@@ -170,6 +172,8 @@ export default function Login({ onSuccess }: LoginProps) {
               <div className="ln-field">
                 <label className="ln-label">Username</label>
                 <input
+                  maxLength={16}
+                  minLength={1}
                   type="text"
                   className="ln-input"
                   placeholder="coolplayer42"
@@ -181,6 +185,7 @@ export default function Login({ onSuccess }: LoginProps) {
               <div className="ln-field">
                 <label className="ln-label">Email</label>
                 <input
+                  minLength={1}
                   type="email"
                   className="ln-input"
                   placeholder="you@example.com"
@@ -192,6 +197,7 @@ export default function Login({ onSuccess }: LoginProps) {
               <div className="ln-field">
                 <label className="ln-label">Password</label>
                 <input
+                  minLength={1}
                   type="password"
                   className="ln-input"
                   placeholder="••••••••"
@@ -203,6 +209,7 @@ export default function Login({ onSuccess }: LoginProps) {
               <div className="ln-field">
                 <label className="ln-label">Confirm Password</label>
                 <input
+                  minLength={1}
                   type="password"
                   className="ln-input"
                   placeholder="••••••••"

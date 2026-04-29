@@ -139,7 +139,7 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
     if (me.isClueGiver) {
       if (me.yourTurn) {
          if (me.clue === "") return "You are the Clue Giver! Draw a card and give a 1-word clue (no color words).";
-         if (me.clue !== "" && me.secondClue === "") return "You can give a 2nd 1-word clue, or end the round.";
+         if (me.clue !== "" && me.secondClue === "") return "You can give a 2nd clue of up to two words, or end the round.";
       }
       return "Clue submitted. Waiting for other players to guess...";
     } else {
@@ -391,13 +391,13 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
           />
 
           {/* player name labels — all offset from true center */}
-          <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: '43%', transform: 'translateX(-360%)', top: '54vh' }}>
+          <div className="hc-nameTip" style={{ zIndex: 200, position: 'absolute', right: '57%', transform: 'translateX(-50%)', top: '54vh' }}>
             {gameState?.players[1].name}
           </div>
-          <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '48vh' }}>
+          <div className="hc-nameTip" style={{ zIndex: 200, position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '48vh' }}>
             {gameState?.players[2].name}
           </div>
-          <div className="hc-deckTip" style={{ zIndex: 200, position: 'absolute', left: '57%', transform: 'translateX(260%)', top: '54vh' }}>
+          <div className="hc-nameTip" style={{ zIndex: 200, position: 'absolute', left: '57%', transform: 'translateX(50%)', top: '54vh' }}>
             {gameState?.players[3].name}
           </div>
 
@@ -580,6 +580,7 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
             onMouseEnter={() => setIsDeckHovered(true)}
             onMouseLeave={() => setIsDeckHovered(false)}
             onClick={() => setCardDrawn(prev => !prev)}
+            style={{zIndex: '200'}}
           > 
             <div className="hc-deckCards">
               <div className="hc-card backCard" />

@@ -66,9 +66,9 @@ export default function EndScreen({ players, currentUser, onReturnToLobby }: End
 
   const rankLabel = (i: number) => {
     if (i === 0) return '🥇';
-    if (i === 1) return '🥈';
-    if (i === 2) return '🥉';
-    if (i === 3) return '💩';
+    if (i === 1) return '2';
+    if (i === 2) return '3';
+    if (i === 3) return '4';
     return `#${i + 1}`;
   };
 
