@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import './Lobby.css';
 import { Socket } from "socket.io-client";
+import ProfileButton from './components/ProfileButton';
+
 interface LobbyProps {
   socket: Socket | null;
   currentUser: { token: string; userId: string; username: string } | null;
@@ -11,6 +13,7 @@ interface LobbyProps {
 export default function Lobby({socket, currentUser, onCreateGame, onJoinGame }: LobbyProps) {
   const [joinCode, setJoinCode] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
+  
 
   useEffect(() => {
     if (!socket) return;
@@ -42,6 +45,8 @@ export default function Lobby({socket, currentUser, onCreateGame, onJoinGame }: 
       <div className="lb-lampShade" />
       <div className="lb-lampRim" />
       <div className="lb-lampBulb" />
+
+      <ProfileButton currentUser={currentUser}/>
 
       <div className="lb-card">
         <div className="lb-brand">HUES & CUES</div>

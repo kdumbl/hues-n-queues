@@ -64,4 +64,5 @@ export interface UserDoc {
   username: string;
   email: string;
   passwordHash: string;
+  profileurl : string;
 }

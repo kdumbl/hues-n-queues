@@ -4,6 +4,7 @@ const userSchema = new Schema({
   username: String,
   email: String,
   passwordHash: String,
+  profileurl: String
 });
 
 export const UserModel = model("User", userSchema);

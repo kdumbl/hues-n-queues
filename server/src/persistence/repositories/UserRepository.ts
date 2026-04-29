@@ -13,6 +13,10 @@ export class UserRepository {
     return doc ? UserMapper.toDomain(doc) : null;
   }
 
+  public static async updateProfileUrl(userId: string, url: string): Promise<void>{
+    await UserModel.updateOne({_id: userId}, {$set: {profileurl: url}});
+  }
+
   public static async create(
     username: string,
     email: string,
