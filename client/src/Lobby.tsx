@@ -8,9 +8,10 @@ interface LobbyProps {
   currentUser: { token: string; userId: string; username: string } | null;
   onCreateGame: () => void;
   onJoinGame: (code: string) => void;
+  onLogOut: () => void;
 }
 
-export default function Lobby({socket, currentUser, onCreateGame, onJoinGame }: LobbyProps) {
+export default function Lobby({socket, currentUser, onCreateGame, onJoinGame, onLogOut }: LobbyProps) {
   const [joinCode, setJoinCode] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
   
@@ -46,7 +47,7 @@ export default function Lobby({socket, currentUser, onCreateGame, onJoinGame }: 
       <div className="lb-lampRim" />
       <div className="lb-lampBulb" />
 
-      <ProfileButton currentUser={currentUser}/>
+      <ProfileButton currentUser={currentUser} onLogOut = {onLogOut}/>
 
       <div className="lb-card">
         <div className="lb-brand">HUES & CUES</div>

@@ -69,7 +69,7 @@
 
 .profile-panel {
   margin-top: 10px;
-  width: 230px;
+  width: 200px;
 
   background: rgba(10, 10, 14, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -224,6 +224,39 @@
 }
 
 .ln-submit:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ln-submit-logout {
+  padding: 8px 16px;
+  width: 100%;
+  background: rgba(109, 37, 37, 0.1);
+  border: 1px solid rgba(206, 114, 114, 0.35);
+  border-radius: 6px;
+  color: #d44343;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.ln-submit-logout:hover:not(:disabled) {
+  background: rgba(185, 59, 59, 0.18);
+  border-color: rgba(230, 81, 81, 0.65);
+  transform: translateY(-1px);
+}
+
+.ln-submit-logout:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ln-submit-logout:disabled {
   opacity: 0.45;
   cursor: default;
 }

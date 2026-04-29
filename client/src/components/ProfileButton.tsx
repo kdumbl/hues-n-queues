@@ -3,15 +3,20 @@ import "./ProfileButton.css";
 
 interface ProfileButtonProps {
   currentUser: { token: string; userId: string; username: string } | null;
+  onLogOut: ()=>void;
 }
 
-export default function ProfileButton({ currentUser }: ProfileButtonProps) {
+export default function ProfileButton({ currentUser, onLogOut }: ProfileButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+
+  const handleLogOut = () => {
+    onLogOut();
+  }
 
   const handleSetProfileUrl = async (newUrl: string) => {
     if (!newUrl.trim()) {
@@ -128,6 +133,14 @@ export default function ProfileButton({ currentUser }: ProfileButtonProps) {
               disabled={loading}
             >
               {loading ? "Saving…" : "Save Image URL"}
+            </button>
+            <button
+              type="button"
+              className="ln-submit-logout"
+              onClick={() => handleLogOut()}
+              disabled={loading}
+            >
+              {loading ? "Logging Out..." : "Logout"}
             </button>
           </div>
         </div>

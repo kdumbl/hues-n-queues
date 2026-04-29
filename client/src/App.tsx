@@ -131,6 +131,7 @@ export default function App() {
     currentUser: currentUser,
     onCreateGame: () => {socketRef.current?.emit("create game")},
     onJoinGame: (code: string) => {socketRef.current?.emit("join game", code)},
+    onLogOut: () => {setCurrentUser(null); sessionStorage.clear();},
   };
 
   const LobbyRoomProp = {
