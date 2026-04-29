@@ -43,4 +43,21 @@ export class AuthService {
     }
     return userDoc.profileurl;
   }
+
+  public static async updateStats(userId: string, stats: boolean): Promise<void> {
+    if(stats){
+      await UserRepository.updateStatsWin(userId);
+    } else {
+      await UserRepository.updateStatsLoss(userId);
+    }
+    
+  }
+
+  public static async getStats(userId: string): Promise<any> {
+    const userDoc = await UserRepository.findById(userId);
+    if (!userDoc) {
+      throw new Error("Invalid userId.");
+    }
+    return userDoc.stats;
+  }
 }

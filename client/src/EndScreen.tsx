@@ -16,13 +16,30 @@ interface EndScreenProps {
 
 export default function EndScreen({ players, currentUser, onReturnToLobby }: EndScreenProps) {
   const confettiRef = useRef<HTMLCanvasElement>(null);
-
   const sorted = [...players].sort((a, b) => b.score - a.score);
   const winner = sorted[0] ?? null;
   const isWinner = winner?.name === currentUser?.username;
+  const hasUpdated = useRef(false);
 
-  /* ── lightweight confetti ── */
+  const handleUpdateStats = async (isWinner: boolean) => {
+    try {
+      const res = await fetch("http://localhost:5001/auth/profile/stats", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${currentUser?.token}`,
+        },
+        body: JSON.stringify({ stats: isWinner }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to update.");
+    } catch (err: any) {}
+  };
+
   useEffect(() => {
+    if(hasUpdated.current) return;
+    hasUpdated.current = true;
+    handleUpdateStats(isWinner);
     const canvas = confettiRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');

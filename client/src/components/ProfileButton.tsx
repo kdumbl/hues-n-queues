@@ -13,6 +13,7 @@ export default function ProfileButton({ currentUser, onLogOut }: ProfileButtonPr
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const [profileStats, setProfileStats] = useState<any>({wins:0,losses:0});
 
   const handleLogOut = () => {
     onLogOut();
@@ -51,6 +52,16 @@ export default function ProfileButton({ currentUser, onLogOut }: ProfileButtonPr
   useEffect(() => {
     if (!currentUser?.token) return;
 
+    const fetchProfileStats = async () => {
+      try {
+        const res = await fetch("http://localhost:5001/auth/profile/stats", {
+          headers: { Authorization: `Bearer ${currentUser.token}` },
+        });
+        const data = await res.json();
+        setProfileStats(data.stats ?? null);
+      } catch {}
+    };
+
     const fetchProfileImage = async () => {
       try {
         const res = await fetch("http://localhost:5001/auth/profile/image", {
@@ -61,6 +72,7 @@ export default function ProfileButton({ currentUser, onLogOut }: ProfileButtonPr
       } catch {}
     };
 
+    fetchProfileStats();
     fetchProfileImage();
   }, [currentUser?.token]);
 
@@ -101,6 +113,11 @@ export default function ProfileButton({ currentUser, onLogOut }: ProfileButtonPr
                 src={profileImageUrl}
                 alt="Profile"
               />
+            )}
+            {profileStats && (
+              <span className="profile-header-name">
+                {profileStats.wins}W {profileStats.losses}L
+              </span>
             )}
           </div>
 

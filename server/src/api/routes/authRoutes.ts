@@ -80,4 +80,35 @@ router.get(
   },
 );
 
+router.put(
+  "/profile/stats",
+  requireAuth,
+  async (req: Request, res: Response) => {
+    const userId = (req as any).user.userId;
+
+    const { stats } = req.body;
+
+    await AuthService.updateStats(userId, stats);
+
+    res
+      .status(200)
+      .json({
+        message: "Profile stats updated successfully",
+        stats: stats,
+      });
+  },
+);
+
+router.get(
+  "/profile/stats",
+  requireAuth,
+  async (req: Request, res: Response) => {
+    const userId = (req as any).user.userId;
+
+    const stats = await AuthService.getStats(userId);
+
+    res.status(200).json({ stats });
+  },
+);
+
 export default router;

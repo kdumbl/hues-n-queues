@@ -10,6 +10,7 @@ export class UserMapper {
       userDoc.email,
       userDoc.passwordHash,
       userDoc.profileurl,
+      userDoc.stats,
     );
   }
 
@@ -18,6 +19,7 @@ export class UserMapper {
       username: user.username,
       email: user.email,
       profileurl: user.profileurl,
+      stats: user.stats,
     };
     if (passwordHash) {
       document.passwordHash = passwordHash;

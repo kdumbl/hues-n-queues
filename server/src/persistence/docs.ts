@@ -65,4 +65,8 @@ export interface UserDoc {
   email: string;
   passwordHash: string;
   profileurl : string;
+  stats: {
+    wins: number;
+    losses: number
+  }
 }
