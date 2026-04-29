@@ -283,6 +283,19 @@
   z-index: 3;
 }
 
+.hc-nameTip {
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  border: 1px solid #555;
+  font-family: monospace;
+  text-align: center;
+  width: 100px;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
 /*  deck button  */
 .hc-deckButton {
   position: absolute;

@@ -93,6 +93,7 @@ export default function LobbyRoom({
                 value={pfpUrl}
                 onChange={handlePfpChange}
                 placeholder="Paste image URL..."
+                style={{width: '80%'}}
               />
               {pfpUrl && (
                 <img src={pfpUrl} alt="Preview" style={{ width: 40, height: 40, borderRadius: '50%', marginLeft: 8 }} />
