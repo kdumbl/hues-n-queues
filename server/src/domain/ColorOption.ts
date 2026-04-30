@@ -35,9 +35,7 @@ export class ColorOption {
     };
   }
 
-  /**
-   * Recreate a ColorOption from a plain Mongo document.
-   */
+
   public static fromDocument(doc: ColorOptionDoc): ColorOption {
     return new ColorOption(doc.optionID, doc.hexCode, doc.gridCoordinates);
   }

@@ -1,6 +1,3 @@
-//convert domain models to mongo models and vice versa
-// src/persistence/mappers/UserMapper.ts
-
 import { Types, Document } from "mongoose";
 import { User } from "../../domain/User"; // Importing your new concrete class!
 import { UserDoc } from "../docs";
@@ -20,8 +17,8 @@ export class UserMapper {
 
   /**
    * Converts a User domain class back into a format MongoDB expects.
-   * * @param user The User domain object
-   * @param passwordHash (Optional) The hashed password, usually only needed when creating a new user.
+   * * @param user 
+   * @param passwordHash 
    */
   public static toDocument(user: User, passwordHash?: string): any {
     const document: any = {
