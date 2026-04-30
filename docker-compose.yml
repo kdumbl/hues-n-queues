@@ -9,7 +9,7 @@ services:
     environment:
       - NODE_ENV=development
       - MONGO_URI_PROD=mongodb://mongo:27017/huesncues
-      - JWT_SECRET=some-long-random-string-change-this
+      - JWT_SECRET=icdi329oskobvqldk3ncorckdvme47mu7jcm5sw
     depends_on:
       - mongo
 

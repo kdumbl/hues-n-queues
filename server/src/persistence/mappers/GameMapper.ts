@@ -42,7 +42,7 @@ export class GameMapper {
   }
 
   public static toDomain(doc: GameDoc): GameManager {
-    const game = new GameManager();
+    const game = new GameManager(doc.gameId);
     const colors = ["RED", "YELLOW", "GREEN", "BLUE", "ORANGE", "PURPLE"];
     game.players = doc.players.map((p, i) => Player.fromDocument(p, colors[i]));
     const playerMap = new Map(game.players.map(p => [p.userId, p]));

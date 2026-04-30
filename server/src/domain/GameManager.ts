@@ -184,6 +184,7 @@ export class GameManager {
 
   public toDocument(): GameDoc {
     return {
+      gameId: this.gameId,
       players: this.players.map(p => p.toDocument()),
       board: this.board.toDocument(),
       currentTurnManager: this.currentTurnManager?.toDocument(),

@@ -1,4 +1,3 @@
-import { error } from "node:console";
 import { GameManager } from "./domain/GameManager";
 
 const games = new Map<string, GameManager>();

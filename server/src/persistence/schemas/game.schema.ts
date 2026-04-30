@@ -1,9 +1,4 @@
-import { Schema, model, InferSchemaType, Types } from "mongoose";
-
-/*
-Basicallly a clone of the domain classes but in a mongodb format.
-Will be stored in mongo and can be used to recreate the game.
-*/
+import { Schema, model } from "mongoose";
 
 const colorOptionSchema = new Schema({
   optionID: Number,
@@ -26,8 +21,6 @@ const playerSchema = new Schema({
 });
 
 const boardSchema = new Schema({
-  // Mongoose syntax for a 2D array of strings. 
-  // We use mixed strings to allow nulls, or define it as [[String]]
   grid: [[String]], 
   occupiedSpaces: [String],
 });

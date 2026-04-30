@@ -11,11 +11,6 @@ const connectDB = async (): Promise<void> => {
     console.error("MongoDB connection error:", err);
     process.exit(1);
   }
-
-  //test stuff
-
-  const x = await UserRepository.findById("698a90810c302758bb2c7077");
-  console.log(x);
 };
 
 export default connectDB;

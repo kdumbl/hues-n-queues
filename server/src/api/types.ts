@@ -1,5 +1,4 @@
 export interface GameState {
-  //client described state of game
   players: Player[];
 }
 

@@ -22,7 +22,6 @@ export interface PlayerDoc {
 }
 
 export interface BoardDoc {
-  // Updated this from the old Record/Map type to our new 2D array
   grid: (string | null)[][]; 
   occupiedSpaces: string[];
 }
@@ -45,18 +44,19 @@ export interface TurnDoc {
   targetOption: ColorOptionDoc | undefined;
   currentPhase: TurnPhase;
   currentClues: string[];
-  roundGuesses: Record<string, string[]>; //userId -> guesses
+  roundGuesses: Record<string, string[]>;
 }
 
 export type GameState = "SETUP" | "ACTIVE" | "END";
 
 export interface GameDoc {
+  gameId: string;
   players: PlayerDoc[];
   board: BoardDoc;
   currentTurnManager: TurnDoc | undefined;
   gameState: GameState;
   currentClueGiverIndex: number;
-  roundsHosted: Record<string, number>; //string is userId
+  roundsHosted: Record<string, number>;
 }
 
 export interface UserDoc {
