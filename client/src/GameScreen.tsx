@@ -1,22 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-//import {socket} from "./api/socket.tsx";
 import "./GameScreen.css";
-import "./BoardScreen.css";
+import "./components/BoardScreen.css";
+import "./components/BoardScreen.tsx"
 import { Socket } from 'socket.io-client';
 import type { GameState } from "./types";
 import warpedBoard from "./assets/warped_board.png";
 import LeaderboardSort from './LeaderboardSort';
 import { rcs } from './ColorPalettes';
 import validateClue from './ValidateClue';
-import "./BoardScreen.css";
-import logo from "./assets/logo.png";
-import backButton from "./assets/back_button.png";
-import submitButton from "./assets/submit_button.png";
-import submitButtonGray from "./assets/submit_button_gray.png";
-import { ScoreRows, TopRow, HCRow } from "./GridPrep.tsx";
+import { HCRow } from "./GridPrep.tsx";
 import { colorStringToPiece, createScoreImages, createImages } from "./ImagePrep.tsx";
-
-type Panel = "settings" | "leaderboard" | null;
+import TopRightMenus from './components/TopRightMenus.tsx';
+import BoardScreen from './components/BoardScreen.tsx';
 
 function masterToIndividualGameState(masterGameState, connectionOrder){
   console.log(connectionOrder);
@@ -44,7 +39,7 @@ function masterToIndividualGameState(masterGameState, connectionOrder){
   }
 }
 
-function generateLeaderboard(gameState){
+export function generateLeaderboard(gameState){
   let LEADERBOARD = [];
   if (gameState != undefined){
     let general = [];
@@ -81,12 +76,6 @@ function indexToGrid(colorIndex){
   return gridPosition;
 }
 
-const rankClass = (i: number) =>
-  i === 0 ? "hc-lbRow isFirst"
-  : i === 1 ? "hc-lbRow isSecond"
-  : i === 2 ? "hc-lbRow isThird"
-  : "hc-lbRow";
-
 interface Props {
   socket: Socket| null;
   gameState: GameState | undefined;
@@ -96,8 +85,6 @@ interface Props {
 export default function GameScreen({socket, gameState, connectionNumber}: Props) {
   const [onBoardScreen, setOnBoardScreen] = useState(false);
   const [isDeckHovered, setIsDeckHovered] = useState(false);
-  const [activePanel, setActivePanel] = useState<Panel>(null);
-  const [colorblind, setColorblind] = useState(false);
   const [isTableHovered, setIsTableHovered] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedColorIndex, setSelectedColorIndex] = useState<string>("");
@@ -107,6 +94,7 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
   const [possibleColors, setPossibleColors] = useState([["", ""], ["", ""], ["", ""], ["", ""]]);
   const [clueErrorMessage, setClueErrorMessage] = useState<string | boolean>("");
   const items = [];
+  type Panel = "settings" | "leaderboard" | null;
   const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"];
   const [lastPlaced, setLastPlaced] = useState(null);
   const [lastPlacedSecondRound, setLastPlacedSecondRound] = useState(null);
@@ -114,10 +102,9 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
   const [scoreImages, setScoreImages] = useState(createScoreImages(gameState));
   const [lastClueGiver, setLastClueGiver] = useState(0);
   const [buttonBorderWidth, setButtonBorderWidth] = useState(0.15);
-
-  // --- NEW ANNOUNCEMENT & SCORING LOGIC ---
   const prevScoreRef = useRef(gameState?.players[0]?.score || 0);
   const [scoreToast, setScoreToast] = useState<string | null>(null);
+  const [activePanel, setActivePanel] = useState<Panel>(null);
 
   useEffect(() => {
     const currentScore = gameState?.players[0]?.score || 0;
@@ -151,7 +138,6 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
       return "Waiting for your turn...";
     }
   };
-  // --- END NEW ANNOUNCEMENT LOGIC ---
 
   //Called when a game space is clicked
   function addPiece(i) {
@@ -184,19 +170,6 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
       }
     }
   })
-
-  function submit(){
-    if (gameState.players[0].secondClue == ""){
-      socket?.emit("guess submitted", lastPlaced, connectionNumber);
-      setLastPlaced(null); // Reset placement so button grays out on next turn
-    } else {
-      socket?.emit("guess submitted", lastPlacedSecondRound, connectionNumber);
-      setLastPlacedSecondRound(null); // Reset placement so button grays out on next turn
-    }
-  }
-
-  const toggle = (panel: Panel) =>
-    setActivePanel(prev => (prev === panel ? null : panel));
 
   const showAnnouncement = (msg: string) => {
     setAnnouncement(msg);
@@ -248,106 +221,20 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
 
   return (
     <>
-      {/* NEW INSTRUCTION BANNER */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        color: '#fff',
-        textAlign: 'center',
-        padding: '10px',
-        fontFamily: 'Courier New, monospace',
-        fontSize: '16px',
-        zIndex: 1000,
-        borderBottom: '2px solid #444',
-        pointerEvents: 'none'
-      }}>
+      <div 
+        style={{ position: 'fixed', top: 0, left: 0, width: '100%', backgroundColor: 'rgba(0, 0, 0, 0.8)', color: '#fff', textAlign: 'center', padding: '10px', fontFamily: 'Courier New, monospace', fontSize: '16px', zIndex: 1000, borderBottom: '2px solid #444', pointerEvents: 'none'}}
+      >
         {getInstructions()}
       </div>
 
-      {/* NEW SCORE TOAST */}
       {scoreToast && (
-        <div style={{
-          position: 'fixed',
-          top: '50px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          backgroundColor: '#2ecc71',
-          color: '#fff',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          fontFamily: 'Impact, sans-serif',
-          fontSize: '24px',
-          zIndex: 1000,
-          boxShadow: '0 4px 6px rgba(0,0,0,0.5)',
-          letterSpacing: '2px'
-        }}>
+        <div 
+          style={{ position: 'fixed', top: '50px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#2ecc71', color: '#fff', padding: '10px 20px', borderRadius: '8px', fontFamily: 'Impact, sans-serif', fontSize: '24px', zIndex: 1000, boxShadow: '0 4px 6px rgba(0,0,0,0.5)', letterSpacing: '2px'}}
+        >
           {scoreToast}
         </div>
       )}
-
-      {/* nav top-right */}
-      <div className="hc-topNav" style={{ marginTop: '30px' }}>
-        <button
-          type="button"
-          className={`hc-navBtn ${activePanel === "leaderboard" ? "isActive" : ""}`}
-          onClick={() => toggle("leaderboard")}
-        >
-          Scores
-        </button>
-        <button
-          type="button"
-          className={`hc-navBtn ${activePanel === "settings" ? "isActive" : ""}`}
-          onClick={() => toggle("settings")}
-        >
-          Settings
-        </button>
-      </div>
-
-      {/* settings label */}
-      {activePanel === "settings" && (
-        <div className="hc-panel" style={{ marginTop: '30px' }}>
-          <div className="hc-panelHeader">Settings</div>
-          <div className="hc-panelBody">
-            <div className="hc-settingRow">
-              <span className="hc-settingLabel">Grid line thickness</span>
-                <div>
-                  <input type="range" min="0" max="0.5" step="0.05" value={buttonBorderWidth} className="slider" id="myRange" onChange={
-                    (e) => setButtonBorderWidth(Number(e.target.value))}/>
-                </div>
-            </div>
-          </div>
-        </div>
-        )}
-
-        {/* leaderboard display */}
-        {activePanel === "leaderboard" && (
-          <div className="hc-panel" style={{ marginTop: '30px' }}>
-            <div className="hc-panelHeader">Leaderboard</div>
-            <div className="hc-panelBody">
-              <table className="hc-lbTable">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Pts</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {generateLeaderboard(gameState).map((p, i) => (
-                    <tr key={p.name} className={rankClass(i)}>
-                      <td className="hc-lbRank">{i + 1}</td>
-                      <td>{p.name}</td>
-                      <td>{p.score.toLocaleString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+      <TopRightMenus gameState={gameState} activePanel={activePanel} setActivePanel={setActivePanel} buttonBorderWidth={buttonBorderWidth} setButtonBorderWidth={setButtonBorderWidth} />
       {!onBoardScreen && (
         <div className="hc-stage">
           {/* wall */}
@@ -403,20 +290,8 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
 
           <div>
             <div className="hc-tableTop">
-              <img
-                src={warpedBoard}
-                className="hc-tableBoard"
-                alt="Game board"
-              />
-
-              <button
-                type="button"
-                className={`hc-tableButton ${isTableHovered ? "isDeckHovered" : ""}`}
-                onMouseEnter={() => setIsTableHovered(true)}
-                onMouseLeave={() => setIsTableHovered(false)}
-                onClick={viewChanger}
-                aria-label="Open game board"
-              />
+              <img src={warpedBoard} className="hc-tableBoard" alt="Game board"/>
+              <button type="button" className={`hc-tableButton ${isTableHovered ? "isDeckHovered" : ""}`} onMouseEnter={() => setIsTableHovered(true)} onMouseLeave={() => setIsTableHovered(false)} onClick={viewChanger} aria-label="Open game board" />
             </div>
             <div className="hc-tableLeg" />
             <div className="hc-tableBase" />
@@ -442,42 +317,15 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
             <div className="hc-cardBackground">
             <div style={{fontFamily: 'Impact', fontSize: '36px', color: '#fff', letterSpacing: '2px'}}>HUES & CUES</div>
               <div style={{fontFamily: 'Courier New, monospace', fontSize: '12px', letterSpacing: '1.5px', color: '#ccc'}}>Your color is...</div>
-              <div
-                  style={{
-                    height: '80px',
-                    width: '100px',
-                    borderRadius: '10px',
-                    background: selectedColor,
-                    boxShadow: `0 0 0 2px #fff, 0 4px 16px rgba(0,0,0,0.6)`,
-                    transform: 'scale(1.05)',
-                    transition: 'all 0.15s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    fontFamily: 'Courier New, monospace',
-                    fontWeight: 'bold',
-                    fontSize: '18px',
-                    textShadow: '0px 0px 4px rgba(0,0,0,0.8)'
-                  }}
-                >
-                  {indexToGrid(selectedColorIndex)}
-                </div>
+              <div style={{ height: '80px', width: '100px', borderRadius: '10px', background: selectedColor, boxShadow: `0 0 0 2px #fff, 0 4px 16px rgba(0,0,0,0.6)`, transform: 'scale(1.05)', transition: 'all 0.15s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'Courier New, monospace', fontWeight: 'bold', fontSize: '18px', textShadow: '0px 0px 4px rgba(0,0,0,0.8)'}}>
+                {indexToGrid(selectedColorIndex)}
+              </div>
               <button
                 onClick={viewChanger}
                 className="hc-cardOption"
                 style = {{fontFamily: 'Courier New, monospace'}}
               >View board</button>
-              <input
-                type="text"
-                placeholder="Enter your cue!"
-                value={cueText}
-                onChange={e => setCueText(e.target.value)}
-                maxLength={16}
-                minLength={1}
-                className="hc-cardInput"
-                style={{fontFamily: 'Courier New, monospace'}}
-              />
+              <input type="text" placeholder="Enter your cue!" value={cueText} onChange={e => setCueText(e.target.value)} maxLength={16} minLength={1} className="hc-cardInput" style={{fontFamily: 'Courier New, monospace'}} />
               <button
                 onClick={() => {
                   if (validateClue(cueText, true)[0]){
@@ -519,38 +367,13 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
                       setSelectedColor(color[0]);
                       setSelectedColorIndex(color[1]);
                     }}
-                    style={{
-                      height: '80px',
-                      borderRadius: '10px',
-                      background: color[0],
-                      boxShadow: selectedColor === color[0] ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)',
-                      cursor: 'pointer',
-                      transform: selectedColor === color[0] ? 'scale(1.05)' : 'scale(1)',
-                      transition: 'all 0.15s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      fontFamily: 'Courier New, monospace',
-                      fontWeight: 'bold',
-                      fontSize: '18px',
-                      textShadow: '0px 0px 4px rgba(0,0,0,0.8)'
-                    }}
+                    style={{ height: '80px', borderRadius: '10px', background: color[0], boxShadow: selectedColor === color[0] ? `0 0 0 3px #fff, 0 4px 16px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.6)', cursor: 'pointer', transform: selectedColor === color[0] ? 'scale(1.05)' : 'scale(1)', transition: 'all 0.15s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'Courier New, monospace', fontWeight: 'bold', fontSize: '18px', textShadow: '0px 0px 4px rgba(0,0,0,0.8)'}}
                   >
                     {indexToGrid(color[1])}
                   </div>
                 ))}
               </div>
-              <input
-                type="text"
-                placeholder="Enter your cue!"
-                value={cueText}
-                onChange={e => setCueText(e.target.value)}
-                maxLength={16}
-                minLength={1}
-                className="hc-cardInput"
-                style={{fontFamily: 'Courier New, monospace'}}
-              />
+              <input type="text" placeholder="Enter your cue!" value={cueText} onChange={e => setCueText(e.target.value)} maxLength={16} minLength={1} className="hc-cardInput" style={{fontFamily: 'Courier New, monospace'}}/>
               <button
                 onClick={() => {
                   if (validateClue(cueText, false)[0]){
@@ -596,76 +419,16 @@ export default function GameScreen({socket, gameState, connectionNumber}: Props)
 
           {/* announcement banner */}
           {announcement && (
-            <div style={{
-              position: 'absolute',
-              bottom: '40px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(10,10,14,0.94)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '10px',
-              padding: '14px 28px',
-              color: '#fff',
-              fontFamily: 'Courier New, monospace',
-              fontSize: '14px',
-              letterSpacing: '1px',
-              zIndex: 400,
-              whiteSpace: 'nowrap' as const,
-              animation: 'panelIn 0.2s ease'
-            }}>
+            <div 
+              style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(10,10,14,0.94)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '14px 28px', color: '#fff', fontFamily: 'Courier New, monospace', fontSize: '14px', letterSpacing: '1px', zIndex: 400, whiteSpace: 'nowrap' as const, animation: 'panelIn 0.2s ease'}}
+            >
               {announcement}
             </div>
           )}
         </div>
       )} 
       {onBoardScreen && (
-        <>
-          <div className="back-button">
-            <button style={{width: '11vw', height: '8.3vh', zIndex: '201', left: '2vw', top: '1.5vw', position: 'absolute', backgroundColor: 'transparent'}} onClick = {viewChanger} />
-            <img src={backButton} style={{width: '11vw', height: '8.3vh', zIndex: '200', left: '2vw', top: '1.5vw', position: 'absolute'}}/>
-          </div>
-          <div className="top-section">
-            <div className="score-row" style={{position: 'absolute', top: '5.5vh'}}>
-              <ScoreRows scoreImages = {scoreImages} />
-            </div>
-            {/* added the switch view func to the logo*/}
-            <img src={logo} style={{position: 'absolute', width: '11vw', height: '19vh', right: '21vw', top: '5.7vh'}}/>
-          </div>
-
-          <div className="hcboard" style={{position: 'absolute', top: '5vh'}}>
-            <div className="hcboard-row">
-              <TopRow lh={'1.3vh'}/>
-            </div>
-            {items}
-            <div className="hcboard-row">
-              <TopRow lh="2.5vh" />
-            </div>
-          </div>
-
-          {/* Active Submit Button */}
-          {gameState?.players[0].yourTurn && !gameState.players[0].isClueGiver && 
-            ((gameState?.players[0].secondClue == "" && lastPlaced != null) || 
-            (gameState?.players[0].secondClue != "" && lastPlacedSecondRound != null)) && (
-            <div className="submit-button">
-              <button style={{width: '14vw', height: '6vh', 'zIndex': '201', 'left': '40.7vw', top: '92.6vh', position: 'absolute', 'backgroundColor': 'transparent'}} onClick = {submit} />
-              <img src={submitButton} style={{width: '14vw', height: '6vh', 'zIndex': '200', 'left': '40.7vw', top: '92.6vh', position: 'absolute'}}/>
-            </div>
-          )}
-
-          {/* Gray Submit Button */}
-          {(!gameState?.players[0].yourTurn || 
-          (gameState?.players[0].yourTurn && !gameState.players[0].isClueGiver && 
-            ((gameState?.players[0].secondClue == "" && lastPlaced == null) || 
-            (gameState?.players[0].secondClue != "" && lastPlacedSecondRound == null)))) && (
-              <img src={submitButtonGray} style={{width: '14vw', height: '6vh', zIndex: '202', left: '40.7vw', top: '92.6vh', position: 'absolute'}} />
-          )}
-          {gameState?.players[0].clue != "" && (
-            <div className="hc-lastClue" style={{position: 'absolute', right: '8vw', top: '40vh'}}>Your clue is: <br /> {gameState?.players[0].clue} </div>
-          )}
-          {gameState?.players[0].secondClue != "" && (
-            <div className="hc-lastClue" style={{position: 'absolute', right: '2.9vw', top: '55vh'}}>Your second clue is: <br /> {gameState?.players[0].secondClue} </div>
-          )}
-        </>
+        <BoardScreen gameState={gameState} lastPlaced={lastPlaced} setLastPlaced={setLastPlaced} lastPlacedSecondRound={lastPlacedSecondRound} setLastPlacedSecondRound={setLastPlacedSecondRound} viewChanger={viewChanger} socket={socket} connectionNumber={connectionNumber} scoreImages={scoreImages} items={items}/>
       )}
     </>
   );

@@ -4,10 +4,10 @@ import Lobby from "./Lobby.tsx";
 import Login from "./Login.tsx";
 import LobbyRoom from "./LobbyRoom.tsx";
 import EndScreen from "./EndScreen.tsx";
-import type { Player, GameState, View } from "./types.ts";
+import type { GameState, View } from "./types.ts";
 import { io, Socket } from "socket.io-client";
 
-import "./BoardScreen.css";
+import "./components/BoardScreen.css";
 import "./GameScreen.css";
 import "./App.css";
 import "./Login.css";
