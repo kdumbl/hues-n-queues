@@ -6,7 +6,7 @@ export class ColorCard {
 
   constructor(cardID: number, options?: ColorOption[]) {
     this.cardID = cardID;
-    // If options are provided (from Mongo), use them; otherwise generate random
+
     this.options = options ?? [
       ColorOption.createRandom(0),
       ColorOption.createRandom(1),
@@ -16,8 +16,7 @@ export class ColorCard {
   }
 
   /**
-   * Acts as a replacement for the Deck class.
-   * Generates a brand new random ColorCard on the fly.
+   * Generates a random ColorCard
    */
   public static drawRandomCard(): ColorCard {
     // Generate a random ID (or you could use a timestamp/UUID in a full app)
@@ -37,7 +36,7 @@ export class ColorCard {
   }
 
   /**
-   * Recreates a ColorCard from a MongoDB document.
+   * Rebuilds ColorCard from MongoDB
    */
   public static fromDocument(doc: ColorCardDoc): ColorCard {
     const options = doc.options.map(ColorOption.fromDocument);
