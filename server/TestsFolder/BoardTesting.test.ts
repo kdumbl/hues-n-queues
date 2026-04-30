@@ -1,128 +1,79 @@
 import { Board } from '../src/domain/Board';
 import { Player } from '../src/domain/Player';
-import { ColorOption } from '../src/domain/ColorOption';
 
 describe('Board', () => {
   let board: Board;
   let testPlayer: Player;
 
   beforeEach(() => {
+    // A fresh board and player are created before each test
     board = new Board();
-    testPlayer = new Player('user123', 'TestPlayer', 'socket123'); 
+    testPlayer = new Player('user123', 'TestPlayer', 'socket123', 'RED', 'http://example.com/avatar.jpg'); 
   });
 
-  test('should initialize a grid based on the MASTER_PALETTE dimensions', () => {
-    const rows = ColorOption.MASTER_PALETTE.length;
-    const cols = ColorOption.MASTER_PALETTE[0].length;
-    
-    try {
-      expect(board.grid.length).toBe(rows);
-    } catch (e) {
-      throw new Error("Does not initialize board with correct number of rows");
-    }
-    try {
-      expect(board.grid[0].length).toBe(cols);
-    } catch (e) {
-      throw new Error("Does not initialize board with correct number of columns");
-    }
-    try {
-      expect(board.isValidPlacement('A-0')).toBe(true);
-    } catch (e) {
-      throw new Error("Does not recognize valid grid spaces");
-    }
+  describe('Initialization', () => {
+    test('should initialize a grid with exactly 16 rows', () => {
+      expect(board.grid.length).toBe(16);
+    });
+
+    test('should initialize a grid with exactly 30 columns', () => {
+      expect(board.grid[0].length).toBe(30);
+    });
+
+    test('should initialize an empty board with 0 occupied spaces', () => {
+      expect(board.toDocument().occupiedSpaces.length).toBe(0);
+    });
   });
 
-  test('getCoordinateColor should return correct hex code or undefined', () => {
-    // A-0 corresponds to row 0, col 0 in the palette
-    const expectedColor = ColorOption.MASTER_PALETTE[0][0];
-    try {
-      expect(board.getCoordinateColor('A-0')).toBe(expectedColor);
-    } catch (e) {
-      throw new Error("Does not return correct hex value of valid colored space");
-    }
-    try {
-      expect(board.getCoordinateColor('Z-99')).toBeUndefined();
-    } catch (e) {
-      throw new Error("Does not return undefined for invalid grid space");
-    }
-  });
-
-  test('isValidPlacement should return true for valid coords and false for invalid', () => {
-    try {
-      expect(board.isValidPlacement('A-0')).toBe(true);
-    } catch (e) {
-      throw new Error("Does not recognize when a grid space is valid");
-    }
-    try {
-      expect(board.isValidPlacement('Z-99')).toBe(false);
-    } catch (e) {
-      throw new Error("Does not recognize when a grid space is invalid");
-    }
-  });
-
-  test('placePiece should successfully place a player on a valid coordinate', () => {
-    const success = board.placePiece('A-0', testPlayer);
-
-    try {
+  describe('placePiece()', () => {
+    test('should return true when a piece is placed within valid bounds (e.g., 0, 0)', () => {
+      const success = board.placePiece(0, 0, testPlayer.userId);
       expect(success).toBe(true);
-    } catch (e) {
-      throw new Error("Error occurs when placing piece in valid location");
-    }
-    try {
-      expect(board.occupiedSpaces).toContain('A-0');
-    } catch (e) {
-      throw new Error("Does not recognize when a grid location currently has a piece on it");
-    }
-    try {
-      expect(board.grid[0][0]).toBe(testPlayer.userId); 
-    } catch (e) {
-      throw new Error("Does not return correct player ID of occupied space");
-    }
-  });
+    });
 
-  test('placePiece should fail on an invalid coordinate', () => {
-    const success = board.placePiece('Z-99', testPlayer);
+    test('should update the grid cell with the correct player ID upon valid placement', () => {
+      board.placePiece(0, 0, testPlayer.userId);
+      expect(board.grid[0][0]).toBe(testPlayer.userId);
+    });
 
-    try {
+    test('should return false for an invalid negative coordinate', () => {
+      const success = board.placePiece(-1, 5, testPlayer.userId);
       expect(success).toBe(false);
-    } catch (e) {
-      throw new Error("Allows player to place piece in invalid location");
-    }
-    try {
-      expect(board.occupiedSpaces.length).toBe(0);
-    } catch (e) {
-      throw new Error("Incorrectly registers chosen (invalid) location as occupied upon attempted placement");
-    }
-    
+    });
+
+    test('should return false for an x-coordinate out of bounds (>= 30)', () => {
+      const success = board.placePiece(30, 5, testPlayer.userId);
+      expect(success).toBe(false);
+    });
+
+    test('should return false for a y-coordinate out of bounds (>= 16)', () => {
+      const success = board.placePiece(10, 16, testPlayer.userId);
+      expect(success).toBe(false);
+    });
+
+    test('should not add to occupied spaces if placement is out of bounds', () => {
+      board.placePiece(99, 99, testPlayer.userId);
+      expect(board.toDocument().occupiedSpaces.length).toBe(0);
+    });
   });
 
-  test('resetBoard should clear all occupied spaces', () => {
-    board.placePiece('A-0', testPlayer); // row 0, col 0
-    board.placePiece('B-2', testPlayer); // row 1, col 2
+  describe('resetBoard()', () => {
+    test('should clear all previously occupied spaces back to null', () => {
+      
+      board.placePiece(0, 0, testPlayer.userId); // x=0, y=0
+      board.placePiece(2, 1, testPlayer.userId); // x=2, y=1
+      board.resetBoard();
 
-    try {
-      expect(board.occupiedSpaces.length).toBe(2);
-    } catch (e) {
-      throw new Error("Does not correctly register placed pieces as occupied");
-    }
-    
-    board.resetBoard();
-
-    try {
-      expect(board.occupiedSpaces.length).toBe(0);
-    } catch (e) {
-      throw new Error("Resetting board does not remove occupation of all spaces");
-    }
-    try {
+      // 3. Assert: Verify the specific spots are null again
       expect(board.grid[0][0]).toBeNull();
-    } catch (e) {
-      throw new Error("Resetting board does not remove piece associated with initial space");
-    }
-    try {
-      expect(board.grid[1][2]).toBeNull();
-    } catch (e) {
-      throw new Error("Resetting board does not remove piece associated with later spaces");
-    }
+      expect(board.grid[1][2]).toBeNull(); 
+    });
 
+    test('should result in exactly 0 occupied spaces in the document output', () => {
+    
+      board.placePiece(5, 5, testPlayer.userId);
+      board.resetBoard();
+      expect(board.toDocument().occupiedSpaces.length).toBe(0);
+    });
   });
 });

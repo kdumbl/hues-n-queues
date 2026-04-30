@@ -21,7 +21,6 @@ export class Player {
   }
 
   public resetPieces(): void {
-    // Logic for clearing local state if necessary
   }
 
   /**
@@ -34,14 +33,12 @@ export class Player {
       socketId: this.socketId,
       score: this.score,
       isClueGiver: this.isClueGiver,
-      _piecesRemaining: 2, // This is a transient field for game logic, not stored in DB but required by the interface
+      _piecesRemaining: 2,
     };
   }
 
   /**
    * Rehydrates a Player from a document.
-   * Note: Since pieceColor isn't in the DB PlayerDoc, we provide a default 
-   * or allow the Mapper to assign it during game load.
    */
   public static fromDocument(doc: PlayerDoc, pieceColor: string = "RED", profileUrl = ""): Player {
     const player = new Player(doc.userId, doc.playerName, doc.socketId, pieceColor, profileUrl);

@@ -1,6 +1,6 @@
 export class ScoringCalc {
   /**
-   * Calculates points based on Chebyshev distance.
+   * Calculates points based on adjacent distance.
    * Standardized to parse "y-x" numeric strings or letter-based rows.
    */
   public static calculate(target: { x: number; y: number }, guessStr: string): number {

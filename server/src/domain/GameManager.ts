@@ -73,7 +73,7 @@ export class GameManager {
   }
 
   /**
-   * Sequential Logic Change: When a clue is submitted, only the FIRST guesser 
+   * Sequential Logic: When a clue is submitted, only the first guesser 
    * following the clue giver is allowed to move.
    */
   public submitClue(socketId: string, clueText: string, colorIndex?: number) {
@@ -91,8 +91,6 @@ export class GameManager {
       this.players.forEach(p => p.yourTurn = false);
       
       // Find the first guesser after the current clue giver
-      // (currentClueGiverIndex was already incremented at the start of the round,
-      // so we use the clue giver's actual current index)
       const giverIndex = this.players.findIndex(p => p.isClueGiver);
       const firstGuesser = this.getNextGuesser(giverIndex + 1);
       if (firstGuesser) {
@@ -103,7 +101,7 @@ export class GameManager {
   }
 
   /**
-   * Sequential Logic Change: After a successful guess, the turn is immediately
+   * Sequential Logic: After a successful guess, the turn is immediately
    * revoked from the current player and passed to the next guesser.
    */
   public submitGuess(socketId: string, positionIndex: number) {
@@ -119,12 +117,10 @@ export class GameManager {
     const success = this.board.placePiece(x, y, player.userId);
     if (success) {
       this.currentTurnManager.receiveGuess(player, coordString);
-      
-      // Revoke turn immediately after submission
       player.yourTurn = false; 
 
       if (this.currentTurnManager.allPlayersGuessed(this.players.length)) {
-        // Capture the returned scores!
+
         const scores = this.currentTurnManager.resolveRound();
         
         if (scores) {
@@ -134,7 +130,6 @@ export class GameManager {
         const giver = this.players.find(p => p.isClueGiver);
         if (giver) giver.yourTurn = true;
       } else {
-        // Pass turn to the next player in the rotation
         const currentPlayerIndex = this.players.indexOf(player);
         const nextGuesser = this.getNextGuesser(currentPlayerIndex + 1);
         if (nextGuesser) {
@@ -145,7 +140,7 @@ export class GameManager {
   }
 
   /**
-   * Helper to find the next player who is NOT the clue giver.
+   * Helper to find the next player who is not the clue giver.
    */
   private getNextGuesser(startIndex: number): Player | undefined {
     for (let i = 0; i < this.players.length; i++) {
@@ -159,7 +154,7 @@ export class GameManager {
   public endRoundAndScore() {
     if (!this.currentTurnManager) return;
     
-    // Force scoring in case the button was clicked before everyone placed their final guess
+    // Force scoring method
     const scores = this.currentTurnManager.forceScoring();
     if (scores) {
       this.updateTotalScores(scores);
