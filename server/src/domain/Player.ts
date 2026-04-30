@@ -9,14 +9,15 @@ export class Player {
   
   // UI-specific attributes required by GameState DTO
   public pieceColor: string;
-  public profileURL: string = "";
+  public profileUrl: string = "";
   public yourTurn: boolean = false;
 
-  constructor(userId: string, playerName: string, socketId: string, pieceColor: string) {
+  constructor(userId: string, playerName: string, socketId: string, pieceColor: string, profileUrl: string) {
     this.userId = userId;
     this.playerName = playerName;
     this.socketId = socketId;
     this.pieceColor = pieceColor;
+    this.profileUrl = profileUrl;
   }
 
   public resetPieces(): void {
@@ -39,8 +40,8 @@ export class Player {
   /**
    * Rehydrates a Player from a document.
    */
-  public static fromDocument(doc: PlayerDoc, pieceColor: string = "RED"): Player {
-    const player = new Player(doc.userId, doc.playerName, doc.socketId, pieceColor);
+  public static fromDocument(doc: PlayerDoc, pieceColor: string = "RED", profileUrl = ""): Player {
+    const player = new Player(doc.userId, doc.playerName, doc.socketId, pieceColor, profileUrl);
     player.score = doc.score;
     player.isClueGiver = doc.isClueGiver;
     return player;

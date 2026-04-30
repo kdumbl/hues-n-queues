@@ -54,11 +54,13 @@ export default function App() {
   //runs on site load
   useEffect(() => {
   const token = sessionStorage.getItem("token");
+  const userId = sessionStorage.getItem("userId") ?? "";
+  const username = sessionStorage.getItem("username") ?? "";
   if (token) {
     setCurrentUser({
       token,
-      userId: "",
-      username: "",
+      userId: userId,
+      username: username,
     });
     setView("lobby");
   } else {
@@ -129,6 +131,7 @@ export default function App() {
     currentUser: currentUser,
     onCreateGame: () => {socketRef.current?.emit("create game")},
     onJoinGame: (code: string) => {socketRef.current?.emit("join game", code)},
+    onLogOut: () => {setCurrentUser(null); sessionStorage.clear();},
   };
 
   const LobbyRoomProp = {
@@ -148,6 +151,8 @@ export default function App() {
 
   if(!currentUser) { return <Login
           onSuccess={(token, userId, username) => {
+            sessionStorage.setItem("userId", userId);
+            sessionStorage.setItem("username", username);
             setCurrentUser({ token, userId, username });
             setView("lobby");
           }}

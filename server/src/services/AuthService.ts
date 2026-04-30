@@ -31,4 +31,33 @@ export class AuthService {
 
     return UserMapper.toDomain(userDoc);
   }
+
+  public static async updateProfileUrl(userId: string, url: string): Promise<void> {
+    await UserRepository.updateProfileUrl(userId, url);
+  }
+
+  public static async getProfileUrl(userId: string): Promise<string> {
+    const userDoc = await UserRepository.findById(userId);
+    if (!userDoc) {
+      throw new Error("Invalid userId.");
+    }
+    return userDoc.profileurl;
+  }
+
+  public static async updateStats(userId: string, stats: boolean): Promise<void> {
+    if(stats){
+      await UserRepository.updateStatsWin(userId);
+    } else {
+      await UserRepository.updateStatsLoss(userId);
+    }
+    
+  }
+
+  public static async getStats(userId: string): Promise<any> {
+    const userDoc = await UserRepository.findById(userId);
+    if (!userDoc) {
+      throw new Error("Invalid userId.");
+    }
+    return userDoc.stats;
+  }
 }

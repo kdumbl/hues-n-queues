@@ -13,6 +13,17 @@ export class UserRepository {
     return doc ? UserMapper.toDomain(doc) : null;
   }
 
+  public static async updateProfileUrl(userId: string, url: string): Promise<void>{
+    await UserModel.updateOne({_id: userId}, {$set: {profileurl: url}});
+  }
+
+  public static async updateStatsWin(userId: string): Promise<void>{
+    await UserModel.updateOne({_id: userId}, {$inc: {"stats.wins": 1}});
+  }
+  public static async updateStatsLoss(userId: string): Promise<void>{
+    await UserModel.updateOne({_id: userId}, {$inc: {"stats.losses": 1}});
+  }
+
   public static async create(
     username: string,
     email: string,

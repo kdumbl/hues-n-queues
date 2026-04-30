@@ -14,7 +14,7 @@ export class GameMapper {
           name: player.playerName,
           socketId: player.socketId,
           pieceColor: player.pieceColor,
-          profileURL: player.profileURL,
+          profileURL: player.profileUrl,
           isClueGiver: player.isClueGiver,
           yourTurn: player.yourTurn,
           score: player.score,
