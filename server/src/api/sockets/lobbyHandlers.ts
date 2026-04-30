@@ -2,14 +2,13 @@ import { Server, Socket } from "socket.io";
 import { getGame, createGame, deleteGame } from "../../gameStore";
 import { Player } from "../../domain/Player";
 import { GameMapper } from "../../persistence/mappers/GameMapper";
-import { registerGameHandlers } from "./gameHandlers";
-import { create } from "node:domain";
 import { GameManager } from "../../domain/GameManager";
+import { AuthService } from "../../services/AuthService"
 
 
 export function registerLobbyHandlers(io: Server, socket: Socket) {
 
-  socket.on("join game", (gameId: string) => {
+  socket.on("join game", async (gameId: string) => {
     const game = getGame(gameId)
       if(game.players.length >= 4) {
         socket.emit("lobby error", "Lobby full");
@@ -23,7 +22,8 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
       } else {
         socket.join(gameId);
         socket.data.gameId = gameId;
-        const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
+        const profileUrl = await AuthService.getProfileUrl(socket.data.user.userId)
+        const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game), profileUrl);
         game.players.push(newPlayer);
         io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
         socket.emit("game joined", gameId, game.players.length - 1);
@@ -32,12 +32,12 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     }
   });
 
-  socket.on("create game", () => {
+  socket.on("create game", async () => {
     const gameId = createGame();
     const game = getGame(gameId);
-    const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game));
+    const profileUrl = await AuthService.getProfileUrl(socket.data.user.userId)
+    const newPlayer = new Player(socket.data.user.userId, socket.data.user.username, socket.id, getColor(game), profileUrl);
     game.players.push(newPlayer);
-    //addrandys(game);
     socket.join(gameId);
     socket.data.gameId = gameId;
     io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
@@ -101,18 +101,5 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     const ids = game.players.map(p => p.userId);
     return ids.includes(userId);
   }
-
-
-  // Handle profile picture URL update
-  socket.on("update pfp", ({ gameId, url }) => {
-    const game = getGame(gameId);
-    if (!game) return;
-    // Find the player by socketId
-    const player = game.players.find(p => p.socketId === socket.id);
-    if (player) {
-      player.profileURL = url;
-      io.to(gameId).emit("gameState updated", GameMapper.toDTO(game));
-    }
-  });
 
 }
