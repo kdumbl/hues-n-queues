@@ -13,14 +13,9 @@ export default function validateClue(cue: string, isSecondTime: boolean) {
       "white",
       "brown",
       "pink",
-      "cyan",
-      "turquoise",
-      "magenta",
-      "maroon",
-      "teal",
-      "beige",
-      "titty",
-      "gooch"
+      "grey",
+      "gray"
+
     ];
 
     if (forbiddenWords.some((word) => lowerCue.includes(word))) {
