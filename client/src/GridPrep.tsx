@@ -67,14 +67,12 @@ export function TopRow({ lh }){
 //letter is the row index as a letter between A and P, which appears on the left and right side of the main board
 //row_num is the index of the row as a number, with 0 being the topmost and 15 being the bottom-most
 //images is an array representing whether each space is occupied by a game piece and if so, which color it is
-//Functionally, each element in the array is an image url that is assigned to the source field of an otherwise empty image object over each space
 //add_piece is the function that is called when a space is clicked, defined in HCBoard
 export function HCRow({rowColors, letter, rowNum, images, addPiece, buttonBorderWidth}){
 
   //Value for easier indexing of array
   let base = rowNum * 30;
   let lefts = ["1.7vw", "3.7vw", "5.7vw", "7.6vw", "9.6vw", "11.6vw", "13.5vw", "15.5vw", "17.5vw", "19.4vw", "21.5vw", "23.4vw", "25.4vw", "27.4vw", "29.3vw", "31.3vw", "33.3vw", "35.2vw", "37.2vw", "39.2vw", "41.2vw", "43.2vw", "45.2vw", "47.1vw", "49.1vw", "51.1vw", "53vw", "55vw", "57vw", "58.9vw"];
-
   const items = [];
 
   //For each column, defines a game space (hcsquarebutt class) whose color corresponds with the row_colors array
@@ -89,7 +87,7 @@ export function HCRow({rowColors, letter, rowNum, images, addPiece, buttonBorder
       </>
     );
   }
-  
+
   return (
     <>
       <div className="hcsquarediv" style={{background: '#000000'}}>{letter}</div>

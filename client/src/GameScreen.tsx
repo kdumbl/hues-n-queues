@@ -14,28 +14,15 @@ import TopRightMenus from './components/TopRightMenus.tsx';
 import BoardScreen from './components/BoardScreen.tsx';
 
 function masterToIndividualGameState(masterGameState, connectionOrder){
-  console.log(connectionOrder);
-  if (connectionOrder == 0){
-    console.log("Assigned as if connOrder was 0");
-    return masterGameState;
-  } else if (connectionOrder == 1){
-    let indGameState: GameState = {
-      players: [masterGameState.players[1], masterGameState.players[2], masterGameState.players[3], masterGameState.players[0]]
-    };
-    console.log("Assigned as if connOrder was 1");
-    return indGameState;
-  } else if (connectionOrder == 2){
-    let indGameState: GameState = {
-      players: [masterGameState.players[2], masterGameState.players[3], masterGameState.players[0], masterGameState.players[1]]
-    };
-    console.log("Assigned as if connOrder was 2");
-    return indGameState;
-  } else if (connectionOrder == 3){
-    let indGameState: GameState = {
-      players: [masterGameState.players[3], masterGameState.players[0], masterGameState.players[1], masterGameState.players[2]]
-    };
-    console.log("Assigned as if connOrder was 3");
-    return indGameState;
+  switch (connectionOrder){
+    case 0:
+      return masterGameState;
+    case 1:
+      return {players: [masterGameState.players[1], masterGameState.players[2], masterGameState.players[3], masterGameState.players[0]]};
+    case 2:
+      return {players: [masterGameState.players[2], masterGameState.players[3], masterGameState.players[0], masterGameState.players[1]]};
+    case 3:
+      return {players: [masterGameState.players[3], masterGameState.players[0], masterGameState.players[1], masterGameState.players[2]]}; 
   }
 }
 
